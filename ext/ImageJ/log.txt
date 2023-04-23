@@ -1,8 +1,10 @@
 --------------------------------------------------------------
 LOG FILE
-(2023/04/23 01:56:55)
+(2023/04/23 00:20:17)
 --------------------------------------------------------------
 
-(2023/04/23 01:56:55)<run><INFO>Attempting to load .dll
-(2023/04/23 01:56:55)<run><VARIABLE>DLL_PATH: C:\Users\Nic\OneDrive - University of Windsor\Documents\CSIAS\CISSCO\ext\ImageJ\plugins\CISSCO\Calculate_Magnetic_Moment_3D_Native.dll
-(2023/04/23 01:56:55)<run><INFO>.dll loaded successfully
+(2023/04/23 00:20:17)<run><INFO>Attempting to load .dll
+(2023/04/23 00:20:17)<run><VARIABLE>DLL_PATH: C:\Users\Nic\OneDrive - University of Windsor\Documents\CSIAS\CISSCO\ext\ImageJ\plugins\CISSCO\Calculate_Magnetic_Moment_3D_Native.dll
+(2023/04/23 00:20:17)<run><INFO>.dll loaded successfully
+(2023/04/23 00:20:47)<run><VARIABLE>mag: C:\Users\Nic\OneDrive - University of Windsor\Documents\CSIAS\CISSCO\test\images\magP=1.003,(18.8,17.5,16.3)bkg=0.3.nii
+(2023/04/23 00:20:48)<run><VARIABLE>phase: C:\Users\Nic\OneDrive - University of Windsor\Documents\CSIAS\CISSCO\test\images\phaseP=1.003,(18.8,17.5,16.3)bkg=0.3.nii
