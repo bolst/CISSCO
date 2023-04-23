@@ -1,0 +1,8 @@
+--------------------------------------------------------------
+LOG FILE
+(2023/04/22 20:27:31)
+--------------------------------------------------------------
+
+(2023/04/22 20:27:31)<run><INFO>Attempting to load .dll
+(2023/04/22 20:27:31)<run><VARIABLE>DLL_PATH: C:\Users\Nic\OneDrive - University of Windsor\Documents\CSIAS\CISSCO\ext\ImageJ\plugins\CISSCO\Calculate_Magnetic_Moment_3D_Native.dll
+(2023/04/22 20:27:31)<run><INFO>.dll loaded successfully
