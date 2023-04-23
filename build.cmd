@@ -1,7 +1,5 @@
 @echo off
 
-cls
-
 echo compiling java files[1/2]...
 javac -cp lib/ij.jar;lib/ml.jar;lib/swt.jar src/java/*.java
 if %ERRORLEVEL% neq 0 (
@@ -35,9 +33,10 @@ if %ERRORLEVEL% neq 0 (
 echo done!
 move src\java\*.class bin >NUL 2>NUL
 
-move Calculate_Magnetic_Moment_3D_Native.dll bin >NUL 2>NUL
+move Calculate_Magnetic_Moment_3D_Native.dll lib >NUL 2>NUL
 
 move Calculate_Magnetic_Moment_3D.o bin >NUL 2>NUL
 
 copy /y bin\* ext\ImageJ\plugins\CISSCO\ >NUL 2>NUL
 copy /y lib\ml.jar ext\ImageJ\plugins\CISSCO\ >NUL 2>NUL
+copy /y lib\Calculate_Magnetic_Moment_3D_Native.dll ext\ImageJ\plugins\CISSCO\ >NUL 2>NUL

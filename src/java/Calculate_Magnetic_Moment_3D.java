@@ -1,35 +1,14 @@
 /*
- * Program designed as a plug-in for ImageJ. Used to calculate magnetic moment of a 3d image.
- *
  * @author Nicholas Bolton (bolton21@uwindsor.ca)
  * @version 3.11, Nov. 14, 2022
  */
 
-/*
- * while working in the same directory as Calculate_Magnetic_Moment_3D and ij.jar, you can compile
- * the class by using:
- * javac .\Calculate_Magnetic_Moment_3D.java -cp ./ij.jar
- */
-
-/*
- * THIS VERSION CAN CALL C++ FUNCTIONS BY RUNNING THE FOLLOWING STEPS IN CMD:
- * 
- * javac Calculate_Magnetic_Moment_3D.java ROIS.java LogManager.java -cp ij.jar
- * javah -cp . Calculate_Magnetic_Moment_3D
- * g++ -c -I"%JAVA_HOME%/include" -I"%JAVA_HOME%/include/win32" -fPIC -m64 Calculate_Magnetic_Moment_3D.cpp -o Calculate_Magnetic_Moment_3D.o
- * g++ -shared -m64 -o Calculate_Magnetic_Moment_3D_Native.dll Calculate_Magnetic_Moment_3D.o -Wl,-add-stdcall-alias
- * 
- * Then move all .class, .o, and .dll files to a subfolder under ImageJ plug-in folder
- */
-
- import java.awt.Rectangle;
+ // imports
  import java.awt.Color;
  import java.awt.event.ActionEvent;
  import java.awt.event.ActionListener;
- import java.awt.Font;
  import java.util.ArrayList;
  import java.lang.Math;
- 
  import javax.swing.JButton;
  import javax.swing.JCheckBox;
  import javax.swing.JFileChooser;
@@ -38,22 +17,10 @@
  import javax.swing.JOptionPane;
  import javax.swing.JTextField;
  import javax.swing.SwingConstants;
- import javax.swing.UIManager;
  import javax.swing.filechooser.FileSystemView;
-
- //import net.miginfocom.swing.MigLayout;
-
  import net.miginfocom.swing.MigLayout;
- 
- // If you are getting an error saying the ij library isn't found, do the following:
- /*
-  * Do ctrl + shift + p to open command window
-  * Search configure classpath and select it
-  * add the location of the ij.jar to reference libraries
-  * check vscode->java projects to see if it is there
-  * if it is then you're good!
-  */
- 
+  
+ // ImageJ tool imports
  import ij.ImagePlus;
  import ij.gui.*;
  import ij.plugin.PlugIn;
@@ -61,14 +28,6 @@
  import ij.process.*;
  import ij.WindowManager;
  import ij.io.Opener;
- 
- /*import java.awt.event.MouseListener;
- import java.awt.event.MouseAdapter;
- import java.awt.event.MouseEvent;
- import java.awt.event.MouseMotionAdapter;
- import java.awt.geom.Line2D;
- import java.awt.geom.Rectangle2D;
- import java.awt.Point;*/
  
  public class Calculate_Magnetic_Moment_3D implements PlugIn, ActionListener {
  
@@ -421,9 +380,9 @@
        try{
 
         item = new ImageItem(s1MagWindowTitle, 
-                                        s1PhaseWindowTitle, 
-                                        Integer.parseInt(txt_M.getText()), 
-                                        Double.parseDouble(txt_eqPhaseRC.getText()));
+                             s1PhaseWindowTitle, 
+                             Integer.parseInt(txt_M.getText()), 
+                             Double.parseDouble(txt_eqPhaseRC.getText()));
         item.calcCenterL();
         item.calcCenterM();
         item.calcCenterS();
@@ -2557,26 +2516,18 @@
      }
    }
  
-   // helper function for run, inserts all the buttons and labels
    /*
-    * So you will see many integers defined in this function such as "***XT" or
-    * "***YT". These are placed in various GUI's components that I had to move as a
-    * group. It is obviously easier to change one integer than change 15 if I want
-    * to move a group of GUI components.
+    * Built using Eclipse and MigLayout. Much easier to manage then before.
+    * If this is to be edited I advise against changing code directly.
+    * Copy and paste this function into Eclipse (or any other IDE) and
+    * make sure you have some GUI plug-in configured so that you can view it
+    * without compiling + running every time. Also make sure to have MigLayout
+    * configured.
     */
-   /*
-    * On the other hand, this function can be generously simplified. I did not
-    * learn various Java GUI classes such as GroupLayout so I didn't know how to
-    * implement them here, although it would have made this much much easier. I did
-    * not spend time learning this because there were other more important tasks to
-    * complete.
-    */
-   // TODO: Simplify this function using GroupLayout or something similar. It
-   // currently works fine but is annoying to edit.
    private static void initialize() {
     try{
       frame = new JFrame("Calculate Magnetic Moment 3D");
-      frame.setAlwaysOnTop(true);
+      frame.setAlwaysOnTop(false);
       frame.setBounds(100, 100, 800, 700);
       frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE); 
 		  frame.getContentPane().setLayout(new MigLayout("", "[][][grow][45px:45.00px:45px][45px:45px:45px,grow][45px:45px:45px,grow][48.00,grow][]", "[][][][][][][][][][][][][][][][][][][][][][][]"));
