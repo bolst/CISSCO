@@ -32,7 +32,7 @@ import ij.io.Opener;
 public class Calculate_Magnetic_Moment_3D implements PlugIn, ActionListener {
 
   private static ImageItem item;
-  private static LogManager logger;
+  public static LogManager logger;
   private static ROIS roiImgMag, roiImgMagXZ, roiImgPhase, roiImgPhaseXZ, roiImgV1SE, roiImgV1SEXZ;
   private static JFrame frame;
   private static JCheckBox chkbx_showrc;
@@ -395,6 +395,7 @@ public class Calculate_Magnetic_Moment_3D implements PlugIn, ActionListener {
         double center_sx = CenterS.get(0);
         double center_sy = CenterS.get(1);
         double center_sz = CenterS.get(2);
+        logger.addInfo("csssss", CenterS);
 
         // Setting center to GUI unless user already has an inputted center point
         if (txt_rcx.getText().isEmpty()) {
@@ -2318,10 +2319,15 @@ public class Calculate_Magnetic_Moment_3D implements PlugIn, ActionListener {
    */
   public void clearVariables() {
     try {
+      int irand = 0;
 
+      logger.addVariable("irand", irand++);
       txt_spinCenterXVal.setText("0");
+      logger.addVariable("irand", irand++);
       txt_spinCenterYVal.setText("0");
+      logger.addVariable("irand", irand++);
       txt_spinCenterZVal.setText("1");
+      logger.addVariable("irand", irand++);
 
       txt_v1seXVal1.setText("0");
       txt_v1seXVal2.setText("0");
@@ -2329,6 +2335,7 @@ public class Calculate_Magnetic_Moment_3D implements PlugIn, ActionListener {
       txt_v1seYVal2.setText("0");
       txt_v1seZVal1.setText("1");
       txt_v1seZVal2.setText("1");
+      logger.addVariable("irand", irand++);
 
       txt_v2seXVal1.setText("0");
       txt_v2seXVal2.setText("0");
@@ -2336,30 +2343,40 @@ public class Calculate_Magnetic_Moment_3D implements PlugIn, ActionListener {
       txt_v2seYVal2.setText("0");
       txt_v2seZVal1.setText("1");
       txt_v2seZVal2.setText("1");
+      logger.addVariable("irand", irand++);
 
       txt_sigSEVal.setText("1.0");
+      logger.addVariable("irand", irand++);
 
       lbl_V0Val.setText("");
+      logger.addVariable("irand", irand++); // 7
 
       lbl_aSE.setText("");
+      logger.addVariable("irand", irand++);
 
       lbl_echoDChi.setText("");
+      logger.addVariable("irand", irand++);
 
       // lbl_d_V0Val.setText("");
 
       lbl_rho0SEVal.setText("");
+      logger.addVariable("irand", irand++);
 
       txt_snrVal.setText("1.0");
       m_SNR = 1.0;
+      logger.addVariable("irand", irand++);
 
       txt_eps12val.setText("0.0");
       m_e12 = 0.0;
+      logger.addVariable("irand", irand++);
 
       txt_eps23val.setText("0.0");
       m_e23 = 0.0;
+      logger.addVariable("irand", irand++); // 13
 
       B0Text.setText("0.0");
       m_B0 = 0.0;
+      logger.addVariable("irand", irand++);
 
       /*
        * XverText.setText("1.0");
@@ -2386,11 +2403,11 @@ public class Calculate_Magnetic_Moment_3D implements PlugIn, ActionListener {
 
       txt_Ri.setText("0");
       m_Ri = 0;
+      logger.addVariable("irand", irand++);
 
       txt_magMomVal.setText("");
 
       lbl_rho0val.setText("");
-
       lbl_errVal.setText("");
 
       lbl_aVal.setText("");
@@ -2410,6 +2427,7 @@ public class Calculate_Magnetic_Moment_3D implements PlugIn, ActionListener {
 
       txt_eqPhaseRC.setText("1.0");
       phaseValue = 1.0;
+      logger.addVariable("irand", irand++);
 
       txt_rc.setText("");
       RCenter = Double.NaN;
@@ -2426,6 +2444,7 @@ public class Calculate_Magnetic_Moment_3D implements PlugIn, ActionListener {
       txt_spz.setText("");
       centerZ_pixelCoordinates = Double.NaN;
       centerZ_subpixelCoordinates = 0;
+      logger.addVariable("irand", irand++);
 
       txt_r1.setText("");
       m_R1 = Double.NaN;
@@ -2440,6 +2459,7 @@ public class Calculate_Magnetic_Moment_3D implements PlugIn, ActionListener {
       lbl_r2phaseCalc.setText("");
       lbl_r1phaseAct.setText("");
       lbl_r1phaseCalc.setText("");
+      logger.addVariable("irand", irand++);
 
       txt_rcx.setText("");
       m_xCenter = 0;
@@ -2455,6 +2475,7 @@ public class Calculate_Magnetic_Moment_3D implements PlugIn, ActionListener {
       R1PhaseCalc = Double.NaN;
       R2PhaseCalc = Double.NaN;
       R3PhaseCalc = Double.NaN;
+      logger.addVariable("irand", irand++);
 
       chkbx_showrc.setSelected(false);
 
@@ -2481,6 +2502,7 @@ public class Calculate_Magnetic_Moment_3D implements PlugIn, ActionListener {
       }
 
       WindowManager.closeAllWindows();
+      logger.addVariable("irand", irand++);
 
       subpixelIsGenerated = false;
       estimatedBGIsFound = false;
@@ -2490,6 +2512,7 @@ public class Calculate_Magnetic_Moment_3D implements PlugIn, ActionListener {
       R3IsFound = false;
       estimateCenterRadii_isClicked = false;
       estimateSubpixelCenter_isClicked = false;
+      logger.addVariable("irand", irand++);
 
       logger.addInfo("Cleared variables");
     } catch (Exception exc) {
@@ -2922,9 +2945,9 @@ public class Calculate_Magnetic_Moment_3D implements PlugIn, ActionListener {
     lbl_spinCenter = new JLabel("Second Image Center:  (");
     frame.getContentPane().add(lbl_spinCenter, "flowx,cell 1 18,alignx trailing");
 
-    txt_v1seXVal1 = new JTextField();
-    txt_v1seXVal1.setColumns(3);
-    frame.getContentPane().add(txt_v1seXVal1, "flowx,cell 2 18,alignx center");
+    txt_spinCenterXVal = new JTextField();
+    txt_spinCenterXVal.setColumns(3);
+    frame.getContentPane().add(txt_spinCenterXVal, "flowx,cell 2 18,alignx center");
 
     lbl_innerBrack1 = new JLabel("-1 )");
     frame.getContentPane().add(lbl_innerBrack1, "flowx,cell 3 18");
@@ -2970,9 +2993,9 @@ public class Calculate_Magnetic_Moment_3D implements PlugIn, ActionListener {
     lbl_comma31 = new JLabel(",");
     frame.getContentPane().add(lbl_comma31, "cell 2 20");
 
-    txt_v1seYVal1 = new JTextField();
-    txt_v1seYVal1.setColumns(3);
-    frame.getContentPane().add(txt_v1seYVal1, "cell 2 18");
+    txt_spinCenterYVal = new JTextField();
+    txt_spinCenterYVal.setColumns(3);
+    frame.getContentPane().add(txt_spinCenterYVal, "cell 2 18");
 
     txt_v1seYVal1 = new JTextField();
     txt_v1seYVal1.setColumns(3);
@@ -2991,9 +3014,9 @@ public class Calculate_Magnetic_Moment_3D implements PlugIn, ActionListener {
     lbl_comma32 = new JLabel(",");
     frame.getContentPane().add(lbl_comma32, "cell 2 20");
 
-    txt_v1seZVal1 = new JTextField();
-    frame.getContentPane().add(txt_v1seZVal1, "cell 2 18");
-    txt_v1seZVal1.setColumns(3);
+    txt_spinCenterZVal = new JTextField();
+    frame.getContentPane().add(txt_spinCenterZVal, "cell 2 18");
+    txt_spinCenterZVal.setColumns(3);
 
     txt_v1seZVal1 = new JTextField();
     txt_v1seZVal1.setColumns(3);

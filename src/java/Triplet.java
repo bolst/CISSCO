@@ -3,14 +3,14 @@ class Triplet<T> {
     private T second;
     private T third;
 
-    public Triplet(T first, T second, T third){
+    public Triplet(T first, T second, T third) {
         this.first = first;
         this.second = second;
         this.third = third;
     }
 
-    public T get(int i){
-        switch(i){
+    public T get(int i) {
+        switch (i) {
             case 0:
                 return first;
             case 1:
@@ -22,8 +22,8 @@ class Triplet<T> {
         }
     }
 
-    public void set(int i, T val){
-        switch (i){
+    public void set(int i, T val) {
+        switch (i) {
             case 0:
                 first = val;
                 return;
@@ -36,5 +36,10 @@ class Triplet<T> {
             default:
                 return;
         }
+    }
+
+    @Override
+    public String toString() {
+        return "<" + String.valueOf(first) + ", " + String.valueOf(second) + ", " + String.valueOf(third) + ">\n";
     }
 }
