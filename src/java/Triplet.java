@@ -40,6 +40,6 @@ class Triplet<T> {
 
     @Override
     public String toString() {
-        return "<" + String.valueOf(first) + ", " + String.valueOf(second) + ", " + String.valueOf(third) + ">\n";
+        return "<" + String.valueOf(first) + ", " + String.valueOf(second) + ", " + String.valueOf(third) + ">";
     }
 }

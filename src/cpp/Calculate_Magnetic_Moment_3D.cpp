@@ -393,7 +393,7 @@ JNIEXPORT void JNICALL Java_Calculate_1Magnetic_1Moment_13D_setMagMomentVariable
     return;
 }
 
-JNIEXPORT void JNICALL Java_Calculate_1Magnetic_1Moment_13D_setRi(JNIEnv *env, jobject thisObj, jint mri)
+JNIEXPORT void JNICALL Java_Calculate_1Magnetic_1Moment_13D_setRi(JNIEnv *env, jobject thisObj, jdouble mri)
 {
     m_Ri = mri;
     return;

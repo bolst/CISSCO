@@ -16,16 +16,16 @@ public class ImageItem {
   private Triplet<Double> center_l;
   private Triplet<Double> center_m;
   private Triplet<Double> center_s;
-  private double bkgPhase;
+  public double bkgPhase;
   private double roi_mag_belowM_sumX, roi_mag_belowM_sumY, roi_mag_belowM_sumZ;
   private int roi_xi, roi_yi, roi_zi, roi_Dx, roi_Dy, roi_Dz;
-  private int roi_mag_belowM_xi, roi_mag_belowM_yi, roi_mag_belowM_zi,
+  public int roi_mag_belowM_xi, roi_mag_belowM_yi, roi_mag_belowM_zi,
       roi_mag_belowM_Dx, roi_mag_belowM_Dy, roi_mag_belowM_Dz;
-  private int M;
+  public int M;
   private double RCenter;
   private double phaseValue;
   private String neglectedAxis;
-  private double m_R0, m_R1, m_R2, m_R3;
+  private double m_R0;
   private double estMagMoment;
   private double R1PhaseCalc, R2PhaseCalc, R3PhaseCalc;
   private double R1PhaseActual, R2PhaseActual, R3PhaseActual;
@@ -34,6 +34,8 @@ public class ImageItem {
   private final double m_ROuterFrom = 0.2;
   private final double m_RMiddleFrom = 0.9;
   private final double m_RInnerFrom = 2.5;
+
+  public boolean isNearEdge = false;
 
   public ImageItem(String magTitle, String phaseTitle, int M_pct, double pV) {
     M = M_pct;
@@ -757,26 +759,23 @@ public class ImageItem {
     suggR3 = Math.pow(base, exp);
     suggR3 = suggR3 * (double) grid;
     suggR3 = Math.ceil(suggR3) / (double) grid;
-    m_R3 = suggR3;
+    double m_R3 = suggR3;
 
     base = factor / m_RMiddleFrom;
     suggR2 = Math.pow(base, exp);
     suggR2 = suggR2 * (double) grid;
     suggR2 = Math.ceil(suggR2) / (double) grid;
-    m_R2 = suggR2;
+    double m_R2 = suggR2;
 
     base = factor / m_ROuterFrom;
     suggR1 = Math.pow(base, exp);
     suggR1 = suggR1 * (double) grid;
     suggR1 = Math.ceil(suggR1) / (double) grid;
-    m_R1 = suggR1;
+    double m_R1 = suggR1;
 
     Calculate_Magnetic_Moment_3D.txt_r1.setText(String.valueOf(m_R1));
     Calculate_Magnetic_Moment_3D.txt_r2.setText(String.valueOf(m_R2));
     Calculate_Magnetic_Moment_3D.txt_r3.setText(String.valueOf(m_R3));
-    Calculate_Magnetic_Moment_3D.R1IsFound = true;
-    Calculate_Magnetic_Moment_3D.R2IsFound = true;
-    Calculate_Magnetic_Moment_3D.R3IsFound = true;
 
     /*
      * Finding m_R0. It is determined by the calculations below.
@@ -811,14 +810,14 @@ public class ImageItem {
     int zDistanceFromEdge1 = mag.getNSlices() - 1 - center_s.get(2).intValue();
     int zDistanceFromEdge2 = center_s.get(2).intValue();
 
-    Calculate_Magnetic_Moment_3D.isNearEdge = true;
+    isNearEdge = true;
 
     if ((xDistanceFromEdge1 >= 4) && (xDistanceFromEdge1 < 8)) {
       if (xDistanceFromEdge1 < m_R0) {
         m_R0 = xDistanceFromEdge1;
       }
     } else if (xDistanceFromEdge1 < 4) {
-      Calculate_Magnetic_Moment_3D.isNearEdge = false;
+      isNearEdge = false;
     }
 
     if ((xDistanceFromEdge2 >= 4) && (xDistanceFromEdge2 < 8)) {
@@ -826,7 +825,7 @@ public class ImageItem {
         m_R0 = xDistanceFromEdge2;
       }
     } else if (xDistanceFromEdge2 < 4) {
-      Calculate_Magnetic_Moment_3D.isNearEdge = false;
+      isNearEdge = false;
     }
 
     if ((yDistanceFromEdge1 >= 4) && (yDistanceFromEdge1 < 8)) {
@@ -834,7 +833,7 @@ public class ImageItem {
         m_R0 = yDistanceFromEdge1;
       }
     } else if (yDistanceFromEdge1 < 4) {
-      Calculate_Magnetic_Moment_3D.isNearEdge = false;
+      isNearEdge = false;
     }
 
     if ((yDistanceFromEdge2 >= 4) && (yDistanceFromEdge2 < 8)) {
@@ -842,7 +841,7 @@ public class ImageItem {
         m_R0 = yDistanceFromEdge2;
       }
     } else if (yDistanceFromEdge2 < 4) {
-      Calculate_Magnetic_Moment_3D.isNearEdge = false;
+      isNearEdge = false;
     }
 
     if ((zDistanceFromEdge1 >= 4) && (zDistanceFromEdge1 < 8)) {
@@ -850,7 +849,7 @@ public class ImageItem {
         m_R0 = zDistanceFromEdge1;
       }
     } else if (zDistanceFromEdge1 < 4) {
-      Calculate_Magnetic_Moment_3D.isNearEdge = false;
+      isNearEdge = false;
     }
 
     if ((zDistanceFromEdge2 >= 4) && (zDistanceFromEdge2 < 8)) {
@@ -858,7 +857,7 @@ public class ImageItem {
         m_R0 = zDistanceFromEdge2;
       }
     } else if (zDistanceFromEdge2 < 4) {
-      Calculate_Magnetic_Moment_3D.isNearEdge = false;
+      isNearEdge = false;
     }
 
     m_R0 = Math.ceil(m_R0);
@@ -911,6 +910,7 @@ public class ImageItem {
 
   public void calcCenterM() {
     // ---------- Begin to find Center_M
+    center_m = new Triplet<Double>(0.0, 0.0, 0.0);
 
     // Making Center_M the small box to start
     center_m.set(0, (double) (roi_mag_belowM_xi + roi_mag_belowM_xi + roi_mag_belowM_Dx));
@@ -950,6 +950,7 @@ public class ImageItem {
   }
 
   public void calcCenterS() {
+    center_s = new Triplet<Double>(0.0, 0.0, 0.0);
     // ------ Begin summing planes in innerbox
     // Initializing arrays for sums of planes in small box
     double[] innerBox_sumOfXPlane = new double[roi_mag_belowM_xi + roi_mag_belowM_Dx + 1];
@@ -1028,6 +1029,14 @@ public class ImageItem {
     // ---------- end to find Center_S
   }
 
+  public Triplet<Double> centerL() {
+    return center_l;
+  }
+
+  public Triplet<Double> centerM() {
+    return center_m;
+  }
+
   public Triplet<Double> centerS() {
     return center_s;
   }
@@ -1042,18 +1051,6 @@ public class ImageItem {
 
   public Double m_R0() {
     return m_R0;
-  }
-
-  public Double m_R1() {
-    return m_R1;
-  }
-
-  public Double m_R2() {
-    return m_R2;
-  }
-
-  public Double m_R3() {
-    return m_R3;
   }
 
   public void setCenterSX(double x) {
