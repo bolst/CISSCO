@@ -31,6 +31,8 @@ import ij.io.Opener;
 
 public class Calculate_Magnetic_Moment_3D implements PlugIn, ActionListener {
 
+  JNIMethods jni = new JNIMethods();
+
   public static JFrame frame;
   public static JCheckBox chkbx_showrc;
   public static JLabel lbl_stepone, lbl_steptwo, lbl_stepthree, lbl_stepfour, lbl_stepfive, lbl_stepsix,
@@ -70,8 +72,6 @@ public class Calculate_Magnetic_Moment_3D implements PlugIn, ActionListener {
       drawnRectangle_sizeY, drawnRectangle_sizeZ;
 
   private static double m_R0;
-  private static double[] xPhaseValues_Positive, yPhaseValues_Positive, zPhaseValues_Positive, xPhaseValues_Negative,
-      yPhaseValues_Negative, zPhaseValues_Negative, neglectedPVP, neglectedPVN, PVP1, PVN1, PVP2, PVN2;
   private static float[][] subpixelMagMatrix, subpixelMagMatrixXZ, subpixelPhaseMatrix, subpixelPhaseMatrixXZ;
 
   public static boolean estimateCenterRadii_isClicked = false;
@@ -102,133 +102,6 @@ public class Calculate_Magnetic_Moment_3D implements PlugIn, ActionListener {
       logger.addInfo(".dll loading error message:", exc.toString());
     }
   }
-
-  /*
-   * The following functions are defined for calling C++ functions. You can look
-   * at the C++ code and find these functions where they are prefixed with
-   * "Java_Calculate_1Magnetic_1Moment_13D_."
-   */
-
-  native void setmVariables(int jm_SubPixels, double jm_R0, double jm_RCenter, double jm_CenterX2,
-      double jm_CenterY2, double jm_CenterZ2, double jphaseValue);
-
-  native void setMagMoment(double nm);
-
-  native void setBackPhase(double jBackPhase);
-
-  native void setRealImagNumbers(float[][][] jreal, float[][][] jimag);
-
-  native void setXYZ(double jx, double jy, double jz);
-
-  native void setPhaseXYMatrix(float[][] jphase);
-
-  native void setPhaseXZMatrix(float[][] jphase);
-
-  native void setMagXYMatrix(float[][] jmag);
-
-  native void setMagXZMatrix(float[][] jmag);
-
-  native void setSmallBox(int jxi, int jyi, int jzi, int jxsize, int jysize, int jzsize);
-
-  native void setCenterL(double jx, double jy, double jz);
-
-  native void setCenterM(double jx, double jy, double jz);
-
-  native void setCenterS(double jx, double jy, double jz);
-
-  native void setmR123(double jmr1, double jmr2, double jmr3);
-
-  native void setR123PhaseCalc(double j1, double j2, double j3);
-
-  native void setMagMomentVariables(double jSNR, double je12, double je23, double jB0, double jRChi, double jTE);
-
-  native void setRi(double jri);
-
-  native void setStep6Variables(double jtef, double jtel, double jb0, double jrx);
-
-  native void setSimulatedMatrices(float[][][] jreal, int jsize);
-
-  native void removeBackgroundPhase(double jbPhase);
-
-  native void generateSubpixelArray();
-
-  native String estimateSubpixelCenter();
-
-  native String calculateRealSum();
-
-  native String calculateImagSum();
-
-  native void estBkgAndSpinDensity();
-
-  native void calcSusceptibility();
-
-  native void interpolateVoxelsSIM(int jsize);
-
-  native double SumCircleElementsReal3DSIMMED(int jradii, int jx, int jy, int jz);
-
-  native double equation10(double jp, double jphi_i, double jphi_j);
-
-  native double calculateUncertainty(double je12, double je23);
-
-  native double getSpinDensity();
-
-  native double getBkg();
-
-  native double getSubX();
-
-  native double getSubY();
-
-  native double getSubZ();
-
-  native double getSubXOther();
-
-  native double getSubYOther();
-
-  native double getSubZOther();
-
-  native String calculateMagneticMoment();
-
-  native double getMR1Calc();
-
-  native double getMR2Calc();
-
-  native double getMR3Calc();
-
-  native double getSNR();
-
-  native double getE12();
-
-  native double getE23();
-
-  native double getB0();
-
-  native double getTE();
-
-  native double getRChi();
-
-  native double getRho();
-
-  native double getChi();
-
-  native double getA();
-
-  native double getUncertainty();
-
-  native double getP();
-
-  native double getP0();
-
-  native double getMagMoment();
-
-  native double getResX();
-
-  native double getResY();
-
-  native double getResZ();
-
-  native double getRealSum();
-
-  native double getImagSum();
 
   public static void main(String[] args) {
   }
@@ -390,12 +263,12 @@ public class Calculate_Magnetic_Moment_3D implements PlugIn, ActionListener {
         item.calcR0123();
         m_R0 = item.m_R0();
 
-        setmVariables(grid, m_R0, RCenter,
+        jni.setmVariables(grid, m_R0, RCenter,
             Double.parseDouble(txt_rcx.getText()),
             Double.parseDouble(txt_rcy.getText()),
             Double.parseDouble(txt_rcx.getText()) - 1.0,
             Double.parseDouble(txt_eqPhaseRC.getText()));
-        setMagMoment(Double.parseDouble(txt_eqPhaseRC.getText()) * Math.pow(RCenter, 3));
+        jni.setMagMoment(Double.parseDouble(txt_eqPhaseRC.getText()) * Math.pow(RCenter, 3));
 
         estimateCenterRadii_isClicked = true;
 
@@ -488,16 +361,16 @@ public class Calculate_Magnetic_Moment_3D implements PlugIn, ActionListener {
 
         // Passing necessary variables to C++
         double RCenter = Double.parseDouble(txt_rc.getText());
-        setmVariables(grid, m_R0, RCenter,
+        jni.setmVariables(grid, m_R0, RCenter,
             Double.parseDouble(txt_rcx.getText()),
             Double.parseDouble(txt_rcy.getText()),
             Double.parseDouble(txt_rcx.getText()) - 1.0,
             Double.parseDouble(txt_eqPhaseRC.getText()));
-        setBackPhase(item.bkgPhase);
-        setRealImagNumbers(croppedRealNumbers3D, croppedImaginaryNumbers3D);
+        jni.setBackPhase(item.bkgPhase);
+        jni.setRealImagNumbers(croppedRealNumbers3D, croppedImaginaryNumbers3D);
 
         // Generate subpixel in C++
-        generateSubpixelArray();
+        jni.generateSubpixelArray();
 
         int croppedImageSize = 2 * (int) m_R0 + 1;
         int Nfinal = grid;
@@ -582,11 +455,11 @@ public class Calculate_Magnetic_Moment_3D implements PlugIn, ActionListener {
         subpixelPhaseImageXZ.show();
 
         // Passing matrices to C++
-        setRealImagNumbers(croppedRealNumbers3D, croppedImaginaryNumbers3D);
-        setPhaseXYMatrix(subpixelPhaseMatrix);
-        setPhaseXZMatrix(subpixelPhaseMatrixXZ);
-        setMagXYMatrix(subpixelMagMatrix);
-        setMagXZMatrix(subpixelMagMatrixXZ);
+        jni.setRealImagNumbers(croppedRealNumbers3D, croppedImaginaryNumbers3D);
+        jni.setPhaseXYMatrix(subpixelPhaseMatrix);
+        jni.setPhaseXZMatrix(subpixelPhaseMatrixXZ);
+        jni.setMagXYMatrix(subpixelMagMatrix);
+        jni.setMagXZMatrix(subpixelMagMatrixXZ);
       }
     }
 
@@ -605,7 +478,7 @@ public class Calculate_Magnetic_Moment_3D implements PlugIn, ActionListener {
 
       {
         // Removing BG phase in C++
-        removeBackgroundPhase(item.bkgPhase);
+        jni.removeBackgroundPhase(item.bkgPhase);
 
         // Removing BG phase in Java
         removeBGPhase(subpixelPhaseMatrix);
@@ -624,7 +497,7 @@ public class Calculate_Magnetic_Moment_3D implements PlugIn, ActionListener {
 
       updateVariables();
       double RCenter = Double.parseDouble(txt_rc.getText());
-      setmVariables(grid, m_R0, RCenter,
+      jni.setmVariables(grid, m_R0, RCenter,
           Double.parseDouble(txt_rcx.getText()),
           Double.parseDouble(txt_rcy.getText()),
           Double.parseDouble(txt_rcx.getText()) - 1.0,
@@ -654,27 +527,27 @@ public class Calculate_Magnetic_Moment_3D implements PlugIn, ActionListener {
         logger.addInfo("cs", item.centerS());
 
         // Passing necessary data to C++
-        setXYZ(Double.parseDouble(txt_rcx.getText()), Double.parseDouble(txt_rcy.getText()),
+        jni.setXYZ(Double.parseDouble(txt_rcx.getText()), Double.parseDouble(txt_rcy.getText()),
             Double.parseDouble(txt_rcz.getText()) - 1.0);
-        setPhaseXYMatrix(subpixelPhaseMatrix);
-        setSmallBox(item.roi_mag_belowM_xi, item.roi_mag_belowM_yi, item.roi_mag_belowM_zi, item.roi_mag_belowM_Dx,
+        jni.setPhaseXYMatrix(subpixelPhaseMatrix);
+        jni.setSmallBox(item.roi_mag_belowM_xi, item.roi_mag_belowM_yi, item.roi_mag_belowM_zi, item.roi_mag_belowM_Dx,
             item.roi_mag_belowM_Dy,
             item.roi_mag_belowM_Dz);
-        setCenterL(item.centerL().get(0), item.centerL().get(1), item.centerL().get(2));
-        setCenterM(item.centerM().get(0), item.centerM().get(1), item.centerM().get(2));
-        setCenterS(item.centerS().get(0), item.centerS().get(1), item.centerS().get(2));
+        jni.setCenterL(item.centerL().get(0), item.centerL().get(1), item.centerL().get(2));
+        jni.setCenterM(item.centerM().get(0), item.centerM().get(1), item.centerM().get(2));
+        jni.setCenterS(item.centerS().get(0), item.centerS().get(1), item.centerS().get(2));
 
         // Calculating subpixel center, if there are no errors then the returned string
         // will be empty
-        subCenterErrorMessage = estimateSubpixelCenter();
+        subCenterErrorMessage = jni.estimateSubpixelCenter();
         logger.addInfo("hi");
 
         if (subCenterErrorMessage.compareTo("") == 0) {
 
           // Getting estimated subpixel centers from C++ in terms of pixels
-          double centerX_pixelCoordinates = getSubX();
-          double centerY_pixelCoordinates = getSubY();
-          double centerZ_pixelCoordinates = getSubZ();
+          double centerX_pixelCoordinates = jni.getSubX();
+          double centerY_pixelCoordinates = jni.getSubY();
+          double centerZ_pixelCoordinates = jni.getSubZ();
 
           // Update center_s to be the estimated subpixel center
           item.centerS().set(0, centerX_pixelCoordinates);
@@ -765,7 +638,7 @@ public class Calculate_Magnetic_Moment_3D implements PlugIn, ActionListener {
 
       updateVariables();
       double RCenter = Double.parseDouble(txt_rc.getText());
-      setmVariables(grid, m_R0, RCenter,
+      jni.setmVariables(grid, m_R0, RCenter,
           Double.parseDouble(txt_rcx.getText()),
           Double.parseDouble(txt_rcy.getText()),
           Double.parseDouble(txt_rcx.getText()) - 1.0,
@@ -1262,13 +1135,13 @@ public class Calculate_Magnetic_Moment_3D implements PlugIn, ActionListener {
       if (condition) {
 
         // Calling C++ to calculate background phase and spin density
-        estBkgAndSpinDensity();
+        jni.estBkgAndSpinDensity();
 
         // Getting calculated background phase from C++
-        item.bkgPhase = Math.abs(getBkg());
+        item.bkgPhase = Math.abs(jni.getBkg());
 
         // Getting calculated spin density from C++
-        double spinDensity = getSpinDensity();
+        double spinDensity = jni.getSpinDensity();
 
         logger.addVariable("estimatedBackgroundPhase", item.bkgPhase);
         logger.addVariable("spinDensity", spinDensity);
@@ -1305,7 +1178,7 @@ public class Calculate_Magnetic_Moment_3D implements PlugIn, ActionListener {
       double B0 = Double.parseDouble(txt_B0Val.getText());
       double R_Chi = Double.parseDouble(txt_RChiVal.getText());
       double TElast = Double.parseDouble(txt_TELastVal.getText());
-      setMagMomentVariables(snr, e12, e23, B0, R_Chi, TElast);
+      jni.setMagMomentVariables(snr, e12, e23, B0, R_Chi, TElast);
 
       double m_R1 = Double.parseDouble(txt_r1.getText());
       double m_R2 = Double.parseDouble(txt_r2.getText());
@@ -1426,10 +1299,10 @@ public class Calculate_Magnetic_Moment_3D implements PlugIn, ActionListener {
           logger.addVariable("m_R3", m_R3);
 
           // Giving matrix to C++
-          setSimulatedMatrices(simulatedRealNumbers, sizeOfSimmedMatrices + 1);
+          jni.setSimulatedMatrices(simulatedRealNumbers, sizeOfSimmedMatrices + 1);
           logger.addInfo("Set matrices to C++");
           // Interpolating matrix in C++
-          interpolateVoxelsSIM(sizeOfSimmedMatrices * 10);
+          jni.interpolateVoxelsSIM(sizeOfSimmedMatrices * 10);
           logger.addInfo("Interpolation complete");
 
           // Getting current rho_0 value from GUI
@@ -1440,9 +1313,9 @@ public class Calculate_Magnetic_Moment_3D implements PlugIn, ActionListener {
           int subCenterSIM = sizeOfSimmedMatrices * 10 / 2;
 
           // Summing real values in each radius in C++
-          double S1 = SumCircleElementsReal3DSIMMED((int) (m_R1 * 10.0), subCenterSIM, subCenterSIM, subCenterSIM);
-          double S2 = SumCircleElementsReal3DSIMMED((int) (m_R2 * 10.0), subCenterSIM, subCenterSIM, subCenterSIM);
-          double S3 = SumCircleElementsReal3DSIMMED((int) (m_R3 * 10.0), subCenterSIM, subCenterSIM, subCenterSIM);
+          double S1 = jni.SumCircleElementsReal3DSIMMED((int) (m_R1 * 10.0), subCenterSIM, subCenterSIM, subCenterSIM);
+          double S2 = jni.SumCircleElementsReal3DSIMMED((int) (m_R2 * 10.0), subCenterSIM, subCenterSIM, subCenterSIM);
+          double S3 = jni.SumCircleElementsReal3DSIMMED((int) (m_R3 * 10.0), subCenterSIM, subCenterSIM, subCenterSIM);
 
           // Getting phi (phase) values from GUI
           double phi1 = Double.parseDouble(lbl_r1phaseCalc.getText());
@@ -1455,8 +1328,8 @@ public class Calculate_Magnetic_Moment_3D implements PlugIn, ActionListener {
 
           // Calculating fij using equation 10 in C++ (theoretical)
           double mag_moment = Double.parseDouble(txt_magMomVal.getText());
-          double Re_f12_THEORETICAL = equation10(mag_moment, phi1, phi2);
-          double Re_f23_THEORETICAL = equation10(mag_moment, phi2, phi3);
+          double Re_f12_THEORETICAL = jni.equation10(mag_moment, phi1, phi2);
+          double Re_f23_THEORETICAL = jni.equation10(mag_moment, phi2, phi3);
 
           logger.addVariable("S1", S1);
           logger.addVariable("S2", S2);
@@ -1475,7 +1348,7 @@ public class Calculate_Magnetic_Moment_3D implements PlugIn, ActionListener {
           txt_eps23val.setText(String.valueOf(Math.round(se23 * 100.0) / 100.0));
 
           // Calculating uncertainty in C++
-          double uncertainty = calculateUncertainty(se12, se23);
+          double uncertainty = jni.calculateUncertainty(se12, se23);
 
           logger.addVariable("uncertainty", uncertainty);
 
@@ -1508,25 +1381,25 @@ public class Calculate_Magnetic_Moment_3D implements PlugIn, ActionListener {
 
         // Calculating magnetic moment in C++, if function returns empty string then no
         // error message
-        errorMessage_Mag = calculateMagneticMoment();
+        errorMessage_Mag = jni.calculateMagneticMoment();
 
         if (errorMessage_Mag.compareTo("") == 0) {
           // Getting various values from C++ as a result of the function to calculate the
           // magnetic moment being ran
-          lbl_r1phaseCalc.setText(String.valueOf(Math.round(getMR1Calc() * 100.0) / 100.0));
-          lbl_r2phaseCalc.setText(String.valueOf(Math.round(getMR2Calc() * 100.0) / 100.0));
-          lbl_r3phaseCalc.setText(String.valueOf(Math.round(getMR3Calc() * 100.0) / 100.0));
-          txt_magMomVal.setText(String.valueOf(Math.round(getMagMoment() * 100.0) / 100.0));
-          if (getUncertainty() == -1.0) {
+          lbl_r1phaseCalc.setText(String.valueOf(Math.round(jni.getMR1Calc() * 100.0) / 100.0));
+          lbl_r2phaseCalc.setText(String.valueOf(Math.round(jni.getMR2Calc() * 100.0) / 100.0));
+          lbl_r3phaseCalc.setText(String.valueOf(Math.round(jni.getMR3Calc() * 100.0) / 100.0));
+          txt_magMomVal.setText(String.valueOf(Math.round(jni.getMagMoment() * 100.0) / 100.0));
+          if (jni.getUncertainty() == -1.0) {
             lbl_errVal.setText("");
             JOptionPane.showMessageDialog(frame,
                 "<html>Error: Cannot calculate error\nMake sure SNR, &epsilon;12 and &epsilon;23 are set.");
           } else {
-            lbl_errVal.setText(String.valueOf(Math.round(getUncertainty() * 100.0) / 100.0));
+            lbl_errVal.setText(String.valueOf(Math.round(jni.getUncertainty() * 100.0) / 100.0));
           }
-          lbl_dchiVal.setText(String.valueOf(Math.round(getChi() * 100.0) / 100.0) + " ppm");
-          lbl_aVal.setText(String.valueOf(Math.round(getA() * 100.0) / 100.0) + " pixels");
-          lbl_rho0val.setText(String.valueOf(Math.round(getSpinDensity() * 100.0) / 100.0));
+          lbl_dchiVal.setText(String.valueOf(Math.round(jni.getChi() * 100.0) / 100.0) + " ppm");
+          lbl_aVal.setText(String.valueOf(Math.round(jni.getA() * 100.0) / 100.0) + " pixels");
+          lbl_rho0val.setText(String.valueOf(Math.round(jni.getSpinDensity() * 100.0) / 100.0));
         } else {
           JOptionPane.showMessageDialog(frame, errorMessage_Mag);
         }
@@ -1543,23 +1416,23 @@ public class Calculate_Magnetic_Moment_3D implements PlugIn, ActionListener {
     else if (e.getSource() == btn_sumRi) {
       updateVariables();
       double m_Ri = Double.parseDouble(txt_Ri.getText());
-      setRi(m_Ri);
+      jni.setRi(m_Ri);
 
       String Imag_errmsg;
       String Real_errmsg;
 
-      Imag_errmsg = calculateImagSum();
-      Real_errmsg = calculateRealSum();
+      Imag_errmsg = jni.calculateImagSum();
+      Real_errmsg = jni.calculateRealSum();
 
       if (Imag_errmsg.compareTo("") == 0) {
-        double m_Si = getImagSum();
+        double m_Si = jni.getImagSum();
         lbl_ImRi.setText("S" + ITALICIZED_I + "= " + String.valueOf(Math.round(m_Si * 100.0) / 100.0));
       } else {
         JOptionPane.showMessageDialog(frame, Imag_errmsg);
       }
 
       if (Real_errmsg.compareTo("") == 0) {
-        double m_Si2 = getRealSum();
+        double m_Si2 = jni.getRealSum();
         lbl_ReRi.setText("S" + ITALICIZED_I + "= " + String.valueOf(Math.round(m_Si2 * 100.0) / 100.0));
       } else {
         JOptionPane.showMessageDialog(frame, Real_errmsg);
@@ -1675,11 +1548,11 @@ public class Calculate_Magnetic_Moment_3D implements PlugIn, ActionListener {
         updateVariables();
 
         // Calculating susceptibility in C++
-        calcSusceptibility();
+        jni.calcSusceptibility();
 
         // Getting values from C++ and setting to GUI
-        lbl_aVal.setText(String.valueOf(Math.round(getA() * 100.0) / 100.0) + " pixels");
-        lbl_dchiVal.setText(String.valueOf(Math.round(getChi() * 100.0) / 100.0) + " ppm");
+        lbl_aVal.setText(String.valueOf(Math.round(jni.getA() * 100.0) / 100.0) + " pixels");
+        lbl_dchiVal.setText(String.valueOf(Math.round(jni.getChi() * 100.0) / 100.0) + " ppm");
       }
     }
 
@@ -2030,9 +1903,9 @@ public class Calculate_Magnetic_Moment_3D implements PlugIn, ActionListener {
         logger.addVariable("mxyz", item.centerS().get(1));
         logger.addVariable("mxyz", item.centerS().get(2));
 
-        setXYZ(item.centerS().get(0), item.centerS().get(1), item.centerS().get(2));
+        jni.setXYZ(item.centerS().get(0), item.centerS().get(1), item.centerS().get(2));
 
-        setmR123(Double.parseDouble(txt_r1.getText()), Double.parseDouble(txt_r2.getText()),
+        jni.setmR123(Double.parseDouble(txt_r1.getText()), Double.parseDouble(txt_r2.getText()),
             Double.parseDouble(txt_r3.getText()));
 
         double RCenter = Double.parseDouble(txt_rc.getText());
@@ -2042,12 +1915,12 @@ public class Calculate_Magnetic_Moment_3D implements PlugIn, ActionListener {
         double R2PhaseCalc = estimatedPValue / Math.pow(Double.parseDouble(txt_r2.getText()), 3);
         double R3PhaseCalc = estimatedPValue / Math.pow(Double.parseDouble(txt_r3.getText()), 3);
 
-        setR123PhaseCalc(R1PhaseCalc, R2PhaseCalc, R3PhaseCalc);
-        setSmallBox(item.roi_mag_belowM_xi, item.roi_mag_belowM_yi, item.roi_mag_belowM_zi, item.roi_mag_belowM_Dx,
+        jni.setR123PhaseCalc(R1PhaseCalc, R2PhaseCalc, R3PhaseCalc);
+        jni.setSmallBox(item.roi_mag_belowM_xi, item.roi_mag_belowM_yi, item.roi_mag_belowM_zi, item.roi_mag_belowM_Dx,
             item.roi_mag_belowM_Dy,
             item.roi_mag_belowM_Dz);
-        setCenterL(item.centerL().get(0), item.centerL().get(1), item.centerL().get(2));
-        setCenterM(item.centerM().get(0), item.centerM().get(1), item.centerM().get(2));
+        jni.setCenterL(item.centerL().get(0), item.centerL().get(1), item.centerL().get(2));
+        jni.setCenterM(item.centerM().get(0), item.centerM().get(1), item.centerM().get(2));
 
       }
 
@@ -2057,13 +1930,13 @@ public class Calculate_Magnetic_Moment_3D implements PlugIn, ActionListener {
       double B0 = Double.parseDouble(txt_B0Val.getText());
       double R_Chi = Double.parseDouble(txt_RChiVal.getText());
       double TElast = Double.parseDouble(txt_TELastVal.getText());
-      setMagMomentVariables(snr, e12, e23, B0, R_Chi, TElast);
+      jni.setMagMomentVariables(snr, e12, e23, B0, R_Chi, TElast);
 
       B0 = Double.parseDouble(txt_B0Val.getText());
       double RChi = Double.parseDouble(txt_RChiVal.getText());
       double TEFirst = Double.parseDouble(txt_TEFirstVal.getText()) / 1000.0;
       double TELast = Double.parseDouble(txt_TELastVal.getText()) / 1000.0;
-      setStep6Variables(TEFirst, TELast, B0, RChi);
+      jni.setStep6Variables(TEFirst, TELast, B0, RChi);
 
       logger.addInfo("Updated variables");
     } catch (

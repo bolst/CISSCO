@@ -5,7 +5,7 @@
 The following file is used in parallel with the corresponding Java file. It uses JNI to exchange data between both files.
 Steps for compiling and running the files are in the README.
 
-You will see many functions below prefixed "Java_Calculate_1Magnetic_1Moment_13D_". These are the JNI functions that will be called from Java.
+You will see many functions below prefixed "Java_JNIMethods_". These are the JNI functions that will be called from Java.
 You can see the return type in the function declaration as well, just like any other function.
 Only primitive data types can be passed between programs (int, double, char, etc). Arrays can be passed too but are a bit tricky since
 C++ technically does not have arrays but pointers, unlike Java. So the firstlevel, secondlevel, and thirdlevel functions assist with this.
@@ -23,7 +23,7 @@ using namespace std;
 #include <fstream>
 #include <sstream>
 #include <jni.h>
-#include "Calculate_Magnetic_Moment_3D.h"
+#include "JNIMethods.h"
 
 #define PI 3.1415926535
 #define MAX_SUBPIXEL_DIM 640
@@ -132,7 +132,7 @@ float ***firstLevel(JNIEnv *env, jobjectArray arr)
 /******************************************************************************************************************/
 /******************************************************************************************************************/
 
-JNIEXPORT void JNICALL Java_Calculate_1Magnetic_1Moment_13D_setmVariables(JNIEnv *env, jobject thisObj, jint nm_SubPixels, jdouble nm_R0, jdouble nm_RCenter, jdouble nm_CenterX2, jdouble nm_CenterY2, jdouble nm_CenterZ2, jdouble nmphasevalue)
+JNIEXPORT void JNICALL Java_JNIMethods_setmVariables(JNIEnv *env, jobject thisObj, jint nm_SubPixels, jdouble nm_R0, jdouble nm_RCenter, jdouble nm_CenterX2, jdouble nm_CenterY2, jdouble nm_CenterZ2, jdouble nmphasevalue)
 {
     m_SubPixels = nm_SubPixels;
     m_R0 = nm_R0;
@@ -145,20 +145,20 @@ JNIEXPORT void JNICALL Java_Calculate_1Magnetic_1Moment_13D_setmVariables(JNIEnv
     return;
 }
 
-JNIEXPORT void JNICALL Java_Calculate_1Magnetic_1Moment_13D_setMagMoment(JNIEnv *env, jobject thisObj, jdouble nmoment)
+JNIEXPORT void JNICALL Java_JNIMethods_setMagMoment(JNIEnv *env, jobject thisObj, jdouble nmoment)
 {
     m_MagMoment = nmoment;
     return;
 }
 
-JNIEXPORT void JNICALL Java_Calculate_1Magnetic_1Moment_13D_setBackPhase(JNIEnv *env, jobject thisObj, jdouble nBackPhase)
+JNIEXPORT void JNICALL Java_JNIMethods_setBackPhase(JNIEnv *env, jobject thisObj, jdouble nBackPhase)
 {
     BackPhase = nBackPhase;
     BkgPhase = nBackPhase;
     return;
 }
 
-JNIEXPORT void JNICALL Java_Calculate_1Magnetic_1Moment_13D_setRealImagNumbers(JNIEnv *env, jobject thisObj, jobjectArray _real, jobjectArray _imag)
+JNIEXPORT void JNICALL Java_JNIMethods_setRealImagNumbers(JNIEnv *env, jobject thisObj, jobjectArray _real, jobjectArray _imag)
 {
     /*
     RealNumbers = new float **[(int)(m_CenterX2 + m_R0) + 1];
@@ -214,7 +214,7 @@ JNIEXPORT void JNICALL Java_Calculate_1Magnetic_1Moment_13D_setRealImagNumbers(J
     return;
 }
 
-JNIEXPORT void JNICALL Java_Calculate_1Magnetic_1Moment_13D_setXYZ(JNIEnv *env, jobject thisObj, jdouble nx, jdouble ny, jdouble nz)
+JNIEXPORT void JNICALL Java_JNIMethods_setXYZ(JNIEnv *env, jobject thisObj, jdouble nx, jdouble ny, jdouble nz)
 {
     m_CenterX = nx;
     m_CenterY = ny;
@@ -223,7 +223,7 @@ JNIEXPORT void JNICALL Java_Calculate_1Magnetic_1Moment_13D_setXYZ(JNIEnv *env, 
     return;
 }
 
-JNIEXPORT void JNICALL Java_Calculate_1Magnetic_1Moment_13D_setPhaseXYMatrix(JNIEnv *env, jobject thisObj, jobjectArray jarr)
+JNIEXPORT void JNICALL Java_JNIMethods_setPhaseXYMatrix(JNIEnv *env, jobject thisObj, jobjectArray jarr)
 {
     subPhaseMatrix = new float *[subpixeldisplay];
     for (int i = 0; i < subpixeldisplay; i++)
@@ -247,7 +247,7 @@ JNIEXPORT void JNICALL Java_Calculate_1Magnetic_1Moment_13D_setPhaseXYMatrix(JNI
     return;
 }
 
-JNIEXPORT void JNICALL Java_Calculate_1Magnetic_1Moment_13D_setPhaseXZMatrix(JNIEnv *env, jobject thisObj, jobjectArray jarr)
+JNIEXPORT void JNICALL Java_JNIMethods_setPhaseXZMatrix(JNIEnv *env, jobject thisObj, jobjectArray jarr)
 {
     subPhaseMatrixXZ = new float *[subpixeldisplay];
     for (int i = 0; i < subpixeldisplay; i++)
@@ -271,7 +271,7 @@ JNIEXPORT void JNICALL Java_Calculate_1Magnetic_1Moment_13D_setPhaseXZMatrix(JNI
     return;
 }
 
-JNIEXPORT void JNICALL Java_Calculate_1Magnetic_1Moment_13D_setMagXYMatrix(JNIEnv *env, jobject thisObj, jobjectArray jarr)
+JNIEXPORT void JNICALL Java_JNIMethods_setMagXYMatrix(JNIEnv *env, jobject thisObj, jobjectArray jarr)
 {
     subMagMatrix = new float *[subpixeldisplay];
     for (int i = 0; i < subpixeldisplay; i++)
@@ -295,7 +295,7 @@ JNIEXPORT void JNICALL Java_Calculate_1Magnetic_1Moment_13D_setMagXYMatrix(JNIEn
     return;
 }
 
-JNIEXPORT void JNICALL Java_Calculate_1Magnetic_1Moment_13D_setMagXZMatrix(JNIEnv *env, jobject thisObj, jobjectArray jarr)
+JNIEXPORT void JNICALL Java_JNIMethods_setMagXZMatrix(JNIEnv *env, jobject thisObj, jobjectArray jarr)
 {
     subMagMatrixXZ = new float *[subpixeldisplay];
     for (int i = 0; i < subpixeldisplay; i++)
@@ -319,7 +319,7 @@ JNIEXPORT void JNICALL Java_Calculate_1Magnetic_1Moment_13D_setMagXZMatrix(JNIEn
     return;
 }
 
-JNIEXPORT void JNICALL Java_Calculate_1Magnetic_1Moment_13D_setmR123(JNIEnv *env, jobject thisObj, jdouble nm_R1, jdouble nm_R2, jdouble nm_R3)
+JNIEXPORT void JNICALL Java_JNIMethods_setmR123(JNIEnv *env, jobject thisObj, jdouble nm_R1, jdouble nm_R2, jdouble nm_R3)
 {
     m_R1 = nm_R1;
     m_R2 = nm_R2;
@@ -327,7 +327,7 @@ JNIEXPORT void JNICALL Java_Calculate_1Magnetic_1Moment_13D_setmR123(JNIEnv *env
     return;
 }
 
-JNIEXPORT void JNICALL Java_Calculate_1Magnetic_1Moment_13D_setR123PhaseCalc(JNIEnv *env, jobject thisObj, jdouble pr1, jdouble pr2, jdouble pr3)
+JNIEXPORT void JNICALL Java_JNIMethods_setR123PhaseCalc(JNIEnv *env, jobject thisObj, jdouble pr1, jdouble pr2, jdouble pr3)
 {
     m_ROuterPhase = pr1;
     m_RMiddlePhase = pr2;
@@ -335,14 +335,14 @@ JNIEXPORT void JNICALL Java_Calculate_1Magnetic_1Moment_13D_setR123PhaseCalc(JNI
     return;
 }
 
-JNIEXPORT void JNICALL Java_Calculate_1Magnetic_1Moment_13D_setR123PhaseActual(JNIEnv *env, jobject thisObj, jdouble pr1, jdouble pr2, jdouble pr3)
+JNIEXPORT void JNICALL Java_JNIMethods_setR123PhaseActual(JNIEnv *env, jobject thisObj, jdouble pr1, jdouble pr2, jdouble pr3)
 {
     m_R1 = pr1;
     m_R2 = pr2;
     m_R3 = pr3;
 }
 
-JNIEXPORT void JNICALL Java_Calculate_1Magnetic_1Moment_13D_setSmallBox(JNIEnv *env, jobject thisObj, jint xi, jint yi, jint zi, jint xsize, jint ysize, jint zsize)
+JNIEXPORT void JNICALL Java_JNIMethods_setSmallBox(JNIEnv *env, jobject thisObj, jint xi, jint yi, jint zi, jint xsize, jint ysize, jint zsize)
 {
 
     smallBox_X = xi;
@@ -355,7 +355,7 @@ JNIEXPORT void JNICALL Java_Calculate_1Magnetic_1Moment_13D_setSmallBox(JNIEnv *
     return;
 }
 
-JNIEXPORT void JNICALL Java_Calculate_1Magnetic_1Moment_13D_setCenterL(JNIEnv *env, jobject thisObj, jdouble x, jdouble y, jdouble z)
+JNIEXPORT void JNICALL Java_JNIMethods_setCenterL(JNIEnv *env, jobject thisObj, jdouble x, jdouble y, jdouble z)
 {
     centerL_x = x;
     centerL_y = y;
@@ -364,7 +364,7 @@ JNIEXPORT void JNICALL Java_Calculate_1Magnetic_1Moment_13D_setCenterL(JNIEnv *e
     return;
 }
 
-JNIEXPORT void JNICALL Java_Calculate_1Magnetic_1Moment_13D_setCenterM(JNIEnv *env, jobject thisObj, jdouble x, jdouble y, jdouble z)
+JNIEXPORT void JNICALL Java_JNIMethods_setCenterM(JNIEnv *env, jobject thisObj, jdouble x, jdouble y, jdouble z)
 {
     centerM_x = x;
     centerM_y = y;
@@ -373,7 +373,7 @@ JNIEXPORT void JNICALL Java_Calculate_1Magnetic_1Moment_13D_setCenterM(JNIEnv *e
     return;
 }
 
-JNIEXPORT void JNICALL Java_Calculate_1Magnetic_1Moment_13D_setCenterS(JNIEnv *env, jobject thisObj, jdouble x, jdouble y, jdouble z)
+JNIEXPORT void JNICALL Java_JNIMethods_setCenterS(JNIEnv *env, jobject thisObj, jdouble x, jdouble y, jdouble z)
 {
     centerS_x = x;
     centerS_y = y;
@@ -382,7 +382,7 @@ JNIEXPORT void JNICALL Java_Calculate_1Magnetic_1Moment_13D_setCenterS(JNIEnv *e
     return;
 }
 
-JNIEXPORT void JNICALL Java_Calculate_1Magnetic_1Moment_13D_setMagMomentVariables(JNIEnv *env, jobject thisObj, jdouble snr, jdouble e12, jdouble e23, jdouble b0, jdouble te, jdouble rchi)
+JNIEXPORT void JNICALL Java_JNIMethods_setMagMomentVariables(JNIEnv *env, jobject thisObj, jdouble snr, jdouble e12, jdouble e23, jdouble b0, jdouble te, jdouble rchi)
 {
     m_SNR = snr;
     m_e12 = e12;
@@ -393,13 +393,13 @@ JNIEXPORT void JNICALL Java_Calculate_1Magnetic_1Moment_13D_setMagMomentVariable
     return;
 }
 
-JNIEXPORT void JNICALL Java_Calculate_1Magnetic_1Moment_13D_setRi(JNIEnv *env, jobject thisObj, jdouble mri)
+JNIEXPORT void JNICALL Java_JNIMethods_setRi(JNIEnv *env, jobject thisObj, jdouble mri)
 {
     m_Ri = mri;
     return;
 }
 
-JNIEXPORT void JNICALL Java_Calculate_1Magnetic_1Moment_13D_setStep6Variables(JNIEnv *env, jobject thisObj, jdouble jtfirst, jdouble jtlast, jdouble jb0, jdouble jrx)
+JNIEXPORT void JNICALL Java_JNIMethods_setStep6Variables(JNIEnv *env, jobject thisObj, jdouble jtfirst, jdouble jtlast, jdouble jb0, jdouble jrx)
 {
     m_TE_first = jtfirst;
     m_TE_last = jtlast;
@@ -409,7 +409,7 @@ JNIEXPORT void JNICALL Java_Calculate_1Magnetic_1Moment_13D_setStep6Variables(JN
     m_p_first = m_p_last * m_TE_first / m_TE_last;
 }
 
-JNIEXPORT void JNICALL Java_Calculate_1Magnetic_1Moment_13D_setSimulatedMatrices(JNIEnv *env, jobject thisObj, jobjectArray jreal, jint jsize)
+JNIEXPORT void JNICALL Java_JNIMethods_setSimulatedMatrices(JNIEnv *env, jobject thisObj, jobjectArray jreal, jint jsize)
 {
     SimRealNumbers = new float **[jsize];
 
@@ -487,7 +487,7 @@ double subpixelToPixel(double coordinate, int axisFlag)
 
     return voxelCoordinate;
 }
-// Function to remove BG phase and interpolate real and imag matrices. This is the C++ function that is called from C++ - see Java_Calculate_1Magnetic_1Moment_13D_removeBackgroundPhase
+// Function to remove BG phase and interpolate real and imag matrices. This is the C++ function that is called from C++ - see Java_JNIMethods_removeBackgroundPhase
 // for the other similar function that is called from Java
 void removeBGPhaseAndInterpolateVoxels(double bPhase)
 {
@@ -3687,7 +3687,7 @@ The functions below either let Java call the above C++ functions, or they give d
 /******************************************************************************************************************/
 /******************************************************************************************************************/
 
-JNIEXPORT void JNICALL Java_Calculate_1Magnetic_1Moment_13D_generateSubpixelArray(
+JNIEXPORT void JNICALL Java_JNIMethods_generateSubpixelArray(
     JNIEnv *env,     // Java environment
     jobject thisObj) // Reserved
 {
@@ -3695,7 +3695,7 @@ JNIEXPORT void JNICALL Java_Calculate_1Magnetic_1Moment_13D_generateSubpixelArra
     OnBnClickedGenerateSubpixel();
 }
 
-JNIEXPORT jstring JNICALL Java_Calculate_1Magnetic_1Moment_13D_estimateSubpixelCenter(JNIEnv *env, jobject thisObj)
+JNIEXPORT jstring JNICALL Java_JNIMethods_estimateSubpixelCenter(JNIEnv *env, jobject thisObj)
 {
     OnBnClickedEstimatecenter();
 
@@ -3704,7 +3704,7 @@ JNIEXPORT jstring JNICALL Java_Calculate_1Magnetic_1Moment_13D_estimateSubpixelC
     return env->NewStringUTF(ermsg);
 }
 
-JNIEXPORT jstring JNICALL Java_Calculate_1Magnetic_1Moment_13D_calculateMagneticMoment(JNIEnv *env, jobject thisObj)
+JNIEXPORT jstring JNICALL Java_JNIMethods_calculateMagneticMoment(JNIEnv *env, jobject thisObj)
 {
 
     OnBnClickedCalcmagmoment();
@@ -3715,7 +3715,7 @@ JNIEXPORT jstring JNICALL Java_Calculate_1Magnetic_1Moment_13D_calculateMagnetic
 }
 
 // Java function to remove background phase - will be called when the button in the GUI is clicked
-JNIEXPORT void JNICALL Java_Calculate_1Magnetic_1Moment_13D_removeBackgroundPhase(JNIEnv *env, jobject thisObj, jdouble bPhase)
+JNIEXPORT void JNICALL Java_JNIMethods_removeBackgroundPhase(JNIEnv *env, jobject thisObj, jdouble bPhase)
 {
 
     removeBGPhaseAndInterpolateVoxels(bPhase);
@@ -3723,7 +3723,7 @@ JNIEXPORT void JNICALL Java_Calculate_1Magnetic_1Moment_13D_removeBackgroundPhas
     return;
 }
 
-JNIEXPORT jstring JNICALL Java_Calculate_1Magnetic_1Moment_13D_calculateRealSum(JNIEnv *env, jobject thisObj)
+JNIEXPORT jstring JNICALL Java_JNIMethods_calculateRealSum(JNIEnv *env, jobject thisObj)
 {
 
     OnBnClickedRealsum();
@@ -3733,7 +3733,7 @@ JNIEXPORT jstring JNICALL Java_Calculate_1Magnetic_1Moment_13D_calculateRealSum(
     return env->NewStringUTF(erMsgS);
 }
 
-JNIEXPORT jstring JNICALL Java_Calculate_1Magnetic_1Moment_13D_calculateImagSum(JNIEnv *env, jobject thisObj)
+JNIEXPORT jstring JNICALL Java_JNIMethods_calculateImagSum(JNIEnv *env, jobject thisObj)
 {
 
     OnBnClickedImaginarysum();
@@ -3743,7 +3743,7 @@ JNIEXPORT jstring JNICALL Java_Calculate_1Magnetic_1Moment_13D_calculateImagSum(
     return env->NewStringUTF(erMsgS);
 }
 
-JNIEXPORT void JNICALL Java_Calculate_1Magnetic_1Moment_13D_estBkgAndSpinDensity(JNIEnv *env, jobject thisObj)
+JNIEXPORT void JNICALL Java_JNIMethods_estBkgAndSpinDensity(JNIEnv *env, jobject thisObj)
 {
 
     ZoomedX = pixelToSubpixel(m_CenterX, 0);
@@ -3772,13 +3772,13 @@ JNIEXPORT void JNICALL Java_Calculate_1Magnetic_1Moment_13D_estBkgAndSpinDensity
     return;
 }
 
-JNIEXPORT void JNICALL Java_Calculate_1Magnetic_1Moment_13D_calcSusceptibility(JNIEnv *env, jobject thisObj)
+JNIEXPORT void JNICALL Java_JNIMethods_calcSusceptibility(JNIEnv *env, jobject thisObj)
 {
     OnBnClickedCalcSusceptibility();
     return;
 }
 
-JNIEXPORT void JNICALL Java_Calculate_1Magnetic_1Moment_13D_interpolateVoxelsSIM(JNIEnv *env, jobject thisObj, jint subpixelsize)
+JNIEXPORT void JNICALL Java_JNIMethods_interpolateVoxelsSIM(JNIEnv *env, jobject thisObj, jint subpixelsize)
 {
     SubpixelSimulatedRealMatrix3D.resize(subpixelsize, vector<vector<float>>(subpixelsize, vector<float>(subpixelsize, 0)));
 
@@ -3786,17 +3786,17 @@ JNIEXPORT void JNICALL Java_Calculate_1Magnetic_1Moment_13D_interpolateVoxelsSIM
     return;
 }
 
-JNIEXPORT jdouble JNICALL Java_Calculate_1Magnetic_1Moment_13D_SumCircleElementsReal3DSIMMED(JNIEnv *env, jobject thisObj, jint radius, jint x, jint y, jint z)
+JNIEXPORT jdouble JNICALL Java_JNIMethods_SumCircleElementsReal3DSIMMED(JNIEnv *env, jobject thisObj, jint radius, jint x, jint y, jint z)
 {
     return SumCircleElementsReal3D_SIM(radius, x, y, z);
 }
 
-JNIEXPORT jdouble JNICALL Java_Calculate_1Magnetic_1Moment_13D_equation10(JNIEnv *env, jobject thisObj, jdouble jp, jdouble jphi_i, jdouble jphi_j)
+JNIEXPORT jdouble JNICALL Java_JNIMethods_equation10(JNIEnv *env, jobject thisObj, jdouble jp, jdouble jphi_i, jdouble jphi_j)
 {
     return (jp / jphi_i) * qromb3D_REa(1, jphi_j / jphi_i, jphi_i) + qromb3D_REb(-1, 2, jp, jphi_i, jphi_j);
 }
 
-JNIEXPORT jdouble JNICALL Java_Calculate_1Magnetic_1Moment_13D_calculateUncertainty(JNIEnv *env, jobject thisObj, jdouble je12, jdouble je23)
+JNIEXPORT jdouble JNICALL Java_JNIMethods_calculateUncertainty(JNIEnv *env, jobject thisObj, jdouble je12, jdouble je23)
 {
     m_e12 = je12;
     m_e23 = je23;
@@ -3821,147 +3821,147 @@ JNIEXPORT jdouble JNICALL Java_Calculate_1Magnetic_1Moment_13D_calculateUncertai
     return m_Uncertainty;
 }
 
-JNIEXPORT jdouble JNICALL Java_Calculate_1Magnetic_1Moment_13D_getSubX(JNIEnv *env, jobject thisObj)
+JNIEXPORT jdouble JNICALL Java_JNIMethods_getSubX(JNIEnv *env, jobject thisObj)
 {
     return m_CenterX;
 }
 
-JNIEXPORT jdouble JNICALL Java_Calculate_1Magnetic_1Moment_13D_getSubY(JNIEnv *env, jobject thisObj)
+JNIEXPORT jdouble JNICALL Java_JNIMethods_getSubY(JNIEnv *env, jobject thisObj)
 {
     return m_CenterY;
 }
 
-JNIEXPORT jdouble JNICALL Java_Calculate_1Magnetic_1Moment_13D_getSubZ(JNIEnv *env, jobject thisObj)
+JNIEXPORT jdouble JNICALL Java_JNIMethods_getSubZ(JNIEnv *env, jobject thisObj)
 {
     return m_CenterZ;
 }
 
-JNIEXPORT jdouble JNICALL Java_Calculate_1Magnetic_1Moment_13D_getSubXOther(JNIEnv *env, jobject thisObj)
+JNIEXPORT jdouble JNICALL Java_JNIMethods_getSubXOther(JNIEnv *env, jobject thisObj)
 {
     return m_CenterX3;
 }
 
-JNIEXPORT jdouble JNICALL Java_Calculate_1Magnetic_1Moment_13D_getSubYOther(JNIEnv *env, jobject thisObj)
+JNIEXPORT jdouble JNICALL Java_JNIMethods_getSubYOther(JNIEnv *env, jobject thisObj)
 {
     return m_CenterY3;
 }
 
-JNIEXPORT jdouble JNICALL Java_Calculate_1Magnetic_1Moment_13D_getSubZOther(JNIEnv *env, jobject thisObj)
+JNIEXPORT jdouble JNICALL Java_JNIMethods_getSubZOther(JNIEnv *env, jobject thisObj)
 {
     return m_CenterZ3;
 }
 
-JNIEXPORT jdouble JNICALL Java_Calculate_1Magnetic_1Moment_13D_getMR1Calc(JNIEnv *env, jobject thisObj)
+JNIEXPORT jdouble JNICALL Java_JNIMethods_getMR1Calc(JNIEnv *env, jobject thisObj)
 {
     return m_ROuterPhase;
 }
 
-JNIEXPORT jdouble JNICALL Java_Calculate_1Magnetic_1Moment_13D_getMR2Calc(JNIEnv *env, jobject thisObj)
+JNIEXPORT jdouble JNICALL Java_JNIMethods_getMR2Calc(JNIEnv *env, jobject thisObj)
 {
     return m_RMiddlePhase;
 }
 
-JNIEXPORT jdouble JNICALL Java_Calculate_1Magnetic_1Moment_13D_getMR3Calc(JNIEnv *env, jobject thisObj)
+JNIEXPORT jdouble JNICALL Java_JNIMethods_getMR3Calc(JNIEnv *env, jobject thisObj)
 {
     return m_RInnerPhase;
 }
 
-JNIEXPORT jdouble JNICALL Java_Calculate_1Magnetic_1Moment_13D_getSNR(JNIEnv *env, jobject thisObj)
+JNIEXPORT jdouble JNICALL Java_JNIMethods_getSNR(JNIEnv *env, jobject thisObj)
 {
     return m_SNR;
 }
 
-JNIEXPORT jdouble JNICALL Java_Calculate_1Magnetic_1Moment_13D_getE12(JNIEnv *env, jobject thisObj)
+JNIEXPORT jdouble JNICALL Java_JNIMethods_getE12(JNIEnv *env, jobject thisObj)
 {
     return m_e12;
 }
 
-JNIEXPORT jdouble JNICALL Java_Calculate_1Magnetic_1Moment_13D_getE23(JNIEnv *env, jobject thisObj)
+JNIEXPORT jdouble JNICALL Java_JNIMethods_getE23(JNIEnv *env, jobject thisObj)
 {
     return m_e23;
 }
 
-JNIEXPORT jdouble JNICALL Java_Calculate_1Magnetic_1Moment_13D_getB0(JNIEnv *env, jobject thisObj)
+JNIEXPORT jdouble JNICALL Java_JNIMethods_getB0(JNIEnv *env, jobject thisObj)
 {
     return m_B0;
 }
 
-JNIEXPORT jdouble JNICALL Java_Calculate_1Magnetic_1Moment_13D_getTE(JNIEnv *env, jobject thisObj)
+JNIEXPORT jdouble JNICALL Java_JNIMethods_getTE(JNIEnv *env, jobject thisObj)
 {
     return m_TE_first;
 }
 
-JNIEXPORT jdouble JNICALL Java_Calculate_1Magnetic_1Moment_13D_getRChi(JNIEnv *env, jobject thisObj)
+JNIEXPORT jdouble JNICALL Java_JNIMethods_getRChi(JNIEnv *env, jobject thisObj)
 {
     return m_RChi;
 }
 
-JNIEXPORT jdouble JNICALL Java_Calculate_1Magnetic_1Moment_13D_getRho(JNIEnv *env, jobject thisObj)
+JNIEXPORT jdouble JNICALL Java_JNIMethods_getRho(JNIEnv *env, jobject thisObj)
 {
     return m_rho;
 }
 
-JNIEXPORT jdouble JNICALL Java_Calculate_1Magnetic_1Moment_13D_getChi(JNIEnv *env, jobject thisObj)
+JNIEXPORT jdouble JNICALL Java_JNIMethods_getChi(JNIEnv *env, jobject thisObj)
 {
     return m_Chi;
 }
 
-JNIEXPORT jdouble JNICALL Java_Calculate_1Magnetic_1Moment_13D_getA(JNIEnv *env, jobject thisObj)
+JNIEXPORT jdouble JNICALL Java_JNIMethods_getA(JNIEnv *env, jobject thisObj)
 {
     return m_a;
 }
 
-JNIEXPORT jdouble JNICALL Java_Calculate_1Magnetic_1Moment_13D_getUncertainty(JNIEnv *env, jobject thisObj)
+JNIEXPORT jdouble JNICALL Java_JNIMethods_getUncertainty(JNIEnv *env, jobject thisObj)
 {
     return m_Uncertainty;
 }
 
-JNIEXPORT jdouble JNICALL Java_Calculate_1Magnetic_1Moment_13D_getP(JNIEnv *env, jobject thisObj)
+JNIEXPORT jdouble JNICALL Java_JNIMethods_getP(JNIEnv *env, jobject thisObj)
 {
     return m_p_first;
 }
 
-JNIEXPORT jdouble JNICALL Java_Calculate_1Magnetic_1Moment_13D_getP0(JNIEnv *env, jobject thisObj)
+JNIEXPORT jdouble JNICALL Java_JNIMethods_getP0(JNIEnv *env, jobject thisObj)
 {
     return m_p0;
 }
 
-JNIEXPORT jdouble JNICALL Java_Calculate_1Magnetic_1Moment_13D_getMagMoment(JNIEnv *env, jobject thisObj)
+JNIEXPORT jdouble JNICALL Java_JNIMethods_getMagMoment(JNIEnv *env, jobject thisObj)
 {
     return m_MagMoment;
 }
 
-JNIEXPORT jdouble JNICALL Java_Calculate_1Magnetic_1Moment_13D_getResX(JNIEnv *env, jobject thisObj)
+JNIEXPORT jdouble JNICALL Java_JNIMethods_getResX(JNIEnv *env, jobject thisObj)
 {
     return m_resx;
 }
 
-JNIEXPORT jdouble JNICALL Java_Calculate_1Magnetic_1Moment_13D_getResY(JNIEnv *env, jobject thisObj)
+JNIEXPORT jdouble JNICALL Java_JNIMethods_getResY(JNIEnv *env, jobject thisObj)
 {
     return m_resy;
 }
 
-JNIEXPORT jdouble JNICALL Java_Calculate_1Magnetic_1Moment_13D_getResZ(JNIEnv *env, jobject thisObj)
+JNIEXPORT jdouble JNICALL Java_JNIMethods_getResZ(JNIEnv *env, jobject thisObj)
 {
     return m_resz;
 }
 
-JNIEXPORT jdouble JNICALL Java_Calculate_1Magnetic_1Moment_13D_getRealSum(JNIEnv *env, jobject thisObj)
+JNIEXPORT jdouble JNICALL Java_JNIMethods_getRealSum(JNIEnv *env, jobject thisObj)
 {
     return m_Si2;
 }
 
-JNIEXPORT jdouble JNICALL Java_Calculate_1Magnetic_1Moment_13D_getImagSum(JNIEnv *env, jobject thisObj)
+JNIEXPORT jdouble JNICALL Java_JNIMethods_getImagSum(JNIEnv *env, jobject thisObj)
 {
     return m_Si;
 }
 
-JNIEXPORT jdouble JNICALL Java_Calculate_1Magnetic_1Moment_13D_getBkg(JNIEnv *env, jobject thisObj)
+JNIEXPORT jdouble JNICALL Java_JNIMethods_getBkg(JNIEnv *env, jobject thisObj)
 {
     return BkgPhase;
 }
 
-JNIEXPORT jdouble JNICALL Java_Calculate_1Magnetic_1Moment_13D_getSpinDensity(JNIEnv *env, jobject thisObj)
+JNIEXPORT jdouble JNICALL Java_JNIMethods_getSpinDensity(JNIEnv *env, jobject thisObj)
 {
     return rho;
 }
