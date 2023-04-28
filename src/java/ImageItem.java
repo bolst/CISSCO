@@ -18,7 +18,7 @@ public class ImageItem {
   private Triplet<Double> center_s;
   public double bkgPhase;
   private double roi_mag_belowM_sumX, roi_mag_belowM_sumY, roi_mag_belowM_sumZ;
-  private int roi_xi, roi_yi, roi_zi, roi_Dx, roi_Dy, roi_Dz;
+  public int roi_xi, roi_yi, roi_zi, roi_Dx, roi_Dy, roi_Dz;
   public int roi_mag_belowM_xi, roi_mag_belowM_yi, roi_mag_belowM_zi,
       roi_mag_belowM_Dx, roi_mag_belowM_Dy, roi_mag_belowM_Dz;
   public int M;

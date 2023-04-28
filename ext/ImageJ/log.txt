@@ -1,8 +1,72 @@
 --------------------------------------------------------------
 LOG FILE
-(2023/04/27 20:19:11)
+(2023/04/27 20:24:14)
 --------------------------------------------------------------
 
-(2023/04/27 20:19:11)<run><INFO>Attempting to load .dll
-(2023/04/27 20:19:11)<run><VARIABLE>DLL_PATH: C:\Users\Nic\OneDrive - University of Windsor\Documents\CSIAS\CISSCO\ext\ImageJ\plugins\CISSCO\Calculate_Magnetic_Moment_3D_Native.dll
-(2023/04/27 20:19:11)<run><INFO>.dll loaded successfully
+(2023/04/27 20:24:14)<run><INFO>Attempting to load .dll
+(2023/04/27 20:24:14)<run><VARIABLE>DLL_PATH: C:\Users\Nic\OneDrive - University of Windsor\Documents\CSIAS\CISSCO\ext\ImageJ\plugins\CISSCO\Calculate_Magnetic_Moment_3D_Native.dll
+(2023/04/27 20:24:14)<run><INFO>.dll loaded successfully
+(2023/04/27 20:24:24)<run><VARIABLE>mag: C:\Users\Nic\OneDrive - University of Windsor\Documents\CSIAS\CISSCO\test\images\magP=8.026,(18.8,17.5,16.3)bkg=0.3.nii
+(2023/04/27 20:24:25)<run><VARIABLE>phase: C:\Users\Nic\OneDrive - University of Windsor\Documents\CSIAS\CISSCO\test\images\phaseP=8.026,(18.8,17.5,16.3)bkg=0.3.nii
+(2023/04/27 20:24:30)<run><INFO>Updated variables
+(2023/04/27 20:24:30)<run><INFO>estcr: 0
+(2023/04/27 20:24:30)<run><INFO>estcr: 1
+(2023/04/27 20:24:30)<run><INFO>estcr: 2
+(2023/04/27 20:24:30)<run><INFO>estcr: 3
+(2023/04/27 20:24:30)<run><INFO>estcr: 4
+(2023/04/27 20:24:30)<run><INFO>csssss: <18.0, 18.0, 17.0>
+(2023/04/27 20:24:31)<run><VARIABLE>mxyz: 18.0
+(2023/04/27 20:24:31)<run><VARIABLE>mxyz: 18.0
+(2023/04/27 20:24:31)<run><VARIABLE>mxyz: 17.0
+(2023/04/27 20:24:31)<run><INFO>Updated variables
+(2023/04/27 20:24:31)<run><VARIABLE>s1magwt: magP=8.026,(18.8,17.5,16.3)bkg=0.3.nii
+(2023/04/27 20:24:31)<run><VARIABLE>s2phasewt: phaseP=8.026,(18.8,17.5,16.3)bkg=0.3.nii
+(2023/04/27 20:24:31)<run><INFO>Got images
+(2023/04/27 20:24:31)<run><VARIABLE>sizeofspi: 170
+(2023/04/27 20:24:31)<run><INFO>made arrays
+(2023/04/27 20:24:31)<run><VARIABLE>xi: 10
+(2023/04/27 20:24:31)<run><VARIABLE>yi: 10
+(2023/04/27 20:24:31)<run><VARIABLE>zi: 9
+(2023/04/27 20:24:32)<run><VARIABLE>mxyz: 18.0
+(2023/04/27 20:24:32)<run><VARIABLE>mxyz: 18.0
+(2023/04/27 20:24:32)<run><VARIABLE>mxyz: 17.0
+(2023/04/27 20:24:32)<run><INFO>Updated variables
+(2023/04/27 20:24:32)<run><INFO>rcx: 18.0
+(2023/04/27 20:24:32)<run><INFO>rcy: 18.0
+(2023/04/27 20:24:32)<run><INFO>rcz: 18.0-1
+(2023/04/27 20:24:32)<run><INFO>ibix: 18
+(2023/04/27 20:24:32)<run><INFO>ibiy: 17
+(2023/04/27 20:24:32)<run><INFO>ibiz: 15
+(2023/04/27 20:24:32)<run><INFO>ibsx: 2
+(2023/04/27 20:24:32)<run><INFO>ibsy: 1
+(2023/04/27 20:24:32)<run><INFO>ibsz: 2
+(2023/04/27 20:24:32)<run><INFO>cl: <18.0, 17.0, 17.0>
+(2023/04/27 20:24:32)<run><INFO>cm: <19.5, 18.0, 16.5>
+(2023/04/27 20:24:32)<run><INFO>cs: <18.0, 18.0, 17.0>
+(2023/04/27 20:24:33)<run><INFO>hi
+(2023/04/27 20:24:35)<run><VARIABLE>mxyz: 18.95
+(2023/04/27 20:24:35)<run><VARIABLE>mxyz: 17.45
+(2023/04/27 20:24:35)<run><VARIABLE>mxyz: 16.35
+(2023/04/27 20:24:35)<run><INFO>Updated variables
+(2023/04/27 20:24:35)<run><INFO>Got coordinate (94,109)
+(2023/04/27 20:24:35)<run><INFO>Got coordinate (94,69)
+(2023/04/27 20:24:35)<run><INFO>Got coordinate (94,108)
+(2023/04/27 20:24:35)<run><INFO>Got coordinate (94,68)
+(2023/04/27 20:24:35)<run><INFO>Got coordinate (94,99)
+(2023/04/27 20:24:35)<run><INFO>Got coordinate (94,79)
+(2023/04/27 20:24:35)<run><INFO>Got coordinate (94,98)
+(2023/04/27 20:24:35)<run><INFO>Got coordinate (94,78)
+(2023/04/27 20:24:35)<run><INFO>Got coordinate (94,99)
+(2023/04/27 20:24:35)<run><INFO>Got coordinate (94,79)
+(2023/04/27 20:24:35)<run><INFO>Got coordinate (94,98)
+(2023/04/27 20:24:35)<run><INFO>Got coordinate (94,78)
+(2023/04/27 20:24:35)<run><VARIABLE>mxyz: 18.95
+(2023/04/27 20:24:35)<run><VARIABLE>mxyz: 17.45
+(2023/04/27 20:24:35)<run><VARIABLE>mxyz: 16.35
+(2023/04/27 20:24:35)<run><INFO>Updated variables
+(2023/04/27 20:24:35)<run><VARIABLE>estimatedBackgroundPhase: 1.7278384817845276
+(2023/04/27 20:24:35)<run><VARIABLE>spinDensity: 2.2418687290931323
+(2023/04/27 20:24:36)<run><VARIABLE>mxyz: 18.95
+(2023/04/27 20:24:36)<run><VARIABLE>mxyz: 17.45
+(2023/04/27 20:24:36)<run><VARIABLE>mxyz: 16.35
+(2023/04/27 20:24:36)<run><INFO>Updated variables

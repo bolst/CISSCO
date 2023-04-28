@@ -24,7 +24,6 @@ import net.miginfocom.swing.MigLayout;
 import ij.ImagePlus;
 import ij.gui.*;
 import ij.plugin.PlugIn;
-import ij.plugin.frame.RoiManager;
 import ij.process.*;
 import ij.WindowManager;
 import ij.io.Opener;
@@ -64,12 +63,9 @@ public class Calculate_Magnetic_Moment_3D implements PlugIn, ActionListener {
   private static ROIS roiImgMag, roiImgMagXZ, roiImgPhase, roiImgPhaseXZ, roiImgV1SE, roiImgV1SEXZ;
   public static ImagePlus subpixelMagImage, subpixelMagImageXZ, subpixelPhaseImage, subpixelPhaseImageXZ, V1SE_XYImage,
       V1SE_XZImage;
-  private static RoiManager rois;
   private static String subCenterErrorMessage,
       subMagTitle, subMagXZTitle, subPhaseTitle, subPhaseXZTitle, V1XY_Title, V1XZ_Title, s1MagWindowTitle,
       s1PhaseWindowTitle, s5MagWindowTitle, s5PhaseWindowTitle, s6MagWindowTitle, s6PhaseWindowTitle, s7WindowTitle;
-  private static int drawnRectangle_initialX, drawnRectangle_initialY, drawnRectangle_initialZ, drawnRectangle_sizeX,
-      drawnRectangle_sizeY, drawnRectangle_sizeZ;
 
   private static double m_R0;
   private static float[][] subpixelMagMatrix, subpixelMagMatrixXZ, subpixelPhaseMatrix, subpixelPhaseMatrixXZ;
@@ -77,31 +73,10 @@ public class Calculate_Magnetic_Moment_3D implements PlugIn, ActionListener {
   public static boolean estimateCenterRadii_isClicked = false;
 
   private static final int grid = 10;
-  private static final double m_ROuterFrom = 0.2;
-  private static final double m_RMiddleFrom = 0.9;
-  private static final double m_RInnerFrom = 2.5;
   private static final double GAMMARBAR = 42.58;
   private static final String ACCEPTED_FILE_TYPE = "nii";
   private static final String ITALICIZED_I = "\uD835\uDC8A";
   private static final String PLUS_MINUS = "\u00B1";
-
-  private static final String DLL_PATH = System.getProperty("user.dir")
-      + "\\plugins\\CISSCO\\Calculate_Magnetic_Moment_3D_Native.dll";
-
-  // needed to call JNI
-  static {
-    logger = new LogManager();
-    logger.addInfo("Attempting to load .dll");
-
-    try {
-      logger.addVariable("DLL_PATH", DLL_PATH);
-      System.load(DLL_PATH);
-
-      logger.addInfo(".dll loaded successfully");
-    } catch (Throwable exc) {
-      logger.addInfo(".dll loading error message:", exc.toString());
-    }
-  }
 
   public static void main(String[] args) {
   }
@@ -1805,9 +1780,9 @@ public class Calculate_Magnetic_Moment_3D implements PlugIn, ActionListener {
     if (!lbl_estBkgPhaseVal.getText().isEmpty()) {
 
       // Removing background phase from all data points in matrix
-      for (int k = drawnRectangle_initialZ; k < drawnRectangle_initialZ + drawnRectangle_sizeZ; k++) {
-        for (int i = drawnRectangle_initialX; i < drawnRectangle_initialX + drawnRectangle_sizeX; i++) {
-          for (int j = drawnRectangle_initialY; j < drawnRectangle_initialY + drawnRectangle_sizeY; j++) {
+      for (int k = item.roi_zi; k < item.roi_zi + item.roi_Dz; k++) {
+        for (int i = item.roi_xi; i < item.roi_xi + item.roi_Dx; i++) {
+          for (int j = item.roi_yi; j < item.roi_yi + item.roi_Dy; j++) {
             phaseVals[i][j][k] = Math.abs(phaseVals[i][j][k] - item.bkgPhase);
           }
         }
