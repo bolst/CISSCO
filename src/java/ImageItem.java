@@ -1,14 +1,8 @@
 import java.awt.Rectangle;
 import java.util.ArrayList;
-
 import ij.ImagePlus;
 import ij.gui.*;
-import ij.plugin.PlugIn;
-import ij.plugin.ZProjector;
-import ij.plugin.frame.RoiManager;
-import ij.process.*;
 import ij.WindowManager;
-import ij.io.Opener;
 
 public class ImageItem {
 
@@ -559,17 +553,17 @@ public class ImageItem {
     if (neglectedAxis.compareTo("x") == 0) {
       center_s.set(0, ((nC + r1) + (nC - r2)) / 2.0);
       center_s.set(0, Math.round(center_s.get(0) * 10.0) / 10.0);
-      Calculate_Magnetic_Moment_3D.txt_rcx.setText(String.valueOf(Math.round(center_s.get(0) * 10.0) / 10.0));
+      Calculate_Magnetic_Moment_3D.gui.txt_rcx.setText(String.valueOf(Math.round(center_s.get(0) * 10.0) / 10.0));
     }
     if (neglectedAxis.compareTo("y") == 0) {
       center_s.set(1, ((nC + r1) + (nC - r2)) / 2.0);
       center_s.set(1, Math.round(center_s.get(1) * 10.0) / 10.0);
-      Calculate_Magnetic_Moment_3D.txt_rcy.setText(String.valueOf(Math.round(center_s.get(1) * 10.0) / 10.0));
+      Calculate_Magnetic_Moment_3D.gui.txt_rcy.setText(String.valueOf(Math.round(center_s.get(1) * 10.0) / 10.0));
     }
     if (neglectedAxis.compareTo("z") == 0) {
       center_s.set(2, ((nC + r1) + (nC - r2)) / 2.0);
       center_s.set(2, Math.round(center_s.get(2) * 10.0) / 10.0);
-      Calculate_Magnetic_Moment_3D.txt_rcz.setText(String.valueOf(Math.round(center_s.get(2) * 10.0) / 10.0));
+      Calculate_Magnetic_Moment_3D.gui.txt_rcz.setText(String.valueOf(Math.round(center_s.get(2) * 10.0) / 10.0));
     }
 
     // returning equation for RCenter
@@ -773,9 +767,9 @@ public class ImageItem {
     suggR1 = Math.ceil(suggR1) / (double) grid;
     double m_R1 = suggR1;
 
-    Calculate_Magnetic_Moment_3D.txt_r1.setText(String.valueOf(m_R1));
-    Calculate_Magnetic_Moment_3D.txt_r2.setText(String.valueOf(m_R2));
-    Calculate_Magnetic_Moment_3D.txt_r3.setText(String.valueOf(m_R3));
+    Calculate_Magnetic_Moment_3D.gui.txt_r1.setText(String.valueOf(m_R1));
+    Calculate_Magnetic_Moment_3D.gui.txt_r2.setText(String.valueOf(m_R2));
+    Calculate_Magnetic_Moment_3D.gui.txt_r3.setText(String.valueOf(m_R3));
 
     /*
      * Finding m_R0. It is determined by the calculations below.
@@ -869,9 +863,9 @@ public class ImageItem {
     R1PhaseCalc = estMagMoment / Math.pow(m_R1, 3);
     R2PhaseCalc = estMagMoment / Math.pow(m_R2, 3);
     R3PhaseCalc = estMagMoment / Math.pow(m_R3, 3);
-    Calculate_Magnetic_Moment_3D.lbl_r1phaseCalc.setText(String.valueOf(Math.round(R1PhaseCalc * 100.0) / 100.0));
-    Calculate_Magnetic_Moment_3D.lbl_r2phaseCalc.setText(String.valueOf(Math.round(R2PhaseCalc * 100.0) / 100.0));
-    Calculate_Magnetic_Moment_3D.lbl_r3phaseCalc.setText(String.valueOf(Math.round(R3PhaseCalc * 100.0) / 100.0));
+    Calculate_Magnetic_Moment_3D.gui.lbl_r1phaseCalc.setText(String.valueOf(Math.round(R1PhaseCalc * 100.0) / 100.0));
+    Calculate_Magnetic_Moment_3D.gui.lbl_r2phaseCalc.setText(String.valueOf(Math.round(R2PhaseCalc * 100.0) / 100.0));
+    Calculate_Magnetic_Moment_3D.gui.lbl_r3phaseCalc.setText(String.valueOf(Math.round(R3PhaseCalc * 100.0) / 100.0));
 
     // setMagMoment(phaseValue * Math.pow(RCenter, 3));
 
