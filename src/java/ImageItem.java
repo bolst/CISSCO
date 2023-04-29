@@ -22,7 +22,6 @@ public class ImageItem {
   private double m_R0;
   private double estMagMoment;
   private double R1PhaseCalc, R2PhaseCalc, R3PhaseCalc;
-  private double R1PhaseActual, R2PhaseActual, R3PhaseActual;
 
   private final int grid = 10;
   private final double m_ROuterFrom = 0.2;
@@ -553,17 +552,17 @@ public class ImageItem {
     if (neglectedAxis.compareTo("x") == 0) {
       center_s.set(0, ((nC + r1) + (nC - r2)) / 2.0);
       center_s.set(0, Math.round(center_s.get(0) * 10.0) / 10.0);
-      Calculate_Magnetic_Moment_3D.gui.txt_rcx.setText(String.valueOf(Math.round(center_s.get(0) * 10.0) / 10.0));
+      Calculate_Magnetic_Moment_3D.gui.ltf_rcx.setValue(String.valueOf(Math.round(center_s.get(0) * 10.0) / 10.0));
     }
     if (neglectedAxis.compareTo("y") == 0) {
       center_s.set(1, ((nC + r1) + (nC - r2)) / 2.0);
       center_s.set(1, Math.round(center_s.get(1) * 10.0) / 10.0);
-      Calculate_Magnetic_Moment_3D.gui.txt_rcy.setText(String.valueOf(Math.round(center_s.get(1) * 10.0) / 10.0));
+      Calculate_Magnetic_Moment_3D.gui.ltf_rcy.setValue(String.valueOf(Math.round(center_s.get(1) * 10.0) / 10.0));
     }
     if (neglectedAxis.compareTo("z") == 0) {
       center_s.set(2, ((nC + r1) + (nC - r2)) / 2.0);
       center_s.set(2, Math.round(center_s.get(2) * 10.0) / 10.0);
-      Calculate_Magnetic_Moment_3D.gui.txt_rcz.setText(String.valueOf(Math.round(center_s.get(2) * 10.0) / 10.0));
+      Calculate_Magnetic_Moment_3D.gui.ltf_rcz.setValue(String.valueOf(Math.round(center_s.get(2) * 10.0) / 10.0));
     }
 
     // returning equation for RCenter
@@ -767,9 +766,9 @@ public class ImageItem {
     suggR1 = Math.ceil(suggR1) / (double) grid;
     double m_R1 = suggR1;
 
-    Calculate_Magnetic_Moment_3D.gui.txt_r1.setText(String.valueOf(m_R1));
-    Calculate_Magnetic_Moment_3D.gui.txt_r2.setText(String.valueOf(m_R2));
-    Calculate_Magnetic_Moment_3D.gui.txt_r3.setText(String.valueOf(m_R3));
+    Calculate_Magnetic_Moment_3D.gui.ltf_r1.setValue(String.valueOf(m_R1));
+    Calculate_Magnetic_Moment_3D.gui.ltf_r2.setValue(String.valueOf(m_R2));
+    Calculate_Magnetic_Moment_3D.gui.ltf_r3.setValue(String.valueOf(m_R3));
 
     /*
      * Finding m_R0. It is determined by the calculations below.
