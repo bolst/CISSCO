@@ -1,9 +1,0 @@
-# ignore all sample images
-test/images
-
-# ignore where imagej is
-ext
-
-# ignoring build files
-build.cmd
-run.cmd
