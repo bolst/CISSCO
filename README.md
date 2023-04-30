@@ -1,17 +1,27 @@
 # __Calculate Magnetic Moment 3D__
 
-Calculate Magnetic Moment 3D (CMM3D) is an ImageJ plug-in developed as an implementation of "Magnetic moment quantifications of small spherical objects in MRI" by Dr. Yu-Chung Cheng.
+Calculate Magnetic Moment 3D (CMM3D) is an ImageJ plug-in developed as an implementation of __Magnetic moment quantifications of small spherical objects in MRI__ by Dr. Yu-Chung Cheng.
 This repo is the source for a 64-bit version of the code.
 
 ## __Developing with this repo__
 
-If one wishes to develop/modify the code in `src/` and test within ImageJ, I have written build+run scripts in cmd/bash for convenience. I suggest creating a new folder in the repo (on the same level as `bin/`,`doc/`,`src/`,etc) called `ext` and placing version of ImageJ within such (i.e., `CISSCO/ext/ImageJ/...`).
+If one wishes to develop/modify the code in `src/` and test within ImageJ, I have written build+run scripts in cmd/bash for convenience.
 
 Java 8 must be used. ImageJ is written in Java 8 and thus CISSCO is also. My C++ compiler is g++ 12.2.0 (MinGW-W64 x86_64-ucrt-posix-seh) and is also required.
 
+To test CISSCO within ImageJ, perform the following steps:
+
+1. Clone this repo to a folder
+2. Create a folder called `ext`. It should be on the same level as `src`,`lib`,etc
+3. Place a version of ImageJ within `ext`. The path should look like `CISSCO/ext/ImageJ/...`
+4. In the repo folder, create two files `build.*` and `run.*`. Replace '*' based on your machine architecture and place the two files within the repo's folder (on the same level as `ext`)
+5. Copy the appropriate file contents below to the created files
+6. Execute `build.*` and then `run.*` from where they are located (if using a terminal, `cd` to their location and run each). ImageJ should open with the CISSCO plug-in included
+
 ### __win64__
-### build.cmd
 ```batch
+REM build.cmd
+
 @echo off
 
 @echo cleaning...
@@ -59,8 +69,9 @@ copy /y lib\ml.jar ext\ImageJ\plugins\CISSCO\ >NUL 2>NUL
 copy /y lib\Calculate_Magnetic_Moment_3D_Native.dll ext\ImageJ\plugins\CISSCO\ >NUL 2>NUL
 ```
 
-### run.cmd
 ```batch
+REM run.cmd
+
 @echo off
 
 cd ext\ImageJ
@@ -73,12 +84,10 @@ cd ..
 ```
 
 ### __Linux/Ubuntu__
-### build.sh
 ```bash
 
 ```
 
-### run.sh
 ```bash
 
 ```
