@@ -1,70 +1,89 @@
-# Calculate Magnetic Moment 3D
+# __Calculate Magnetic Moment 3D__
 
-Calculate Magnetic Moment 3D (CMM3D) is an ImageJ plug-in used to find the magnetic moment of a 3D image.
+Calculate Magnetic Moment 3D (CMM3D) is an ImageJ plug-in developed as an implementation of "Magnetic moment quantifications of small spherical objects in MRI" by Dr. Yu-Chung Cheng.
+This repo is the source for a 64-bit version of the code.
 
-## Compiling
+## __Developing with this repo__
 
-- 64-bit:
+If one wishes to develop/modify the code in `src/` and test within ImageJ, I have written build+run scripts in cmd/bash for convenience. I suggest creating a new folder in the repo (on the same level as `bin/`,`doc/`,`src/`,etc) called `ext` and placing version of ImageJ within such (i.e., `CISSCO/ext/ImageJ/...`).
 
-CMM3D uses Java 8. Make sure you have 64-bit Java 8 and 64-bit ImageJ downloaded and make sure your PATH variables are set properly.
-Also make sure you have the location of the ImageJ library, the following works if ij.jar is in the same directory as the .cpp and .java files:
+Java 8 must be used. ImageJ is written in Java 8 and thus CISSCO is also. My C++ compiler is g++ 12.2.0 (MinGW-W64 x86_64-ucrt-posix-seh) and is also required.
 
-```cmd
-javac Calculate_Magnetic_Moment_3D.java ROIS.java LogManager.java -cp ij.jar
+### __win64__
+### build.cmd
+```batch
+@echo off
 
-javah -cp . Calculate_Magnetic_Moment_3D
+@echo cleaning...
+del /q bin\*.*
+del /q ext\ImageJ\plugins\CISSCO\*.*
 
-g++ -c -I"%JAVA_HOME%/include" -I"%JAVA_HOME%/include/win32" -m64 -fPIC Calculate_Magnetic_Moment_3D.cpp -o Calculate_Magnetic_Moment_3D.o
+echo compiling java files[1/2]...
+javac -cp lib/ij.jar;lib/ml.jar src/java/*.java
+if %ERRORLEVEL% neq 0 (
+    echo Failed to compile java files
+    exit /b 1
+)
 
+echo compiling java files[2/2]...
+javah -cp src/java JNIMethods
+if %ERRORLEVEL% neq 0 (
+    echo Failed to compile java files
+    exit /b 1
+)
+
+move /y JNIMethods.h src/cpp >NUL 2>NUL
+
+echo compiling cpp files[1/2]...
+g++ -c -I"%JAVA_HOME%/include" -I"%JAVA_HOME%/include/win32" -m64 -fPIC src/cpp/Calculate_Magnetic_Moment_3D.cpp -o Calculate_Magnetic_Moment_3D.o
+if %ERRORLEVEL% neq 0 (
+    echo Failed to compile cpp files
+    exit /b 1
+)
+
+echo compiling cpp files[2/2]...
 g++ -shared -m64 -o Calculate_Magnetic_Moment_3D_Native.dll Calculate_Magnetic_Moment_3D.o -Wl,-add-stdcall-alias
+if %ERRORLEVEL% neq 0 (
+    echo Failed to compile cpp files
+    exit /b 1
+)
 
-copy Calculate_Magnetic_Moment_3D.class C:\...\ImageJ\plugins\CMM3D /Y
+echo done!
 
-copy Calculate_Magnetic_Moment_3D.o C:\...\ImageJ\plugins\CMM3D /Y
+move /y src\java\*.class bin >NUL 2>NUL
+move /y Calculate_Magnetic_Moment_3D_Native.dll lib >NUL 2>NUL
+move /y Calculate_Magnetic_Moment_3D.o bin >NUL 2>NUL
 
-copy LogManager.class C:\...\ImageJ\plugins\CMM3D /Y
-
-copy ROIS.class C:\...\ImageJ\plugins\CMM3D /Y
-
-copy Calculate_Magnetic_Moment_3D_Native.dll C:\...\ImageJ\plugins\CMM3D /Y
-
-copy * C:\Users\Nic\"OneDrive - University of Windsor"\Co-op\CISSCO\src /Y
-
-C:\...\ImageJ\ImageJ.exe
+copy /y bin\* ext\ImageJ\plugins\CISSCO\ >NUL 2>NUL
+copy /y lib\ml.jar ext\ImageJ\plugins\CISSCO\ >NUL 2>NUL
+copy /y lib\Calculate_Magnetic_Moment_3D_Native.dll ext\ImageJ\plugins\CISSCO\ >NUL 2>NUL
 ```
-This will run ImageJ with the CMM3D plug-in. Make sure to replace "..." in the commands with the path to ImageJ.
 
-- 32-bit:
+### run.cmd
+```batch
+@echo off
 
-CMM3D uses Java 8. Make sure you have 32-bit Java 8 and 32-bit ImageJ downloaded and make sure your PATH variables are set properly.
-Also make sure you have the location of the ImageJ library, the following works if ij.jar is in the same directory as the .cpp and .java files:
+cd ext\ImageJ
 
-```cmd
-javac Calculate_Magnetic_Moment_3D.java ROIS.java LogManager.java -cp ij.jar
+echo Running ImageJ...
+start ImageJ.exe
 
-javah -cp . Calculate_Magnetic_Moment_3D
-
-g++ -c -I"%JAVA_HOME%/include" -I"%JAVA_HOME%/include/win32" -m32 Calculate_Magnetic_Moment_3D.cpp -o Calculate_Magnetic_Moment_3D.o
-
-g++ -shared -m32 -o Calculate_Magnetic_Moment_3D_Native.dll Calculate_Magnetic_Moment_3D.o -Wl,-add-stdcall-alias
-
-copy Calculate_Magnetic_Moment_3D.class C:\...\ImageJ\plugins\CMM3D /Y
-
-copy Calculate_Magnetic_Moment_3D.o C:\...\ImageJ\plugins\CMM3D /Y
-
-copy LogManager.class C:\...\ImageJ\plugins\CMM3D /Y
-
-copy ROIS.class C:\...\ImageJ\plugins\CMM3D /Y
-
-copy Calculate_Magnetic_Moment_3D_Native.dll C:\...\ImageJ\plugins\CMM3D /Y
-
-copy * C:\Users\Nic\"OneDrive - University of Windsor"\Co-op\CISSCO\src /Y
-
-C:\...\ImageJ\ImageJ.exe
+cd ..
+cd ..
 ```
-This will run ImageJ with the CMM3D plug-in. Make sure to replace "..." in the commands with the path to ImageJ.
 
-## Usage
+### __Linux/Ubuntu__
+### build.sh
+```bash
+
+```
+
+### run.sh
+```bash
+
+```
+
+## __Usage__
 
 - Step 1:
 

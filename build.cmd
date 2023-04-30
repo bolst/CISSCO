@@ -35,10 +35,9 @@ if %ERRORLEVEL% neq 0 (
 )
 
 echo done!
+
 move /y src\java\*.class bin >NUL 2>NUL
-
 move /y Calculate_Magnetic_Moment_3D_Native.dll lib >NUL 2>NUL
-
 move /y Calculate_Magnetic_Moment_3D.o bin >NUL 2>NUL
 
 copy /y bin\* ext\ImageJ\plugins\CISSCO\ >NUL 2>NUL
