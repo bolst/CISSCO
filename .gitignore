@@ -1,2 +1,5 @@
-./test/images/
-./ext/
+#ignore all mri images
+images
+
+#ignore where imagej is
+ext
