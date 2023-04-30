@@ -1,5 +1,9 @@
 @echo off
 
+@echo cleaning...
+del /q bin\*.*
+del /q ext\ImageJ\plugins\CISSCO\*.*
+
 echo compiling java files[1/2]...
 javac -cp lib/ij.jar;lib/ml.jar src/java/*.java
 if %ERRORLEVEL% neq 0 (

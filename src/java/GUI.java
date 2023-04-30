@@ -1,14 +1,17 @@
+import java.awt.event.ActionListener;
+import java.awt.event.ActionEvent;
+import java.awt.event.FocusAdapter;
+import java.awt.event.FocusEvent;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
-import java.awt.event.ActionListener;
-import java.awt.event.ActionEvent;
+import javax.swing.JTextField;
 import net.miginfocom.swing.MigLayout;
 
-class GUI {
+public class GUI {
     public JFrame frame;
     public JCheckBox chkbx_showrc;
     public JLabel lbl_stepone, lbl_steptwo, lbl_stepthree, lbl_stepfour, lbl_stepfive, lbl_stepsix,
@@ -869,5 +872,124 @@ class GUI {
                 Calculate_Magnetic_Moment_3D.est_radius_spin_echo();
             }
         });
+    }
+}
+
+class LabeledLabel extends JPanel {
+    private JLabel IDLabel;
+    private JLabel valueLabel;
+    private JLabel unitLabel;
+
+    public LabeledLabel(String labelText, String valueText, String unitText) {
+        setLayout(new MigLayout("insets 0", "[grow,fill]", "[]"));
+        // Create and add the IDLabel component
+        IDLabel = new JLabel(labelText);
+        add(IDLabel);
+
+        // Create and add the text field component
+        valueLabel = new JLabel(valueText);
+        add(valueLabel);
+
+        // Create and add the unit IDLabel component (if provided)
+        if (unitText != null) {
+            unitLabel = new JLabel(unitText);
+            if (!valueText.isEmpty()) {
+                add(unitLabel);
+            }
+        }
+
+    }
+
+    // Getter for the text field value
+    public String getValue() {
+        return valueLabel.getText();
+    }
+
+    // Setter for the text field value
+    public void setValue(String value) {
+        valueLabel.setText(value);
+        if (!value.isEmpty() && unitLabel != null)
+            add(unitLabel);
+    }
+
+    // Additional getters and setters for IDLabel, unit, etc. can be added as needed
+}
+
+class LabeledTextField extends JPanel {
+    private JLabel label;
+    private DefTextField textField;
+    private JLabel unitLabel;
+
+    public LabeledTextField(String labelText, String valueText, String unitText, int col) {
+        setLayout(new MigLayout("insets 0", "[grow,fill]", "[]"));
+        // Create and add the label component
+        label = new JLabel(labelText);
+        add(label);
+
+        // Create and add the text field component
+        textField = (valueText == null) ? (new DefTextField()) : (new DefTextField(valueText));
+        textField.setColumns(col);
+        add(textField, "growx");
+
+        // Create and add the unit label component (if provided)
+        if (unitText != null) {
+            unitLabel = new JLabel(unitText);
+            add(unitLabel);
+        }
+    }
+
+    // Getter for the text field
+    public DefTextField getValueTF() {
+        return textField;
+    }
+
+    // Getter for the text field value
+    public String getValue() {
+        return textField.getText();
+    }
+
+    // Setter for the text field value
+    public void setValue(String value) {
+        textField.setText(value);
+    }
+}
+
+class DefTextField extends JTextField {
+    private final String defaultText;
+
+    public DefTextField() {
+        super("0.0");
+        this.defaultText = "0.0";
+
+        addFocusListener(new FocusAdapter() {
+            @Override
+            public void focusLost(FocusEvent e) {
+                if (getText().isEmpty()) {
+                    setText("0.0");
+                }
+            }
+        });
+    }
+
+    public DefTextField(String defaultText) {
+        super(defaultText);
+        this.defaultText = defaultText;
+
+        addFocusListener(new FocusAdapter() {
+            @Override
+            public void focusLost(FocusEvent e) {
+                if (getText().isEmpty()) {
+                    setText(defaultText);
+                }
+            }
+        });
+    }
+
+    public String getDefaultText() {
+        return defaultText;
+    }
+
+    public boolean isDefault() {
+        return this.getText().compareTo(this.defaultText) == 0;
     }
 }
