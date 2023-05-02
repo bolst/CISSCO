@@ -41,7 +41,15 @@ echo done!
 move /y src\java\*.class bin >NUL 2>NUL
 move /y Calculate_Magnetic_Moment_3D_Native.dll lib >NUL 2>NUL
 move /y Calculate_Magnetic_Moment_3D.o bin >NUL 2>NUL
+if %ERRORLEVEL% neq 0 (
+    echo Failed to move output files to bin and lib
+    exit /b 1
+)
 
 copy /y bin\* ext\ImageJ\plugins\CISSCO\ >NUL 2>NUL
 copy /y lib\ml.jar ext\ImageJ\plugins\CISSCO\ >NUL 2>NUL
 copy /y lib\Calculate_Magnetic_Moment_3D_Native.dll ext\ImageJ\plugins\CISSCO\ >NUL 2>NUL
+if %ERRORLEVEL% neq 0 (
+    echo Failed to copy files to ext\ImageJ\plugins\CISSCO\ (does this directory exist?)
+    exit /b 1
+)
