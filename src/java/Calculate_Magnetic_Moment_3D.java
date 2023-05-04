@@ -1118,11 +1118,11 @@ public class Calculate_Magnetic_Moment_3D implements PlugIn {
         gui.lbl_r3phaseCalc.setText(String.valueOf(Math.round(jni.getMR3Calc() * 100.0) / 100.0));
         gui.ltf_magMom.setValue(String.valueOf(Math.round(jni.getMagMoment() * 100.0) / 100.0));
         if (jni.getUncertainty() == -1.0) {
-          gui.ll_rho0err.setValue("");
+          gui.ll_momenterror.setValue("");
           JOptionPane.showMessageDialog(gui.frame,
               "<html>Error: Cannot calculate error\nMake sure SNR, &epsilon;12 and &epsilon;23 are set.");
         } else {
-          gui.ll_rho0err.setValue(String.valueOf(Math.round(jni.getUncertainty() * 100.0) / 100.0));
+          gui.ll_momenterror.setValue(String.valueOf(Math.round(jni.getUncertainty() * 100.0) / 100.0));
         }
         gui.ll_dChi.setValue(String.valueOf(Math.round(jni.getChi() * 100.0) / 100.0) + " ppm");
         gui.ll_a.setValue(String.valueOf(Math.round(jni.getA() * 100.0) / 100.0) + " pixels");
@@ -1334,7 +1334,7 @@ public class Calculate_Magnetic_Moment_3D implements PlugIn {
         logger.addVariable("uncertainty", uncertainty);
 
         // Setting uncertainty to GUI
-        gui.ll_rho0err.setValue(String.valueOf(Math.round(uncertainty * 100.0) / 100.0));
+        gui.ll_momenterror.setValue(String.valueOf(Math.round(uncertainty * 100.0) / 100.0));
 
       }
     }
@@ -1707,7 +1707,7 @@ public class Calculate_Magnetic_Moment_3D implements PlugIn {
         double B0 = Double.parseDouble(gui.ltf_B0.getValue());
         double TELast = Double.parseDouble(gui.ltf_TELast.getValue()) / 1000.0;
         double mag_moment = Double.parseDouble(gui.ltf_magMom.getValue());
-        double d_mag_moment = Double.parseDouble(gui.ll_rho0err.getValue());
+        double d_mag_moment = Double.parseDouble(gui.ll_momenterror.getValue());
 
         // p = ga^3 can be rewritten to get dChi
         double dChi = (2.0 * mag_moment) / (GAMMARBAR * B0 * TELast * V0);

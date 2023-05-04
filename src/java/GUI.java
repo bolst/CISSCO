@@ -30,7 +30,7 @@ public class GUI {
             ltf_TEFirst, ltf_TELast, ltf_B0, ltf_RChi, ltf_sigSE, ltf_eps12, ltf_eps23, ltf_snr, ltf_Ri, ltf_secondImgX,
             ltf_secondImgY, ltf_secondImgZ, ltf_v1seX1, ltf_v1seX2, ltf_v1seY1, ltf_v1seY2, ltf_v1seZ1, ltf_v1seZ2,
             ltf_v2seX1, ltf_v2seX2, ltf_v2seY1, ltf_v2seY2, ltf_v2seZ1, ltf_v2seZ2;
-    public LabeledLabel ll_estBkgPhase, ll_grid, ll_rho0, ll_ReRi, ll_ImRi, ll_rho0err, ll_rho0SE, ll_aSE, ll_dChi,
+    public LabeledLabel ll_estBkgPhase, ll_grid, ll_rho0, ll_ReRi, ll_ImRi, ll_momenterror, ll_rho0SE, ll_aSE, ll_dChi,
             ll_dChiSE, ll_a, ll_V0;
     private final String ITALICIZED_I = "\uD835\uDC8A";
 
@@ -267,7 +267,7 @@ public class GUI {
         btn_plotZ = new JButton("Plot Z Phase Profiles");
         frame.getContentPane().add(btn_plotZ, "cell 8 8");
 
-        btn_estBkgDens = new JButton("<html>Estimate Bkg & &rho;0");
+        btn_estBkgDens = new JButton("<html>Estimate Bkg & &rho;<sub>0</sub></html>");
         frame.getContentPane().add(btn_estBkgDens, "cell 1 9,growx");
 
         /*
@@ -277,7 +277,7 @@ public class GUI {
          * JLabel lbl_rho0val = new JLabel("");
          * frame.getContentPane().add(lbl_rho0val, "cell 2 9");
          */
-        ll_rho0 = new LabeledLabel("<html>&rho;0 =</html>", "", null);
+        ll_rho0 = new LabeledLabel("<html>&rho;<sub>0</sub> =</html>", "", null);
         frame.getContentPane().add(ll_rho0, "flowx,cell 2 9");
 
         /*
@@ -339,7 +339,7 @@ public class GUI {
          * frame.getContentPane().add(txt_eps12val, "cell 1 13");
          */
 
-        ltf_eps12 = new LabeledTextField("<html>&epsilon;12 =</html>", "0.0", null, 3);
+        ltf_eps12 = new LabeledTextField("<html>&eta;12 =</html>", "0.0", null, 3);
         frame.getContentPane().add(ltf_eps12, "cell 1 13");
 
         /*
@@ -351,7 +351,7 @@ public class GUI {
          * frame.getContentPane().add(txt_eps23val, "cell 1 14");
          */
 
-        ltf_eps23 = new LabeledTextField("<html>&epsilon;23 =</html>", "0.0", null, 3);
+        ltf_eps23 = new LabeledTextField("<html>&eta;23 =</html>", "0.0", null, 3);
         frame.getContentPane().add(ltf_eps23, "cell 1 14");
 
         /*
@@ -378,8 +378,8 @@ public class GUI {
          * frame.getContentPane().add(lbl_errVal, "cell 1 13");
          */
 
-        ll_rho0err = new LabeledLabel("<html>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&delta&rho/&rho =</html>", "", null);
-        frame.getContentPane().add(ll_rho0err, "cell 1 13");
+        ll_momenterror = new LabeledLabel("<html>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&delta;p/p =</html>", "", "%");
+        frame.getContentPane().add(ll_momenterror, "cell 1 13");
 
         /*
          * lbl_Ri = new JLabel("R" + ITALICIZED_I + " =");
@@ -455,7 +455,7 @@ public class GUI {
          * frame.getContentPane().add(lbl_dchiVal, "cell 5 16");
          */
 
-        ll_dChi = new LabeledLabel("<html>&Delta;&Chi; =</html>", "", null);
+        ll_dChi = new LabeledLabel("<html>&Delta;&Chi; =</html>", "", "ppm");
         frame.getContentPane().add(ll_dChi, "flowx, cell 5 16,alignx right");
 
         btn_unk = new JButton("TODO: Name");
@@ -487,7 +487,7 @@ public class GUI {
          * frame.getContentPane().add(lbl_aVal, "cell 5 17");
          */
 
-        ll_a = new LabeledLabel("a =", "", null);
+        ll_a = new LabeledLabel("a =", "", "pixels");
         frame.getContentPane().add(ll_a, "flowx,cell 5 17,alignx right");
 
         lbl_stepseven = new JLabel("7.");
@@ -649,7 +649,8 @@ public class GUI {
         frame.getContentPane().add(SECPanel, "cell 2 19 7 1,alignx left");
 
         // "V1,SE Region"
-        frame.getContentPane().add(new JLabel("<html>V<sub>1,SE</sub> Region:</html>"), "cell 1 20, align right");
+        frame.getContentPane().add(new JLabel("<html>V<sub>1,SE</sub> Box Coordinates:</html>"),
+                "cell 1 20, align right");
         // "V1,SE Region" coordinates
         ltf_v1seX1 = new LabeledTextField("(", "0.0", null, 4);
         ltf_v1seY1 = new LabeledTextField(",", "0.0", null, 4);
@@ -667,7 +668,8 @@ public class GUI {
         frame.getContentPane().add(V1Panel, "cell 2 20 7 1,alignx left");
 
         // "V2,SE Region" labels
-        frame.getContentPane().add(new JLabel("<html>V<sub>2,SE</sub> Region:</html>"), "cell 1 21, align right");
+        frame.getContentPane().add(new JLabel("<html>V<sub>2,SE</sub> Box Coordinates:</html>"),
+                "cell 1 21, align right");
         // "V2,SE Region" coordinates
         ltf_v2seX1 = new LabeledTextField("(", "0.0", null, 4);
         ltf_v2seY1 = new LabeledTextField(",", "0.0", null, 4);
@@ -720,7 +722,7 @@ public class GUI {
          * frame.getContentPane().add(lbl_echoDChiVal, "cell 2 23");
          */
 
-        ll_dChiSE = new LabeledLabel("<html>&Delta&Chi =</html>", "", null);
+        ll_dChiSE = new LabeledLabel("<html>&Delta&Chi =</html>", "", "ppm");
         frame.getContentPane().add(ll_dChiSE, "flowx, cell 2 23");
 
         /*
@@ -731,7 +733,7 @@ public class GUI {
          * frame.getContentPane().add(lbl_aSEVal, "cell 4 23");
          */
 
-        ll_aSE = new LabeledLabel("a =", "", null);
+        ll_aSE = new LabeledLabel("a =", "", "pixels");
         frame.getContentPane().add(ll_aSE, "flowx,cell 4 23");
 
         /*
@@ -766,7 +768,7 @@ public class GUI {
         ltf_rcy = new LabeledTextField("y=", "0.0", null, 4);
         frame.getContentPane().add(ltf_rcy, "cell 2 1");
 
-        ltf_rcz = new LabeledTextField("z=", "0.0", "-1", 4);
+        ltf_rcz = new LabeledTextField("z=", "0.0", "-1 ,", 4);
         frame.getContentPane().add(ltf_rcz, "cell 2 1");
 
         /*
@@ -778,7 +780,7 @@ public class GUI {
          * frame.getContentPane().add(txt_M, "cell 5 1,alignx left");
          * txt_M.setColumns(2);
          */
-        ltf_M = new LabeledTextField("|M%|:", "50", null, 2);
+        ltf_M = new LabeledTextField("|M%|=", "50", null, 2);
         frame.getContentPane().add(ltf_M, "cell 3 1, spanx");
 
         // ActionListeners

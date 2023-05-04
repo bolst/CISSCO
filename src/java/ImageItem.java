@@ -109,11 +109,6 @@ public class ImageItem {
       roi_Dz = roi_Dx;
     }
 
-    findMBox();
-  }
-
-  // Function to find values below inputted M%
-  private void findMBox() {
     // ------- Finding innerbox that contains values below threshold
 
     // setting slice to starting ROI point in the z
