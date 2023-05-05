@@ -291,7 +291,7 @@ public class GUI {
          * frame.getContentPane().add(lbl_estBkgPhaseUnit, "cell 8 9");
          */
 
-        ll_estBkgPhase = new LabeledLabel("Estimated Background Phase =", "", "radians");
+        ll_estBkgPhase = new LabeledLabel("Estimated Background Phase =", "0.0", "radians");
         frame.getContentPane().add(ll_estBkgPhase, "cell 4 9");
 
         lbl_stepfive = new JLabel("5.");
@@ -378,7 +378,7 @@ public class GUI {
          * frame.getContentPane().add(lbl_errVal, "cell 1 13");
          */
 
-        ll_momenterror = new LabeledLabel("<html>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&delta;p/p =</html>", "", "%");
+        ll_momenterror = new LabeledLabel("<html>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&delta;p/p =</html>", "0.0", "%");
         frame.getContentPane().add(ll_momenterror, "cell 1 13");
 
         /*
@@ -455,8 +455,8 @@ public class GUI {
          * frame.getContentPane().add(lbl_dchiVal, "cell 5 16");
          */
 
-        ll_dChi = new LabeledLabel("<html>&Delta;&Chi; =</html>", "", "ppm");
-        frame.getContentPane().add(ll_dChi, "flowx, cell 5 16,alignx right");
+        ll_dChi = new LabeledLabel("<html>&Delta;&Chi; =</html>", "0.0", "ppm");
+        frame.getContentPane().add(ll_dChi, "spanx, cell 5 16,alignx left");
 
         btn_unk = new JButton("TODO: Name");
         frame.getContentPane().add(btn_unk, "cell 1 17,growx");
@@ -487,8 +487,8 @@ public class GUI {
          * frame.getContentPane().add(lbl_aVal, "cell 5 17");
          */
 
-        ll_a = new LabeledLabel("a =", "", "pixels");
-        frame.getContentPane().add(ll_a, "flowx,cell 5 17,alignx right");
+        ll_a = new LabeledLabel("a =", "0.0", "pixels");
+        frame.getContentPane().add(ll_a, "spanx,cell 5 17,alignx left");
 
         lbl_stepseven = new JLabel("7.");
         frame.getContentPane().add(lbl_stepseven, "cell 0 18");
@@ -700,7 +700,7 @@ public class GUI {
          * frame.getContentPane().add(lbl_V0Unit, "cell 2 22,aligny top");
          */
 
-        ll_V0 = new LabeledLabel("<html>V<sub>0</sub> =</html>", "", "<html>pixels<sup>3</sup></html>");
+        ll_V0 = new LabeledLabel("<html>V<sub>0</sub> =</html>", "0.0", "<html>pixels<sup>3</sup></html>");
         frame.getContentPane().add(ll_V0, "flowx, cell 2 22");
 
         /*
@@ -722,7 +722,7 @@ public class GUI {
          * frame.getContentPane().add(lbl_echoDChiVal, "cell 2 23");
          */
 
-        ll_dChiSE = new LabeledLabel("<html>&Delta&Chi =</html>", "", "ppm");
+        ll_dChiSE = new LabeledLabel("<html>&Delta&Chi =</html>", "0.0", "ppm");
         frame.getContentPane().add(ll_dChiSE, "flowx, cell 2 23");
 
         /*
@@ -733,7 +733,7 @@ public class GUI {
          * frame.getContentPane().add(lbl_aSEVal, "cell 4 23");
          */
 
-        ll_aSE = new LabeledLabel("a =", "", "pixels");
+        ll_aSE = new LabeledLabel("a =", "0.0", "pixels");
         frame.getContentPane().add(ll_aSE, "flowx,cell 4 23");
 
         /*
