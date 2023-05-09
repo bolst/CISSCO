@@ -10,6 +10,9 @@ import java.lang.Math;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 import javax.swing.filechooser.FileSystemView;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.util.Scanner;
 
 // ImageJ tool imports
 import ij.ImagePlus;
@@ -59,8 +62,24 @@ public class Calculate_Magnetic_Moment_3D implements PlugIn {
     // clearVariables();
     try {
       // Initializing file choosing window
-      final JFileChooser initialFileChooserWindow = new JFileChooser(
-          FileSystemView.getFileSystemView().getHomeDirectory());
+      JFileChooser initialFileChooserWindow;
+
+      // if a file "pth.txt" is present the file opener will default to the path in
+      // the text file
+      File setPathFile = new File("pth.txt");
+      if (setPathFile.exists()) {
+        logger.addInfo("worked");
+        try (Scanner scnr = new Scanner(setPathFile)) {
+          String set_path = scnr.nextLine();
+          initialFileChooserWindow = new JFileChooser(set_path);
+        } catch (Exception exc) {
+          logger.addWarning(exc.toString());
+          initialFileChooserWindow = new JFileChooser(FileSystemView.getFileSystemView().getHomeDirectory());
+        }
+      } else {
+        logger.addVariable("home", FileSystemView.getFileSystemView().getHomeDirectory());
+        initialFileChooserWindow = new JFileChooser(FileSystemView.getFileSystemView().getHomeDirectory());
+      }
 
       // Setting title of choosing the magnitude file window
       initialFileChooserWindow.setDialogTitle("CHOOSE MAG FILE");
@@ -167,36 +186,44 @@ public class Calculate_Magnetic_Moment_3D implements PlugIn {
       double center_sy = item.centerS().get(1);
       double center_sz = item.centerS().get(2);
       logger.addInfo("csssss", item.centerS());
+      logger.addInfo("estcr", irand++);
 
       // Setting center to GUI unless user already has an inputted center point
       if (gui.ltf_rcx.getValueTF().isDefault()) {
         gui.ltf_rcx.setValue(String.valueOf(center_sx));
       }
+      logger.addInfo("estcr", irand++);
 
       if (gui.ltf_rcy.getValueTF().isDefault()) {
         gui.ltf_rcy.setValue(String.valueOf(center_sy));
       }
+      logger.addInfo("estcr", irand++);
 
       if (gui.ltf_rcz.getValueTF().isDefault()) {
         gui.ltf_rcz.setValue(String.valueOf(center_sz + 1));
       }
+      logger.addInfo("estcr", irand++);
 
       // Getting x y and z centers from GUI
       item.setCenterSX(Double.parseDouble(gui.ltf_rcx.getValue()));
       item.setCenterSY(Double.parseDouble(gui.ltf_rcy.getValue()));
       item.setCenterSZ(Double.parseDouble(gui.ltf_rcz.getValue()) - 1);
+      logger.addInfo("estcr", irand++);
 
       // Getting RCenter from estimated xyz
       // RCenter = estimateRCenter((int)(item.centerS().get(0)),
       // (int)(item.centerS().get(1)),
       // (int)(item.centerS().get(2)));
       double RCenter = item.estimateRCenter();
+      logger.addInfo("estcr", irand++);
 
       // Updating GUI
       gui.ltf_rc.setValue(String.valueOf(Math.round(RCenter * 10.0) / 10.0));
+      logger.addInfo("estcr", irand++);
 
       item.calcR0123();
       m_R0 = item.m_R0();
+      logger.addInfo("estcr", irand++);
 
       jni.setmVariables(grid, m_R0, RCenter,
           Double.parseDouble(gui.ltf_rcx.getValue()),
@@ -204,8 +231,10 @@ public class Calculate_Magnetic_Moment_3D implements PlugIn {
           Double.parseDouble(gui.ltf_rcx.getValue()) - 1.0,
           Double.parseDouble(gui.ltf_eqPhase.getValue()));
       jni.setMagMoment(Double.parseDouble(gui.ltf_eqPhase.getValue()) * Math.pow(RCenter, 3));
+      logger.addInfo("estcr", irand++);
 
       estimateCenterRadii_isClicked = true;
+      logger.addInfo("estcr", irand++);
 
     } catch (Exception exc) {
       JOptionPane.showMessageDialog(gui.frame, exc);

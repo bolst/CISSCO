@@ -444,7 +444,7 @@ public class GUI {
          * frame.getContentPane().add(lbl_TEFirstUnit, "cell 2 16");
          */
 
-        ltf_TEFirst = new LabeledTextField("TE_first =", "0.0", "ms", 3);
+        ltf_TEFirst = new LabeledTextField("TE_first =", "0.0", "ms", 4);
         frame.getContentPane().add(ltf_TEFirst, "cell 2 16");
 
         /*

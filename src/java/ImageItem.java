@@ -1,4 +1,5 @@
 import java.awt.Rectangle;
+import java.nio.channels.CancelledKeyException;
 import java.util.ArrayList;
 import ij.ImagePlus;
 import ij.gui.*;
@@ -61,18 +62,12 @@ public class ImageItem {
     roi_Dx = (int) roiRectangle.getWidth();
     roi_Dy = (int) roiRectangle.getHeight();
 
-    roi_Dz = 0;
-
     // z dimension is the greater of roi_Dy and roi_Dx
-    if (roi_Dx > roi_Dy) {
-      roi_Dz = roi_Dx;
-    } else {
-      roi_Dz = roi_Dy;
-    }
+    roi_Dz = (roi_Dx > roi_Dy) ? roi_Dx : roi_Dy;
+    Calculate_Magnetic_Moment_3D.logger.addVariable("roi_Dz", roi_Dz);
 
-    if (roi_Dz % 2 == 0) {
+    if (roi_Dz % 2 == 0)
       roi_Dz++;
-    }
 
     // Setting new ROI to rectangle
     roiRectangle.setBounds(roi_xi, roi_yi, roi_Dz,
@@ -95,19 +90,28 @@ public class ImageItem {
     roi_Dx = roi_Dz;
 
     roi_Dz = (roi_Dz + 1) / 2;
+    Calculate_Magnetic_Moment_3D.logger.addVariable("roi_Dz", roi_Dz);
 
-    // Handler if user selects a slice that is invalid (too small or large, AKA too
-    // close to image end)
+    // If user selects a slice that is invalid (too small or large, i.e. too close
+    // to end of image)
     if (((mag.getCurrentSlice() - roi_Dz) >= 0)
         && ((mag.getCurrentSlice() + roi_Dz) < mag.getNSlices())) {
+      roi_zi = mag.getCurrentSlice() - roi_Dz / 2;
     } else {
       mag.setSlice(mag.getNSlices() / 2);
 
       // Initial z point (since true z is 0-31 but slices go from 1-32)
-      roi_zi = mag.getCurrentSlice() - 1 - roi_Dz;
+      roi_zi = mag.getCurrentSlice() - roi_Dz - 1;
 
       roi_Dz = roi_Dx;
     }
+
+    Calculate_Magnetic_Moment_3D.logger.addVariable("roi_xi", roi_xi);
+    Calculate_Magnetic_Moment_3D.logger.addVariable("roi_yi", roi_yi);
+    Calculate_Magnetic_Moment_3D.logger.addVariable("roi_zi", roi_zi);
+    Calculate_Magnetic_Moment_3D.logger.addVariable("roi_Dx", roi_Dx);
+    Calculate_Magnetic_Moment_3D.logger.addVariable("roi_Dy", roi_Dy);
+    Calculate_Magnetic_Moment_3D.logger.addVariable("roi_Dz", roi_Dz);
 
     // ------- Finding innerbox that contains values below threshold
 
@@ -597,10 +601,14 @@ public class ImageItem {
     double[] xPhaseValues_Negative = new double[2 * (csx + grid + 1)];
     double[] yPhaseValues_Negative = new double[2 * (csy + grid + 1)];
     double[] zPhaseValues_Negative = new double[2 * (csz + grid + 1)];
+    Calculate_Magnetic_Moment_3D.logger.addVariable("pvp array size", 2 * (csx + grid + 1));
 
     // Setting slice to initial z
     phase.setSlice(csz + 1);
 
+    Calculate_Magnetic_Moment_3D.logger.addVariable("csx", csx);
+    Calculate_Magnetic_Moment_3D.logger.addVariable("csy", csy);
+    Calculate_Magnetic_Moment_3D.logger.addVariable("csz", csz);
     // putting phase values into array, following respectively for other 5 loops
     for (int i = csx; i < csx + grid + 1; i++) {
       xPhaseValues_Positive[i] = Math.abs((double) phase.getProcessor().getPixelValue(i, csy));
@@ -634,6 +642,7 @@ public class ImageItem {
     negateValues(yPhaseValues_Negative, M, csy, "y", false);
     negateValues(zPhaseValues_Positive, M, csz, "z", true);
     negateValues(zPhaseValues_Negative, M, csz, "z", false);
+    Calculate_Magnetic_Moment_3D.logger.addInfo("negated");
 
     // Putting equitorial plane and MRI field direction into new variables (since we
     // technically don't know which direction is going to be the MRI field
@@ -696,6 +705,7 @@ public class ImageItem {
         break;
     }
 
+    Calculate_Magnetic_Moment_3D.logger.addVariable("neglectedAxis", neglectedAxis);
     // returning the estimated radius along the MRI field direction
     return findRadiiNeglected(nC, neglectedAxis, neglectedPVP, neglectedPVN);
   }
@@ -730,9 +740,6 @@ public class ImageItem {
 
     return bkgPhase;
 
-    // lbl_estBkgPhaseVal.setText(String.valueOf(Math.round(bkgPhase * 100.0) /
-    // 100.0));
-    // estimatedBGIsFound = true;
     // ---------- end to find background phase
   }
 
@@ -783,13 +790,11 @@ public class ImageItem {
     m_R0 = m_R0 * (double) grid;
     m_R0 = Math.ceil(m_R0) / (double) grid;
 
-    if (m_R0 > 21.0) {
+    if (m_R0 > 21.0)
       m_R0 = 21.0;
-    }
 
-    if (m_R0 < 8.0) {
+    if (m_R0 < 8.0)
       m_R0 = 8.0;
-    }
 
     int xDistanceFromEdge1 = mag.getWidth() - 1 - center_s.get(0).intValue();
     int xDistanceFromEdge2 = center_s.get(0).intValue();
@@ -893,6 +898,8 @@ public class ImageItem {
       }
     }
 
+    Calculate_Magnetic_Moment_3D.logger.addVariable("center_l", center_l);
+
     // ---------- end to find Center_L
   }
 
@@ -934,6 +941,8 @@ public class ImageItem {
     center_m.set(1, center_m.get(1) / 2.0 + 0.5);
     center_m.set(2, center_m.get(2) / 2.0 + 0.5);
 
+    Calculate_Magnetic_Moment_3D.logger.addVariable("center_m", center_m);
+
     // ---------- end to find Center_M
   }
 
@@ -944,6 +953,13 @@ public class ImageItem {
     double[] innerBox_sumOfXPlane = new double[roi_mag_belowM_xi + roi_mag_belowM_Dx + 1];
     double[] innerBox_sumOfYPlane = new double[roi_mag_belowM_yi + roi_mag_belowM_Dy + 1];
     double[] innerBox_sumOfZPlane = new double[roi_mag_belowM_zi + roi_mag_belowM_Dz + 1];
+
+    Calculate_Magnetic_Moment_3D.logger.addVariable("rmb xi", roi_mag_belowM_xi);
+    Calculate_Magnetic_Moment_3D.logger.addVariable("rmb yi", roi_mag_belowM_yi);
+    Calculate_Magnetic_Moment_3D.logger.addVariable("rmb zi", roi_mag_belowM_zi);
+    Calculate_Magnetic_Moment_3D.logger.addVariable("rmb dx", roi_mag_belowM_Dx);
+    Calculate_Magnetic_Moment_3D.logger.addVariable("rmb dy", roi_mag_belowM_Dy);
+    Calculate_Magnetic_Moment_3D.logger.addVariable("rmb dx", roi_mag_belowM_Dz);
 
     // Summing z plane and putting it into array
     for (int k = roi_mag_belowM_zi; k <= roi_mag_belowM_zi + roi_mag_belowM_Dz; k++) {
