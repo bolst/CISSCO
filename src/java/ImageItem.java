@@ -35,23 +35,22 @@ public class ImageItem {
     M = M_pct;
     phaseValue = pV;
 
+    // If mag and phase images are not present
     if (WindowManager.getImage(magTitle) == null || WindowManager.getImage(phaseTitle) == null) {
       throw new IllegalStateException("No magnitude or phase file open.");
     }
 
+    // Getting image instances
     mag = WindowManager.getImage(magTitle);
     phase = WindowManager.getImage(phaseTitle);
 
-    boolean isROI = true;
-
-    // Condition to see whether ROI is on mag or phase image
-    if (mag.getRoi() != null) {
-    } else if (phase.getRoi() != null) {
-      isROI = false;
+    // If no ROI is present
+    if (mag.getRoi() == null && phase.getRoi() == null) {
+      throw new IllegalStateException("No ROI found");
     }
 
     // getting ROI regardless of what image it is on
-    Roi drawnRectangle = isROI ? mag.getRoi() : phase.getRoi();
+    Roi drawnRectangle = (mag.getRoi() != null) ? mag.getRoi() : phase.getRoi();
 
     // Getting ROI data in rectangle class
     Rectangle roiRectangle = drawnRectangle.getBounds();
@@ -74,7 +73,7 @@ public class ImageItem {
         roi_Dz);
 
     // Setting ROI to image
-    if (isROI) {
+    if (mag.getRoi() != null) {
       mag.setRoi(roiRectangle);
     } else {
       phase.setRoi(roiRectangle);

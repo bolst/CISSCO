@@ -168,62 +168,48 @@ public class Calculate_Magnetic_Moment_3D implements PlugIn {
 
     try {
 
-      int irand = 0;
-      logger.addInfo("estcr", irand++);
       item = new ImageItem(s1MagWindowTitle,
           s1PhaseWindowTitle,
           Integer.parseInt(gui.ltf_M.getValue()),
           Double.parseDouble(gui.ltf_eqPhase.getValue()));
-      logger.addInfo("estcr", irand++);
       item.calcCenterL();
-      logger.addInfo("estcr", irand++);
       item.calcCenterM();
-      logger.addInfo("estcr", irand++);
       item.calcCenterS();
-      logger.addInfo("estcr", irand++);
       gui.ll_estBkgPhase.setValue(String.valueOf(Math.round(item.estBkg() * 100.0) / 100.0));
       double center_sx = item.centerS().get(0);
       double center_sy = item.centerS().get(1);
       double center_sz = item.centerS().get(2);
-      logger.addInfo("csssss", item.centerS());
-      logger.addInfo("estcr", irand++);
+      logger.addInfo("cs", item.centerS());
 
       // Setting center to GUI unless user already has an inputted center point
       if (gui.ltf_rcx.getValueTF().isDefault()) {
         gui.ltf_rcx.setValue(String.valueOf(center_sx));
       }
-      logger.addInfo("estcr", irand++);
 
       if (gui.ltf_rcy.getValueTF().isDefault()) {
         gui.ltf_rcy.setValue(String.valueOf(center_sy));
       }
-      logger.addInfo("estcr", irand++);
 
       if (gui.ltf_rcz.getValueTF().isDefault()) {
         gui.ltf_rcz.setValue(String.valueOf(center_sz + 1));
       }
-      logger.addInfo("estcr", irand++);
 
       // Getting x y and z centers from GUI
       item.setCenterSX(Double.parseDouble(gui.ltf_rcx.getValue()));
       item.setCenterSY(Double.parseDouble(gui.ltf_rcy.getValue()));
       item.setCenterSZ(Double.parseDouble(gui.ltf_rcz.getValue()) - 1);
-      logger.addInfo("estcr", irand++);
 
       // Getting RCenter from estimated xyz
       // RCenter = estimateRCenter((int)(item.centerS().get(0)),
       // (int)(item.centerS().get(1)),
       // (int)(item.centerS().get(2)));
       double RCenter = item.estimateRCenter();
-      logger.addInfo("estcr", irand++);
 
       // Updating GUI
       gui.ltf_rc.setValue(String.valueOf(Math.round(RCenter * 10.0) / 10.0));
-      logger.addInfo("estcr", irand++);
 
       item.calcR0123();
       m_R0 = item.m_R0();
-      logger.addInfo("estcr", irand++);
 
       jni.setmVariables(grid, m_R0, RCenter,
           Double.parseDouble(gui.ltf_rcx.getValue()),
@@ -231,10 +217,8 @@ public class Calculate_Magnetic_Moment_3D implements PlugIn {
           Double.parseDouble(gui.ltf_rcx.getValue()) - 1.0,
           Double.parseDouble(gui.ltf_eqPhase.getValue()));
       jni.setMagMoment(Double.parseDouble(gui.ltf_eqPhase.getValue()) * Math.pow(RCenter, 3));
-      logger.addInfo("estcr", irand++);
 
       estimateCenterRadii_isClicked = true;
-      logger.addInfo("estcr", irand++);
 
     } catch (Exception exc) {
       JOptionPane.showMessageDialog(gui.frame, exc);
