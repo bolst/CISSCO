@@ -164,8 +164,6 @@ public class Calculate_Magnetic_Moment_3D implements PlugIn {
    */
   public static void est_center_rad() {
 
-    updateVariables();
-
     try {
 
       item = new ImageItem(s1MagWindowTitle,
@@ -1747,9 +1745,9 @@ public class Calculate_Magnetic_Moment_3D implements PlugIn {
     if (!gui.ll_estBkgPhase.getValue().isEmpty()) {
 
       // Removing background phase from all data points in matrix
-      for (int k = item.roi_zi; k < item.roi_zi + item.roi_Dz; k++) {
-        for (int i = item.roi_xi; i < item.roi_xi + item.roi_Dx; i++) {
-          for (int j = item.roi_yi; j < item.roi_yi + item.roi_Dy; j++) {
+      for (int k = item.roi_zi; k < item.roi_zi + item.roi_dz; k++) {
+        for (int i = item.roi_xi; i < item.roi_xi + item.roi_dx; i++) {
+          for (int j = item.roi_yi; j < item.roi_yi + item.roi_dy; j++) {
             phaseVals[i][j][k] = Math.abs(phaseVals[i][j][k] - item.bkgPhase);
           }
         }
