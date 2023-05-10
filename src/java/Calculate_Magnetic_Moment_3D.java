@@ -725,8 +725,8 @@ public class Calculate_Magnetic_Moment_3D implements PlugIn {
       float R3_phase_actual = 0;
 
       // Summing up all phase values where the radii and equitorial axis intercept
-      switch (item.neglectedAxis()) {
-        case "x":
+      switch (item.MRIAxis()) {
+        case X:
           R1_phase_actual += subpixelPhaseImage.getProcessor().getPixelValue(
               (int) pixelToSubpixel(item.centerS().get(0), 0),
               (int) pixelToSubpixel(item.centerS().get(1), 1) + (int) m_R1 * 10);
@@ -791,7 +791,7 @@ public class Calculate_Magnetic_Moment_3D implements PlugIn {
               + String.valueOf((int) pixelToSubpixel(item.centerS().get(2), 2) - (int) m_R3 * 10) + ")");
           break;
 
-        case "y":
+        case Y:
           R1_phase_actual += subpixelPhaseImageXZ.getProcessor()
               .getPixelValue((int) pixelToSubpixel(item.centerS().get(0), 0) + (int) m_R1 * 10,
                   (int) pixelToSubpixel(item.centerS().get(2), 2));
@@ -832,7 +832,7 @@ public class Calculate_Magnetic_Moment_3D implements PlugIn {
               (int) pixelToSubpixel(item.centerS().get(2), 2) - (int) m_R3 * 10);
           break;
 
-        case "z":
+        case Z:
           R1_phase_actual += subpixelPhaseImage.getProcessor().getPixelValue(
               (int) pixelToSubpixel(item.centerS().get(0), 0),
               (int) pixelToSubpixel(item.centerS().get(1), 1) + (int) m_R1 * 10);
