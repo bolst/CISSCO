@@ -110,7 +110,7 @@ Now you can change this center and click "Redraw Center" if you wish. You can al
 You will also notice the "Plot Phase Profiles" button for each axis. This just displays a graph of the phase values along the respective axis through the center.
 Once you find suitable R1, R2, and R3 values, you can click "Estimate Bkg & rho_0". This will calculate the spin density and the background phase again. The background phase should be updated with a more precise result.
 
-- Step 5:
+- Step 5 (incomplete):
 
 You can click "Calculate Magnetic Moment" after completing the above to calculate the magnetic moment. If you do not have values for e12 and e23 you will not see the uncertainty. You can calculate these values by uploading simulated images. These images are generated with the Python code. Loading these images will have the program automatically calculate e12 and e23 as well as the uncertainty. Make sure to input the appropriate SNR, which is defaulted to 1.
 You can also calculate the sum of the real and imaginary values inside an inputted radius Ri and have it display.
