@@ -68,7 +68,7 @@ double m_RMiddleFrom = 0.9;
 double m_ROuterFrom = 0.2;
 double m_SNR, m_SNRoc;
 double rho, BkgPhase;
-int m_Ri;
+double m_Ri;
 
 int counter = 0;
 
