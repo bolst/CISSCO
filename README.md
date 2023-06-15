@@ -12,8 +12,9 @@ To test CISSCO within ImageJ, perform the following steps:
 
 1. Clone this repo to a folder
 2. Create a folder called `ext`. It should be on the same level as `src`,`lib`,etc
-3. Place a version of ImageJ within `ext`. The path should look like `CISSCO/ext/ImageJ/...`. Create a folder `CISSCO` within `ImageJ/plugins/`
-4. Execute `build.*` from its location (I suggest using a terminal, `cd` to its location and execute it). ImageJ should open with the CISSCO plug-in included
+3. Place a version of ImageJ within `ext`. The path should look like `CISSCO/ext/ImageJ/...`. 
+4. Create a folder `CISSCO` within `ImageJ/plugins/`
+5. Execute `build.*` from its location (I suggest using a terminal, `cd` to its location and execute it). ImageJ should open with the CISSCO plug-in included
 
 ## __Dependencies__
 

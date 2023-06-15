@@ -52,3 +52,10 @@ if [ $? -ne 0 ]; then
 fi
 
 echo "done"
+
+cd ext/ImageJ
+
+echo "Running ImageJ..."
+./ImageJ &
+
+cd ../..
