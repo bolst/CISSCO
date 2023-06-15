@@ -1,7 +1,6 @@
 # __Calculate Magnetic Moment 3D__
 
 Calculate Magnetic Moment 3D (CMM3D) is an ImageJ plug-in developed as an implementation of __Magnetic moment quantifications of small spherical objects in MRI__ by Dr. Yu-Chung Cheng.
-This repo is the source for a Windows 64-bit version of the code.
 
 ## __Developing with this repo__
 
@@ -14,83 +13,13 @@ To test CISSCO within ImageJ, perform the following steps:
 1. Clone this repo to a folder
 2. Create a folder called `ext`. It should be on the same level as `src`,`lib`,etc
 3. Place a version of ImageJ within `ext`. The path should look like `CISSCO/ext/ImageJ/...`. Create a folder `CISSCO` within `ImageJ/plugins/`
-4. Execute `build.*` and then `run.*` from where they are located (if using a terminal, `cd` to their location and run each). ImageJ should open with the CISSCO plug-in included
-
-```batch
-REM build.cmd
-
-@echo off
-
-@echo cleaning...
-del /q bin\*.*
-del /q ext\ImageJ\plugins\CISSCO\*.*
-
-echo compiling java files[1/2]...
-javac -cp lib/ij.jar;lib/ml.jar src/java/*.java
-if %ERRORLEVEL% neq 0 (
-    echo Failed to compile java files
-    exit /b 1
-)
-
-echo compiling java files[2/2]...
-javah -cp src/java JNIMethods
-if %ERRORLEVEL% neq 0 (
-    echo Failed to compile java files
-    exit /b 1
-)
-
-move /y JNIMethods.h src/cpp >NUL 2>NUL
-
-echo compiling cpp files[1/2]...
-g++ -c -I"%JAVA_HOME%/include" -I"%JAVA_HOME%/include/win32" -m64 -fPIC src/cpp/Calculate_Magnetic_Moment_3D.cpp -o Calculate_Magnetic_Moment_3D.o
-if %ERRORLEVEL% neq 0 (
-    echo Failed to compile cpp files
-    exit /b 1
-)
-
-echo compiling cpp files[2/2]...
-g++ -shared -m64 -o Calculate_Magnetic_Moment_3D_Native.dll Calculate_Magnetic_Moment_3D.o -Wl,-add-stdcall-alias
-if %ERRORLEVEL% neq 0 (
-    echo Failed to compile cpp files
-    exit /b 1
-)
-
-echo done!
-
-move /y src\java\*.class bin >NUL 2>NUL
-move /y Calculate_Magnetic_Moment_3D_Native.dll lib >NUL 2>NUL
-move /y Calculate_Magnetic_Moment_3D.o bin >NUL 2>NUL
-if %ERRORLEVEL% neq 0 (
-    echo Failed to move output files to bin and lib
-    exit /b 1
-)
-
-copy /y bin\* ext\ImageJ\plugins\CISSCO\ >NUL 2>NUL
-copy /y lib\ml.jar ext\ImageJ\plugins\CISSCO\ >NUL 2>NUL
-copy /y lib\Calculate_Magnetic_Moment_3D_Native.dll ext\ImageJ\plugins\CISSCO\ >NUL 2>NUL
-if %ERRORLEVEL% neq 0 (
-    echo Failed to copy files to ext\ImageJ\plugins\CISSCO\ (does this directory exist?)
-    exit /b 1
-)
-```
-
-```batch
-REM run.cmd
-
-@echo off
-
-cd ext\ImageJ
-
-echo Running ImageJ...
-start ImageJ.exe
-
-cd ..
-cd ..
-```
+4. Execute `build.*` from its location (I suggest using a terminal, `cd` to its location and execute it). ImageJ should open with the CISSCO plug-in included
 
 ## __Dependencies__
 
 This plug-in uses MigLayout. It is a layout manager for Java Swing and is used to build the GUI. MigLayout produces flowing, grid based, absolute, grouped and docking layouts. It can also be configured with Eclipse so that you can edit the GUI interactively instead of by source code.
+
+You can download MigLayout from https://www.miglayout.com/ but it is not required as it is already in this repository within ``lib/``
 
 ## __Usage__
 
