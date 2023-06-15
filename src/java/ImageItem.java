@@ -1,5 +1,4 @@
 import java.awt.Rectangle;
-import java.util.ArrayList;
 import javax.swing.JOptionPane;
 
 import ij.ImagePlus;
@@ -29,8 +28,6 @@ public class ImageItem {
   private final double m_ROuterFrom = 0.2;
   private final double m_RMiddleFrom = 0.9;
   private final double m_RInnerFrom = 2.5;
-
-  private final int MIN_ROI_DZ = 5;
 
   public boolean isNearEdge = false;
 

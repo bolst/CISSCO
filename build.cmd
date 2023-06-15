@@ -1,8 +1,6 @@
-REM build.cmd
-
 @echo off
 
-@echo cleaning...
+echo cleaning...
 del /q bin\*.*
 del /q ext\ImageJ\plugins\CISSCO\*.*
 
@@ -49,7 +47,10 @@ if %ERRORLEVEL% neq 0 (
 copy /y bin\* ext\ImageJ\plugins\CISSCO\ >NUL 2>NUL
 copy /y lib\ml.jar ext\ImageJ\plugins\CISSCO\ >NUL 2>NUL
 copy /y lib\Calculate_Magnetic_Moment_3D_Native.dll ext\ImageJ\plugins\CISSCO\ >NUL 2>NUL
-if %ERRORLEVEL% neq 0 (
-    echo Failed to copy files to ext\ImageJ\plugins\CISSCO\ (does this directory exist?)
-    exit /b 1
-)
+
+cd ext\ImageJ
+echo Running ImageJ...
+start ImageJ.exe
+
+cd ..
+cd ..
