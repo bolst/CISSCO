@@ -102,33 +102,38 @@ public class ImageItem {
 
     // If current slice is too close to begin/end of img - need to fit dz (slice
     // range) to be within image slice range
-    if (mag_img.getRoi() != null) // if roi is on mag image
+    if (mag_img.getRoi() != null) // if ROI is on mag image
     {
-      // if dz range is ok
-      if (mag_img.getCurrentSlice() - (roi_dz + 1) / 2 < 0) {
-        roi_zi = 0;
-        roi_dz = Math.max(2 * mag_img.getCurrentSlice(), MIN_ROI_DZ);
-      } else if (mag_img.getCurrentSlice() + (roi_dz + 1) / 2 > mag_img.getNSlices()) {
-        roi_dz = Math.max(mag_img.getNSlices() - mag_img.getCurrentSlice(), MIN_ROI_DZ);
-        roi_zi = mag_img.getNSlices() - roi_dz - 1;
-      }
-      // if dz spans past slice range
-      else
-        roi_zi = mag_img.getCurrentSlice() - (roi_dz + 1) / 2 - 1;
-
-    } else // if roi is on phase image
-    {
-      if (phase_img.getCurrentSlice() - (roi_dz + 1) / 2 < 0) // if dz range is ok
+      int Sn = mag_img.getNSlices();
+      int Si = mag_img.getCurrentSlice();
+      if (Si - roi_dz / 2 < 1) // if slice is too close to first slice
       {
+        roi_dz = 2 * Si - 1;
         roi_zi = 0;
-        roi_dz = Math.max(2 * phase_img.getCurrentSlice(), MIN_ROI_DZ);
-      } else if (phase_img.getCurrentSlice() + (roi_dz + 1) / 2 > phase_img.getNSlices()) {
-        roi_dz = Math.max(phase_img.getNSlices() - phase_img.getCurrentSlice(), MIN_ROI_DZ);
-        roi_zi = phase_img.getNSlices() - roi_dz - 1;
+      } else if (Si + roi_dz / 2 > Sn) // if slice is too close to last slice
+      {
+        roi_dz = 2 * (Sn - Si) + 1;
+        roi_zi = Sn - roi_dz;
+      } else // if slice is ok
+      {
+        roi_zi = Si - roi_dz / 2 - 1;
       }
-      // if dz spans past slice range
-      else
-        roi_zi = phase_img.getCurrentSlice() - (roi_dz + 1) / 2 - 1;
+    } else // if ROI is on phase image
+    {
+      int Sn = phase_img.getNSlices();
+      int Si = phase_img.getCurrentSlice();
+      if (Si - roi_dz / 2 < 1) // if slice is too close to first slice
+      {
+        roi_dz = 2 * Si - 1;
+        roi_zi = 0;
+      } else if (Si + roi_dz / 2 > Sn) // if slice is too close to last slice
+      {
+        roi_dz = 2 * (Sn - Si) + 1;
+        roi_zi = Sn - roi_dz;
+      } else // if slice is ok
+      {
+        roi_zi = Si - roi_dz / 2 - 1;
+      }
     }
 
     Calculate_Magnetic_Moment_3D.logger.addVariable("roi_xi", roi_xi);
@@ -271,7 +276,8 @@ public class ImageItem {
     // finding radius where no values are 0.0 (recall values were set to 0.0 if
     // below M%)
     int dr = 0;
-    while (XP[dr] == 0.0 ||
+    while (dr < XP.length &&
+        XP[dr] == 0.0 ||
         XN[dr] == 0.0 ||
         YP[dr] == 0.0 ||
         YN[dr] == 0.0 ||
@@ -774,6 +780,13 @@ public class ImageItem {
     } else if (zDistanceFromEdge2 < 4) {
       isNearEdge = false;
     }
+
+    Calculate_Magnetic_Moment_3D.logger.addVariable("xdistedge1", xDistanceFromEdge1);
+    Calculate_Magnetic_Moment_3D.logger.addVariable("xdistedge2", xDistanceFromEdge2);
+    Calculate_Magnetic_Moment_3D.logger.addVariable("ydistedge1", yDistanceFromEdge1);
+    Calculate_Magnetic_Moment_3D.logger.addVariable("ydistedge2", yDistanceFromEdge2);
+    Calculate_Magnetic_Moment_3D.logger.addVariable("zdistedge1", zDistanceFromEdge1);
+    Calculate_Magnetic_Moment_3D.logger.addVariable("zdistedge2", zDistanceFromEdge2);
 
     m_R0 = Math.ceil(m_R0);
 

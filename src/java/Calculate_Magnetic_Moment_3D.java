@@ -212,7 +212,7 @@ public class Calculate_Magnetic_Moment_3D implements PlugIn {
       jni.setmVariables(grid, m_R0, RCenter,
           Double.parseDouble(gui.ltf_rcx.getValue()),
           Double.parseDouble(gui.ltf_rcy.getValue()),
-          Double.parseDouble(gui.ltf_rcx.getValue()) - 1.0,
+          Double.parseDouble(gui.ltf_rcz.getValue()) - 1.0,
           Double.parseDouble(gui.ltf_eqPhase.getValue()));
       jni.setMagMoment(Double.parseDouble(gui.ltf_eqPhase.getValue()) * Math.pow(RCenter, 3));
 
@@ -310,7 +310,7 @@ public class Calculate_Magnetic_Moment_3D implements PlugIn {
       jni.setmVariables(grid, m_R0, RCenter,
           Double.parseDouble(gui.ltf_rcx.getValue()),
           Double.parseDouble(gui.ltf_rcy.getValue()),
-          Double.parseDouble(gui.ltf_rcx.getValue()) - 1.0,
+          Double.parseDouble(gui.ltf_rcz.getValue()) - 1.0,
           Double.parseDouble(gui.ltf_eqPhase.getValue()));
       jni.setBackPhase(item.bkgPhase);
       jni.setRealImagNumbers(croppedRealNumbers3D, croppedImaginaryNumbers3D);
@@ -444,7 +444,7 @@ public class Calculate_Magnetic_Moment_3D implements PlugIn {
     jni.setmVariables(grid, m_R0, RCenter,
         Double.parseDouble(gui.ltf_rcx.getValue()),
         Double.parseDouble(gui.ltf_rcy.getValue()),
-        Double.parseDouble(gui.ltf_rcx.getValue()) - 1.0,
+        Double.parseDouble(gui.ltf_rcz.getValue()) - 1.0,
         Double.parseDouble(gui.ltf_eqPhase.getValue()));
 
     // condition for program to continue, must have generated subpixel and estimated
@@ -475,13 +475,17 @@ public class Calculate_Magnetic_Moment_3D implements PlugIn {
       jni.setXYZ(Double.parseDouble(gui.ltf_rcx.getValue()),
           Double.parseDouble(gui.ltf_rcy.getValue()),
           Double.parseDouble(gui.ltf_rcz.getValue()) - 1.0);
+      logger.addInfo("xyz");
       jni.setPhaseXYMatrix(subpixelPhaseMatrix);
+      logger.addInfo("spmtx");
       jni.setSmallBox(item.roi_mag_belowM_xi, item.roi_mag_belowM_yi, item.roi_mag_belowM_zi, item.roi_mag_belowM_Dx,
           item.roi_mag_belowM_Dy,
           item.roi_mag_belowM_Dz);
+      logger.addInfo("smallbox");
       jni.setCenterL(item.centerL().get(0), item.centerL().get(1), item.centerL().get(2));
       jni.setCenterM(item.centerM().get(0), item.centerM().get(1), item.centerM().get(2));
       jni.setCenterS(item.centerS().get(0), item.centerS().get(1), item.centerS().get(2));
+      logger.addInfo("clms");
 
       // Calculating subpixel center, if there are no errors then the returned string
       // will be empty
@@ -586,7 +590,7 @@ public class Calculate_Magnetic_Moment_3D implements PlugIn {
     jni.setmVariables(grid, m_R0, RCenter,
         Double.parseDouble(gui.ltf_rcx.getValue()),
         Double.parseDouble(gui.ltf_rcy.getValue()),
-        Double.parseDouble(gui.ltf_rcx.getValue()) - 1.0,
+        Double.parseDouble(gui.ltf_rcz.getValue()) - 1.0,
         Double.parseDouble(gui.ltf_eqPhase.getValue()));
 
     boolean condition = (WindowManager.getImage(subMagTitle) != null && WindowManager.getImage(subMagXZTitle) != null
@@ -1361,24 +1365,22 @@ public class Calculate_Magnetic_Moment_3D implements PlugIn {
     double m_Ri = Double.parseDouble(gui.ltf_Ri.getValue());
     jni.setRi(m_Ri);
 
-    String Imag_errmsg;
-    String Real_errmsg;
+    String imag_msg;
+    String real_msg;
 
-    Imag_errmsg = jni.calculateImagSum();
-    Real_errmsg = jni.calculateRealSum();
+    imag_msg = jni.calculateImagSum();
+    real_msg = jni.calculateRealSum();
 
-    if (Imag_errmsg.compareTo("") == 0) {
-      double m_Si = jni.getImagSum();
-      gui.ll_ImRi.setValue(gui.ll_ImRi.getValue() + String.valueOf(Math.round(m_Si * 100.0) / 100.0));
+    if (imag_msg.compareTo("") == 0) {
+      gui.ll_ImRi.setValue(String.valueOf(Math.round(jni.getImagSum() * 100.0) / 100.0));
     } else {
-      JOptionPane.showMessageDialog(gui.frame, Imag_errmsg);
+      JOptionPane.showMessageDialog(gui.frame, imag_msg);
     }
 
-    if (Real_errmsg.compareTo("") == 0) {
-      double m_Si2 = jni.getRealSum();
-      gui.ll_ReRi.setValue(gui.ll_ReRi.getValue() + String.valueOf(Math.round(m_Si2 * 100.0) / 100.0));
+    if (real_msg.compareTo("") == 0) {
+      gui.ll_ReRi.setValue(String.valueOf(Math.round(jni.getRealSum() * 100.0) / 100.0));
     } else {
-      JOptionPane.showMessageDialog(gui.frame, Real_errmsg);
+      JOptionPane.showMessageDialog(gui.frame, real_msg);
     }
   }
 

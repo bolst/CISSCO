@@ -1,18 +1,42 @@
 class JNIMethods {
     private static final String DLL_PATH = System.getProperty("user.dir")
             + "\\plugins\\CISSCO\\Calculate_Magnetic_Moment_3D_Native.dll";
+    private static final String SO_PATH = System.getProperty("user.dir")
+            + "/plugins/CISSCO/Calculate_Magnetic_Moment_3D_Native.so";
 
     static {
         Calculate_Magnetic_Moment_3D.logger = new LogManager();
-        Calculate_Magnetic_Moment_3D.logger.addInfo("Attempting to load .dll");
 
-        try {
-            Calculate_Magnetic_Moment_3D.logger.addVariable("DLL_PATH", DLL_PATH);
-            System.load(DLL_PATH);
+        String os = System.getProperty("os.name").toLowerCase();
 
-            Calculate_Magnetic_Moment_3D.logger.addInfo(".dll loaded successfully");
-        } catch (Throwable exc) {
-            Calculate_Magnetic_Moment_3D.logger.addInfo(".dll loading error message:", exc.toString());
+        if (os.contains("win")) {
+
+            Calculate_Magnetic_Moment_3D.logger.addInfo("Attempting to load .dll");
+
+            try {
+                Calculate_Magnetic_Moment_3D.logger.addVariable("DLL_PATH", DLL_PATH);
+                System.load(DLL_PATH);
+
+                Calculate_Magnetic_Moment_3D.logger.addInfo(".dll loaded successfully");
+            } catch (Throwable exc) {
+                Calculate_Magnetic_Moment_3D.logger.addInfo(".dll loading error message:", exc.toString());
+            }
+
+        } else if (os.contains("nix") || os.contains("nux") || os.contains("mac")) {
+
+            Calculate_Magnetic_Moment_3D.logger.addInfo("Attempting to load .so");
+
+            try {
+                Calculate_Magnetic_Moment_3D.logger.addVariable("SO_PATH", SO_PATH);
+                System.load(SO_PATH);
+
+                Calculate_Magnetic_Moment_3D.logger.addInfo(".so loaded successfully");
+            } catch (Throwable exc) {
+                Calculate_Magnetic_Moment_3D.logger.addInfo(".so loading error message:", exc.toString());
+            }
+
+        } else {
+            Calculate_Magnetic_Moment_3D.logger.addInfo("Unknown OS");
         }
     }
 

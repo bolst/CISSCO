@@ -88,6 +88,10 @@ cd ..
 cd ..
 ```
 
+## __Dependencies__
+
+This plug-in uses MigLayout. It is a layout manager for Java Swing and is used to build the GUI. MigLayout produces flowing, grid based, absolute, grouped and docking layouts. It can also be configured with Eclipse so that you can edit the GUI interactively instead of by source code.
+
 ## __Usage__
 
 - Step 1:
