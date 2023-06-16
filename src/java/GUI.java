@@ -190,8 +190,8 @@ public class GUI {
         lbl_r1phaseCalc = new JLabel("");
         frame.getContentPane().add(lbl_r1phaseCalc, "cell 4 6");
 
-        lbl_r1phaseUnit = new JLabel("radians");
-        frame.getContentPane().add(lbl_r1phaseUnit, "cell 5 6");
+        // lbl_r1phaseUnit = new JLabel("radians");
+        // frame.getContentPane().add(lbl_r1phaseUnit, "cell 5 6");
 
         lbl_r1phaseAct = new JLabel("");
         frame.getContentPane().add(lbl_r1phaseAct, "cell 6 6");
@@ -222,8 +222,8 @@ public class GUI {
         lbl_r2phaseCalc = new JLabel("");
         frame.getContentPane().add(lbl_r2phaseCalc, "cell 4 7");
 
-        lbl_r2phaseUnit = new JLabel("radians");
-        frame.getContentPane().add(lbl_r2phaseUnit, "cell 5 7");
+        // lbl_r2phaseUnit = new JLabel("radians");
+        // frame.getContentPane().add(lbl_r2phaseUnit, "cell 5 7");
 
         lbl_r2phaseAct = new JLabel("");
         frame.getContentPane().add(lbl_r2phaseAct, "cell 6 7");
@@ -254,8 +254,8 @@ public class GUI {
         lbl_r3phaseCalc = new JLabel("");
         frame.getContentPane().add(lbl_r3phaseCalc, "cell 4 8");
 
-        lbl_r3phaseUnit = new JLabel("radians");
-        frame.getContentPane().add(lbl_r3phaseUnit, "cell 5 8");
+        // lbl_r3phaseUnit = new JLabel("radians");
+        // frame.getContentPane().add(lbl_r3phaseUnit, "cell 5 8");
 
         lbl_r3phaseAct = new JLabel("");
         frame.getContentPane().add(lbl_r3phaseAct, "cell 6 8");
