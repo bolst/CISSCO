@@ -11,6 +11,7 @@ public class ImageItem {
   private Triplet<Double> center_l;
   private Triplet<Double> center_m;
   private Triplet<Double> center_s;
+  public Triplet<Double> subpix_image_center;
   public double bkgPhase;
   private double roi_mag_belowM_sumX, roi_mag_belowM_sumY, roi_mag_belowM_sumZ;
   public int roi_xi, roi_yi, roi_zi, roi_dx, roi_dy, roi_dz;
@@ -97,40 +98,41 @@ public class ImageItem {
 
     Calculate_Magnetic_Moment_3D.logger.addVariable("roi_dz", roi_dz);
 
+    // get current and # of slices from whatever image ROI is on
+    int Sn = (mag_img.getRoi() != null) ? mag_img.getNSlices() : phase_img.getNSlices();
+    int Si = (mag_img.getRoi() != null) ? mag_img.getCurrentSlice() : phase_img.getCurrentSlice();
+
     // If current slice is too close to begin/end of img - need to fit dz (slice
     // range) to be within image slice range
-    if (mag_img.getRoi() != null) // if ROI is on mag image
+
+    // if ROI extends beyond the 1st slice, then fit dz to be twice
+    // the distance from the 1st slice to the current slice (and + 1 for center)
+    if (Si - roi_dz / 2 < 1) {
+      roi_dz = 2 * Si - 1;
+      roi_zi = 0;
+    }
+    // if ROI extends beyond last slice, then fit dz to be twice the
+    // distance from the last slice to the current slice (and +1 for center)
+    else if (Si + roi_dz / 2 > Sn) {
+      roi_dz = 2 * (Sn - Si) + 1;
+      roi_zi = Sn - roi_dz;
+    }
+    // if slice is ok
+    else {
+      roi_zi = Si - roi_dz / 2 - 1;
+    }
+
+    if (Si - roi_dz / 2 < 1) // if slice is too close to first slice
     {
-      int Sn = mag_img.getNSlices();
-      int Si = mag_img.getCurrentSlice();
-      if (Si - roi_dz / 2 < 1) // if slice is too close to first slice
-      {
-        roi_dz = 2 * Si - 1;
-        roi_zi = 0;
-      } else if (Si + roi_dz / 2 > Sn) // if slice is too close to last slice
-      {
-        roi_dz = 2 * (Sn - Si) + 1;
-        roi_zi = Sn - roi_dz;
-      } else // if slice is ok
-      {
-        roi_zi = Si - roi_dz / 2 - 1;
-      }
-    } else // if ROI is on phase image
+      roi_dz = 2 * Si - 1;
+      roi_zi = 0;
+    } else if (Si + roi_dz / 2 > Sn) // if slice is too close to last slice
     {
-      int Sn = phase_img.getNSlices();
-      int Si = phase_img.getCurrentSlice();
-      if (Si - roi_dz / 2 < 1) // if slice is too close to first slice
-      {
-        roi_dz = 2 * Si - 1;
-        roi_zi = 0;
-      } else if (Si + roi_dz / 2 > Sn) // if slice is too close to last slice
-      {
-        roi_dz = 2 * (Sn - Si) + 1;
-        roi_zi = Sn - roi_dz;
-      } else // if slice is ok
-      {
-        roi_zi = Si - roi_dz / 2 - 1;
-      }
+      roi_dz = 2 * (Sn - Si) + 1;
+      roi_zi = Sn - roi_dz;
+    } else // if slice is ok
+    {
+      roi_zi = Si - roi_dz / 2 - 1;
     }
 
     Calculate_Magnetic_Moment_3D.logger.addVariable("roi_xi", roi_xi);

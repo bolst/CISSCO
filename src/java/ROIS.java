@@ -133,6 +133,9 @@ public class ROIS {
                     Calculate_Magnetic_Moment_3D.subpixelMagImage.setRoi(r);
                     r.setPosition(1);
                     roiManager.addRoi(r);
+                    Calculate_Magnetic_Moment_3D.logger
+                            .addVariable("MXY" + Calculate_Magnetic_Moment_3D.subpixelMagImage.getTitle(),
+                                    r.toString());
                 }
                 roiManager.runCommand(Calculate_Magnetic_Moment_3D.subpixelMagImage, "Show All");
                 break;
@@ -142,6 +145,9 @@ public class ROIS {
                     Calculate_Magnetic_Moment_3D.subpixelMagImageXZ.setRoi(r);
                     r.setPosition(1);
                     roiManager.addRoi(r);
+                    Calculate_Magnetic_Moment_3D.logger
+                            .addVariable("MXZ" + Calculate_Magnetic_Moment_3D.subpixelMagImageXZ.getTitle(),
+                                    r.toString());
                 }
                 roiManager.runCommand(Calculate_Magnetic_Moment_3D.subpixelMagImageXZ, "Show All");
                 break;
@@ -151,6 +157,9 @@ public class ROIS {
                     Calculate_Magnetic_Moment_3D.subpixelPhaseImage.setRoi(r);
                     r.setPosition(1);
                     roiManager.addRoi(r);
+                    Calculate_Magnetic_Moment_3D.logger
+                            .addVariable("PXY" + Calculate_Magnetic_Moment_3D.subpixelPhaseImage.getTitle(),
+                                    r.toString());
                 }
                 roiManager.runCommand(Calculate_Magnetic_Moment_3D.subpixelPhaseImage, "Show All");
                 break;
@@ -160,6 +169,9 @@ public class ROIS {
                     Calculate_Magnetic_Moment_3D.subpixelPhaseImageXZ.setRoi(r);
                     r.setPosition(1);
                     roiManager.addRoi(r);
+                    Calculate_Magnetic_Moment_3D.logger
+                            .addVariable("PXZ" + Calculate_Magnetic_Moment_3D.subpixelPhaseImageXZ.getTitle(),
+                                    r.toString());
                 }
                 roiManager.runCommand(Calculate_Magnetic_Moment_3D.subpixelPhaseImageXZ, "Show All");
                 break;

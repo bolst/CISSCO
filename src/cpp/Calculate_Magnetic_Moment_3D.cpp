@@ -1326,8 +1326,6 @@ void OnBnClickedEstimatecenter()
 
     // pDoc->OnButtonRestore();
 
-    ofstream fst("cpp.txt");
-    fst << "ok lsgo\n";
     errorMessage = "";
 
     if (SubpixelPhaseMatrix.empty())
@@ -1343,9 +1341,6 @@ void OnBnClickedEstimatecenter()
     int Nfinal = m_SubPixels;
     int RCenterSubpixels;
 
-    fst << "smallbox_XYZ= " << smallBox_X << ' ' << smallBox_Y << ' ' << smallBox_Z << '\n';
-    fst << "smallbox_DR= " << smallBox_XSize << ' ' << smallBox_YSize << ' ' << smallBox_ZSize << '\n';
-
     double Xmin = pixelToSubpixel((double)(smallBox_X), 0);
     double Xmax = pixelToSubpixel((double)(smallBox_X + smallBox_XSize), 0);
     double Ymin = pixelToSubpixel((double)(smallBox_Y), 1);
@@ -1353,9 +1348,6 @@ void OnBnClickedEstimatecenter()
     double Zmin = pixelToSubpixel((double)(smallBox_Z), 2);
     double Zmax = pixelToSubpixel((double)(smallBox_Z + smallBox_ZSize), 2);
 
-    fst << "Xmin= " << Xmin << " Ymin= " << Ymin << " Zmin= " << Zmin << '\n';
-    fst << "Xmax= " << Xmax << " Ymax= " << Ymax << " Zmax= " << Zmax << '\n';
-    fst << "m_CenterXYZ2= " << m_CenterX2 << ' ' << m_CenterY2 << ' ' << m_CenterZ2 << '\n';
     // Dont think this is necessary
     double RCenter = m_RCenter;
     // double R1 = m_R1;
@@ -1469,9 +1461,6 @@ void OnBnClickedEstimatecenter()
         Zmax = ceil(Zmax / 10.0) * 10.0 - 1;
     }
 
-    fst << "Xmin= " << Xmin << " Ymin= " << Ymin << " Zmin= " << Zmin << '\n';
-    fst << "Xmax= " << Xmax << " Ymax= " << Ymax << " Zmax= " << Zmax << '\n';
-
     // Find center
     //  ---------- begin to set up a unit sphere inside a tight cube---------- Do NOT change without discussion
     //  The center of the sphere is located at (radius, radius, radius). The cube has a size from 0 to 2*radius.
@@ -1488,7 +1477,6 @@ void OnBnClickedEstimatecenter()
     CubeMask.clear();                                                                               // in case we need to regenerate this matrix again by re-clicking
     CubeMask.resize(diam1, vector<vector<int>>(diam1, vector<int>(diam1, 0)));
 
-    fst << "vector\n";
     for (int k = 0; k <= Dsubpixels; k++)
     {
         Zdiff = k - RCenterSubpixels;
@@ -1507,7 +1495,6 @@ void OnBnClickedEstimatecenter()
             }
         }
     }
-    fst << "loopy\n";
     //  ---------- end to set up a unit sphere inside a tight cube
 
     // ---------- begin to set up corner points for the first amoeba search
@@ -1590,10 +1577,7 @@ void OnBnClickedEstimatecenter()
     Simplex[10][1] = pixelToSubpixel((double)(centerS_y), 1);
     Simplex[10][2] = pixelToSubpixel((double)(centerS_z), 2);
 
-    fst << "sum spherical\n";
-    const clock_t ti = clock();
     SimplexY[0] = SumSphericalMask(RCenterSubpixels, (int)(Simplex[0][0]), (int)(Simplex[0][1]), (int)(Simplex[0][2]), CubeMask);
-    fst << "one iter: " << float(clock() - ti) / CLOCKS_PER_SEC;
     SimplexY[1] = SumSphericalMask(RCenterSubpixels, (int)(Simplex[1][0]), (int)(Simplex[1][1]), (int)(Simplex[1][2]), CubeMask);
     SimplexY[2] = SumSphericalMask(RCenterSubpixels, (int)(Simplex[2][0]), (int)(Simplex[2][1]), (int)(Simplex[2][2]), CubeMask);
     SimplexY[3] = SumSphericalMask(RCenterSubpixels, (int)(Simplex[3][0]), (int)(Simplex[3][1]), (int)(Simplex[3][2]), CubeMask);
@@ -1602,7 +1586,6 @@ void OnBnClickedEstimatecenter()
     SimplexY[6] = SumSphericalMask(RCenterSubpixels, (int)(Simplex[6][0]), (int)(Simplex[6][1]), (int)(Simplex[6][2]), CubeMask);
     SimplexY[7] = SumSphericalMask(RCenterSubpixels, (int)(Simplex[7][0]), (int)(Simplex[7][1]), (int)(Simplex[7][2]), CubeMask);
     SimplexY[8] = SumSphericalMask(RCenterSubpixels, (int)(Simplex[8][0]), (int)(Simplex[8][1]), (int)(Simplex[8][2]), CubeMask);
-    fst.close();
     SimplexY[9] = SumSphericalMask(RCenterSubpixels, (int)(Simplex[9][0]), (int)(Simplex[9][1]), (int)(Simplex[9][2]), CubeMask);
     SimplexY[10] = SumSphericalMask(RCenterSubpixels, (int)(Simplex[10][0]), (int)(Simplex[10][1]), (int)(Simplex[10][2]), CubeMask);
 

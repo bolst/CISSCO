@@ -237,6 +237,12 @@ public class Calculate_Magnetic_Moment_3D implements PlugIn {
   public static void gen_subpix() {
     updateVariables();
 
+    // pass "center" of subpixel images to item
+    // every conversion of pixel to subpixel or vice versa
+    // needs this value
+    item.subpix_image_center = new Triplet<Double>(item.centerS().get(0), item.centerS().get(1), item.centerS().get(2));
+    logger.addVariable("subpix image center", item.subpix_image_center.toString());
+
     // if no RCenter is inputted
     if (gui.ltf_rc.getValue().isEmpty()) {
       JOptionPane.showMessageDialog(gui.frame, "Error: No RCenter found.");
@@ -457,39 +463,21 @@ public class Calculate_Magnetic_Moment_3D implements PlugIn {
 
     if (condition) {
 
-      logger.addInfo("rcx", gui.ltf_rcx.getValue());
-      logger.addInfo("rcy", gui.ltf_rcy.getValue());
-      logger.addInfo("rcz", gui.ltf_rcz.getValue() + "-1");
-      logger.addInfo("ibix", item.roi_mag_belowM_xi);
-      logger.addInfo("ibiy", item.roi_mag_belowM_yi);
-      logger.addInfo("ibiz", item.roi_mag_belowM_zi);
-      logger.addInfo("ibsx", item.roi_mag_belowM_Dx);
-      logger.addInfo("ibsy", item.roi_mag_belowM_Dy);
-      logger.addInfo("ibsz", item.roi_mag_belowM_Dz);
-      logger.addInfo("cl", item.centerL());
-      logger.addInfo("cm", item.centerM());
-      logger.addInfo("cs", item.centerS());
-
       // Passing necessary data to C++
       jni.setXYZ(Double.parseDouble(gui.ltf_rcx.getValue()),
           Double.parseDouble(gui.ltf_rcy.getValue()),
           Double.parseDouble(gui.ltf_rcz.getValue()) - 1.0);
-      logger.addInfo("xyz");
       jni.setPhaseXYMatrix(subpixelPhaseMatrix);
-      logger.addInfo("spmtx");
       jni.setSmallBox(item.roi_mag_belowM_xi, item.roi_mag_belowM_yi, item.roi_mag_belowM_zi, item.roi_mag_belowM_Dx,
           item.roi_mag_belowM_Dy,
           item.roi_mag_belowM_Dz);
-      logger.addInfo("smallbox");
       jni.setCenterL(item.centerL().get(0), item.centerL().get(1), item.centerL().get(2));
       jni.setCenterM(item.centerM().get(0), item.centerM().get(1), item.centerM().get(2));
       jni.setCenterS(item.centerS().get(0), item.centerS().get(1), item.centerS().get(2));
-      logger.addInfo("clms");
 
       // Calculating subpixel center, if there are no errors then the returned string
       // will be empty
       subCenterErrorMessage = jni.estimateSubpixelCenter();
-      logger.addInfo("hi");
 
       if (subCenterErrorMessage.compareTo("") == 0) {
 
@@ -520,15 +508,17 @@ public class Calculate_Magnetic_Moment_3D implements PlugIn {
          * written out, and may have to be compiled to view.
          */
 
+        int sub_x = (int) pixelToSubpixel(item.centerS().get(0), 0);
+        int sub_y = (int) pixelToSubpixel(item.centerS().get(1), 1);
+        int sub_z = (int) pixelToSubpixel(item.centerS().get(2), 2);
+
         // Creating a new ROIS for the XY mag image
         roiImgMag = new ROIS("MXY");
         // Adding the center as a point to the list
-        roiImgMag.addPointROI("Center", (int) pixelToSubpixel(item.centerS().get(0), 0),
-            (int) pixelToSubpixel(item.centerS().get(1), 1));
+        roiImgMag.addPointROI("Center", sub_x, sub_y);
         if (gui.chkbx_showrc.isSelected()) {
           // If the box is selected, adds RCenter circle ROI to the list
-          roiImgMag.addCircleROI("RCenter", (int) pixelToSubpixel(item.centerS().get(0), 0),
-              (int) pixelToSubpixel(item.centerS().get(1), 1), RCenter * 10.0);
+          roiImgMag.addCircleROI("RCenter", sub_x, sub_y, RCenter * 10.0);
         }
         // Displays the ROIS on the image
         roiImgMag.displayROIS();
@@ -536,32 +526,23 @@ public class Calculate_Magnetic_Moment_3D implements PlugIn {
         // The next 3 blocks of code follow the same logic as described above
 
         roiImgMagXZ = new ROIS("MXZ");
-        roiImgMagXZ.addPointROI("Center", (int) pixelToSubpixel(item.centerS().get(0), 0),
-            (int) pixelToSubpixel(item.centerS().get(2), 2));
+        roiImgMagXZ.addPointROI("Center", sub_x, sub_z);
         if (gui.chkbx_showrc.isSelected()) {
-          roiImgMagXZ.addCircleROI("RCenter", (int) pixelToSubpixel(item.centerS().get(0), 0),
-              (int) pixelToSubpixel(item.centerS().get(2), 2),
-              RCenter * 10.0);
+          roiImgMagXZ.addCircleROI("RCenter", sub_x, sub_z, RCenter * 10.0);
         }
         roiImgMagXZ.displayROIS();
 
         roiImgPhase = new ROIS("PXY");
-        roiImgPhase.addPointROI("Center", (int) pixelToSubpixel(item.centerS().get(0), 0),
-            (int) pixelToSubpixel(item.centerS().get(1), 1));
+        roiImgPhase.addPointROI("Center", sub_x, sub_y);
         if (gui.chkbx_showrc.isSelected()) {
-          roiImgPhase.addCircleROI("RCenter", (int) pixelToSubpixel(item.centerS().get(0), 0),
-              (int) pixelToSubpixel(item.centerS().get(1), 1),
-              RCenter * 10.0);
+          roiImgPhase.addCircleROI("RCenter", sub_x, sub_y, RCenter * 10.0);
         }
         roiImgPhase.displayROIS();
 
         roiImgPhaseXZ = new ROIS("PXZ");
-        roiImgPhaseXZ.addPointROI("Center", (int) pixelToSubpixel(item.centerS().get(0), 0),
-            (int) pixelToSubpixel(item.centerS().get(2), 2));
+        roiImgPhaseXZ.addPointROI("Center", sub_x, sub_z);
         if (gui.chkbx_showrc.isSelected()) {
-          roiImgPhaseXZ.addCircleROI("RCenter", (int) pixelToSubpixel(item.centerS().get(0), 0),
-              (int) pixelToSubpixel(item.centerS().get(2), 2),
-              RCenter * 10.0);
+          roiImgPhaseXZ.addCircleROI("RCenter", sub_x, sub_z, RCenter * 10.0);
         }
         roiImgPhaseXZ.displayROIS();
 
@@ -585,13 +566,28 @@ public class Calculate_Magnetic_Moment_3D implements PlugIn {
    */
   public static void redraw_center() {
     updateVariables();
+
+    // get rcenter from GUI
     double RCenter = Double.parseDouble(gui.ltf_rc.getValue());
+
+    // update item center based off current subcenter GUI values
+    item.setCenterSX(Double.parseDouble(gui.ltf_spx.getValue()));
+    item.setCenterSY(Double.parseDouble(gui.ltf_spy.getValue()));
+    item.setCenterSZ(Double.parseDouble(gui.ltf_spz.getValue()));
+    logger.addVariable("Center set as", String.valueOf(Double.parseDouble(gui.ltf_spx.getValue()))
+        + ',' + String.valueOf(Double.parseDouble(gui.ltf_spy.getValue())) + ','
+        + String.valueOf(Double.parseDouble(gui.ltf_spz.getValue())));
+    logger.addVariable("Center returned values", String.valueOf(item.centerS().get(0)) + ','
+        + String.valueOf(item.centerS().get(1)) + ',' + String.valueOf(item.centerS().get(2)));
+
+    // pass values to c++
     jni.setmVariables(grid, m_R0, RCenter,
         Double.parseDouble(gui.ltf_rcx.getValue()),
         Double.parseDouble(gui.ltf_rcy.getValue()),
         Double.parseDouble(gui.ltf_rcz.getValue()) - 1.0,
         Double.parseDouble(gui.ltf_eqPhase.getValue()));
 
+    // condition for button to function
     boolean condition = (WindowManager.getImage(subMagTitle) != null && WindowManager.getImage(subMagXZTitle) != null
         && WindowManager.getImage(subPhaseTitle) != null && WindowManager.getImage(subPhaseXZTitle) != null)
         && !(gui.ltf_spx.getValue().isEmpty() || gui.ltf_spy.getValue().isEmpty() || gui.ltf_spz.getValue().isEmpty());
@@ -600,40 +596,38 @@ public class Calculate_Magnetic_Moment_3D implements PlugIn {
 
       // This is basically a repetition from the btn_estSubC code
 
+      // getting sub center
+      int sub_x = (int) pixelToSubpixel(item.centerS().get(0), 0);
+      int sub_y = (int) pixelToSubpixel(item.centerS().get(1), 1);
+      int sub_z = (int) pixelToSubpixel(item.centerS().get(2), 2);
+      logger.addVariable("subxyz (in redraw)",
+          String.valueOf(sub_x) + ',' + String.valueOf(sub_y) + ',' + String.valueOf(sub_z));
+
       roiImgMag.clear();
-      roiImgMag.addPointROI("Center", (int) pixelToSubpixel(item.centerS().get(0), 0),
-          (int) pixelToSubpixel(item.centerS().get(1), 1));
+      roiImgMag.addPointROI("Center", sub_x, sub_y);
       if (gui.chkbx_showrc.isSelected()) {
-        roiImgMag.addCircleROI("RCenter", (int) pixelToSubpixel(item.centerS().get(0), 0),
-            (int) pixelToSubpixel(item.centerS().get(1), 1), RCenter * 10.0);
+        roiImgMag.addCircleROI("RCenter", sub_x, sub_y, RCenter * 10.0);
       }
       roiImgMag.displayROIS();
 
       roiImgMagXZ.clear();
-      roiImgMagXZ.addPointROI("Center", (int) pixelToSubpixel(item.centerS().get(0), 0),
-          (int) pixelToSubpixel(item.centerS().get(2), 2));
+      roiImgMagXZ.addPointROI("Center", sub_x, sub_z);
       if (gui.chkbx_showrc.isSelected()) {
-        roiImgMagXZ.addCircleROI("RCenter", (int) pixelToSubpixel(item.centerS().get(0), 0),
-            (int) pixelToSubpixel(item.centerS().get(2), 2), RCenter * 10.0);
+        roiImgMagXZ.addCircleROI("RCenter", sub_x, sub_z, RCenter * 10.0);
       }
       roiImgMagXZ.displayROIS();
 
       roiImgPhase.clear();
-      roiImgPhase.addPointROI("Center", (int) pixelToSubpixel(item.centerS().get(0), 0),
-          (int) pixelToSubpixel(item.centerS().get(1), 1));
+      roiImgPhase.addPointROI("Center", sub_x, sub_y);
       if (gui.chkbx_showrc.isSelected()) {
-        roiImgPhase.addCircleROI("RCenter", (int) pixelToSubpixel(item.centerS().get(0), 0),
-            (int) pixelToSubpixel(item.centerS().get(1), 1), RCenter * 10.0);
+        roiImgPhase.addCircleROI("RCenter", sub_x, sub_y, RCenter * 10.0);
       }
       roiImgPhase.displayROIS();
 
       roiImgPhaseXZ.clear();
-      roiImgPhaseXZ.addPointROI("Center", (int) pixelToSubpixel(item.centerS().get(0), 0),
-          (int) pixelToSubpixel(item.centerS().get(2), 2));
+      roiImgPhaseXZ.addPointROI("Center", sub_x, sub_z);
       if (gui.chkbx_showrc.isSelected()) {
-        roiImgPhaseXZ.addCircleROI("RCenter", (int) pixelToSubpixel(item.centerS().get(0), 0),
-            (int) pixelToSubpixel(item.centerS().get(2), 2),
-            RCenter * 10.0);
+        roiImgPhaseXZ.addCircleROI("RCenter", sub_x, sub_z, RCenter * 10.0);
       }
       roiImgPhaseXZ.displayROIS();
     } else {
@@ -653,74 +647,55 @@ public class Calculate_Magnetic_Moment_3D implements PlugIn {
     double m_R2 = Double.parseDouble(gui.ltf_r2.getValue());
     double m_R3 = Double.parseDouble(gui.ltf_r3.getValue());
 
+    // update item center based off current subcenter GUI values
+    item.setCenterSX(Double.parseDouble(gui.ltf_spx.getValue()));
+    item.setCenterSY(Double.parseDouble(gui.ltf_spy.getValue()));
+    item.setCenterSZ(Double.parseDouble(gui.ltf_spz.getValue()));
+
     boolean condition = (WindowManager.getImage(subMagTitle) != null && WindowManager.getImage(subMagXZTitle) != null
         && WindowManager.getImage(subPhaseTitle) != null && WindowManager.getImage(subPhaseXZTitle) != null)
         && !(gui.ltf_spx.getValue().isEmpty() || gui.ltf_spy.getValue().isEmpty() || gui.ltf_spz.getValue().isEmpty());
 
     if (condition) {
 
+      int sub_x = (int) pixelToSubpixel(item.centerS().get(0), 0);
+      int sub_y = (int) pixelToSubpixel(item.centerS().get(1), 1);
+      int sub_z = (int) pixelToSubpixel(item.centerS().get(2), 2);
+
       // Clearing ROI list
       roiImgMag.clear();
       // Adding center ROI to list
-      roiImgMag.addPointROI("Center", (int) pixelToSubpixel(item.centerS().get(0), 0),
-          (int) pixelToSubpixel(item.centerS().get(1), 1));
+      roiImgMag.addPointROI("Center", sub_x, sub_y);
       // Adding R1 to list
-      roiImgMag.addCircleROI("MR1", (int) pixelToSubpixel(item.centerS().get(0), 0),
-          (int) pixelToSubpixel(item.centerS().get(1), 1),
-          m_R1 * 10.0);
+      roiImgMag.addCircleROI("MR1", sub_x, sub_y, m_R1 * 10.0);
       // Adding R2 to list
-      roiImgMag.addCircleROI("MR2", (int) pixelToSubpixel(item.centerS().get(0), 0),
-          (int) pixelToSubpixel(item.centerS().get(1), 1),
-          m_R2 * 10.0);
+      roiImgMag.addCircleROI("MR2", sub_x, sub_y, m_R2 * 10.0);
       // Adding R3 to list
-      roiImgMag.addCircleROI("MR3", (int) pixelToSubpixel(item.centerS().get(0), 0),
-          (int) pixelToSubpixel(item.centerS().get(1), 1),
-          m_R3 * 10.0);
+      roiImgMag.addCircleROI("MR3", sub_x, sub_y, m_R3 * 10.0);
       // Displaying list
       roiImgMag.displayROIS();
 
       // The same logic as above is followed for the next three blocks
 
       roiImgMagXZ.clear();
-      roiImgMagXZ.addPointROI("Center", (int) pixelToSubpixel(item.centerS().get(0), 0),
-          (int) pixelToSubpixel(item.centerS().get(2), 2));
-      roiImgMagXZ.addCircleROI("MR1", (int) pixelToSubpixel(item.centerS().get(0), 0),
-          (int) pixelToSubpixel(item.centerS().get(2), 2),
-          m_R1 * 10.0);
-      roiImgMagXZ.addCircleROI("MR2", (int) pixelToSubpixel(item.centerS().get(0), 0),
-          (int) pixelToSubpixel(item.centerS().get(2), 2),
-          m_R2 * 10.0);
-      roiImgMagXZ.addCircleROI("MR3", (int) pixelToSubpixel(item.centerS().get(0), 0),
-          (int) pixelToSubpixel(item.centerS().get(2), 2),
-          m_R3 * 10.0);
+      roiImgMagXZ.addPointROI("Center", sub_x, sub_z);
+      roiImgMagXZ.addCircleROI("MR1", sub_x, sub_z, m_R1 * 10.0);
+      roiImgMagXZ.addCircleROI("MR2", sub_x, sub_z, m_R2 * 10.0);
+      roiImgMagXZ.addCircleROI("MR3", sub_x, sub_z, m_R3 * 10.0);
       roiImgMagXZ.displayROIS();
 
       roiImgPhase.clear();
-      roiImgPhase.addPointROI("Center", (int) pixelToSubpixel(item.centerS().get(0), 0),
-          (int) pixelToSubpixel(item.centerS().get(1), 1));
-      roiImgPhase.addCircleROI("MR1", (int) pixelToSubpixel(item.centerS().get(0), 0),
-          (int) pixelToSubpixel(item.centerS().get(1), 1),
-          m_R1 * 10.0);
-      roiImgPhase.addCircleROI("MR2", (int) pixelToSubpixel(item.centerS().get(0), 0),
-          (int) pixelToSubpixel(item.centerS().get(1), 1),
-          m_R2 * 10.0);
-      roiImgPhase.addCircleROI("MR3", (int) pixelToSubpixel(item.centerS().get(0), 0),
-          (int) pixelToSubpixel(item.centerS().get(1), 1),
-          m_R3 * 10.0);
+      roiImgPhase.addPointROI("Center", sub_x, sub_y);
+      roiImgPhase.addCircleROI("MR1", sub_x, sub_y, m_R1 * 10.0);
+      roiImgPhase.addCircleROI("MR2", sub_x, sub_y, m_R2 * 10.0);
+      roiImgPhase.addCircleROI("MR3", sub_x, sub_y, m_R3 * 10.0);
       roiImgPhase.displayROIS();
 
       roiImgPhaseXZ.clear();
-      roiImgPhaseXZ.addPointROI("Center", (int) pixelToSubpixel(item.centerS().get(0), 0),
-          (int) pixelToSubpixel(item.centerS().get(2), 2));
-      roiImgPhaseXZ.addCircleROI("MR1", (int) pixelToSubpixel(item.centerS().get(0), 0),
-          (int) pixelToSubpixel(item.centerS().get(2), 2),
-          m_R1 * 10.0);
-      roiImgPhaseXZ.addCircleROI("MR2", (int) pixelToSubpixel(item.centerS().get(0), 0),
-          (int) pixelToSubpixel(item.centerS().get(2), 2),
-          m_R2 * 10.0);
-      roiImgPhaseXZ.addCircleROI("MR3", (int) pixelToSubpixel(item.centerS().get(0), 0),
-          (int) pixelToSubpixel(item.centerS().get(2), 2),
-          m_R3 * 10.0);
+      roiImgPhaseXZ.addPointROI("Center", sub_x, sub_z);
+      roiImgPhaseXZ.addCircleROI("MR1", sub_x, sub_z, m_R1 * 10.0);
+      roiImgPhaseXZ.addCircleROI("MR2", sub_x, sub_z, m_R2 * 10.0);
+      roiImgPhaseXZ.addCircleROI("MR3", sub_x, sub_z, m_R3 * 10.0);
       roiImgPhaseXZ.displayROIS();
 
       float R1_phase_actual = 0;
@@ -730,150 +705,78 @@ public class Calculate_Magnetic_Moment_3D implements PlugIn {
       // Summing up all phase values where the radii and equitorial axis intercept
       switch (item.MRIAxis()) {
         case X:
-          R1_phase_actual += subpixelPhaseImage.getProcessor().getPixelValue(
-              (int) pixelToSubpixel(item.centerS().get(0), 0),
-              (int) pixelToSubpixel(item.centerS().get(1), 1) + (int) m_R1 * 10);
-          logger.addInfo("Got coordinate (" + String.valueOf((int) pixelToSubpixel(item.centerS().get(0), 0)) + ","
-              + String.valueOf((int) pixelToSubpixel(item.centerS().get(1), 1) + (int) m_R1 * 10) + ")");
-          R1_phase_actual += subpixelPhaseImage.getProcessor().getPixelValue(
-              (int) pixelToSubpixel(item.centerS().get(0), 0),
-              (int) pixelToSubpixel(item.centerS().get(1), 1) - (int) m_R1 * 10);
-          logger.addInfo("Got coordinate (" + String.valueOf((int) pixelToSubpixel(item.centerS().get(0), 0)) + ","
-              + String.valueOf((int) pixelToSubpixel(item.centerS().get(1), 1) - (int) m_R1 * 10) + ")");
-          R1_phase_actual += subpixelPhaseImageXZ.getProcessor().getPixelValue(
-              (int) pixelToSubpixel(item.centerS().get(0), 0),
-              (int) pixelToSubpixel(item.centerS().get(2), 2) + (int) m_R1 * 10);
-          logger.addInfo("Got coordinate (" + String.valueOf((int) pixelToSubpixel(item.centerS().get(0), 0)) + ","
-              + String.valueOf((int) pixelToSubpixel(item.centerS().get(2), 2) + (int) m_R1 * 10) + ")");
-          R1_phase_actual += subpixelPhaseImageXZ.getProcessor().getPixelValue(
-              (int) pixelToSubpixel(item.centerS().get(0), 0),
-              (int) pixelToSubpixel(item.centerS().get(2), 2) - (int) m_R1 * 10);
-          logger.addInfo("Got coordinate (" + String.valueOf((int) pixelToSubpixel(item.centerS().get(0), 0)) + ","
-              + String.valueOf((int) pixelToSubpixel(item.centerS().get(2), 2) - (int) m_R1 * 10) + ")");
+          R1_phase_actual += subpixelPhaseImage.getProcessor().getPixelValue(sub_x, sub_y + (int) m_R1 * 10);
+          logger.addInfo(
+              "Got coordinate (" + String.valueOf(sub_x) + "," + String.valueOf(sub_y + (int) m_R1 * 10) + ")");
+          R1_phase_actual += subpixelPhaseImage.getProcessor().getPixelValue(sub_x, sub_y - (int) m_R1 * 10);
+          logger.addInfo(
+              "Got coordinate (" + String.valueOf(sub_x) + "," + String.valueOf(sub_y - (int) m_R1 * 10) + ")");
+          R1_phase_actual += subpixelPhaseImageXZ.getProcessor().getPixelValue(sub_x, sub_z + (int) m_R1 * 10);
+          logger.addInfo(
+              "Got coordinate (" + String.valueOf(sub_x) + "," + String.valueOf(sub_z + (int) m_R1 * 10) + ")");
+          R1_phase_actual += subpixelPhaseImageXZ.getProcessor().getPixelValue(sub_x, sub_z - (int) m_R1 * 10);
+          logger.addInfo(
+              "Got coordinate (" + String.valueOf(sub_x) + "," + String.valueOf(sub_z - (int) m_R1 * 10) + ")");
 
-          R2_phase_actual += subpixelPhaseImage.getProcessor().getPixelValue(
-              (int) pixelToSubpixel(item.centerS().get(0), 0),
-              (int) pixelToSubpixel(item.centerS().get(1), 1) + (int) m_R2 * 10);
-          logger.addInfo("Got coordinate (" + String.valueOf((int) pixelToSubpixel(item.centerS().get(0), 0)) + ","
-              + String.valueOf((int) pixelToSubpixel(item.centerS().get(1), 1) + (int) m_R2 * 10) + ")");
-          R2_phase_actual += subpixelPhaseImage.getProcessor().getPixelValue(
-              (int) pixelToSubpixel(item.centerS().get(0), 0),
-              (int) pixelToSubpixel(item.centerS().get(1), 1) - (int) m_R2 * 10);
-          logger.addInfo("Got coordinate (" + String.valueOf((int) pixelToSubpixel(item.centerS().get(0), 0)) + ","
-              + String.valueOf((int) pixelToSubpixel(item.centerS().get(1), 1) - (int) m_R2 * 10) + ")");
-          R2_phase_actual += subpixelPhaseImageXZ.getProcessor().getPixelValue(
-              (int) pixelToSubpixel(item.centerS().get(0), 0),
-              (int) pixelToSubpixel(item.centerS().get(2), 2) + (int) m_R2 * 10);
-          logger.addInfo("Got coordinate (" + String.valueOf((int) pixelToSubpixel(item.centerS().get(0), 0)) + ","
-              + String.valueOf((int) pixelToSubpixel(item.centerS().get(2), 2) + (int) m_R2 * 10) + ")");
-          R2_phase_actual += subpixelPhaseImageXZ.getProcessor().getPixelValue(
-              (int) pixelToSubpixel(item.centerS().get(0), 0),
-              (int) pixelToSubpixel(item.centerS().get(2), 2) - (int) m_R2 * 10);
-          logger.addInfo("Got coordinate (" + String.valueOf((int) pixelToSubpixel(item.centerS().get(0), 0)) + ","
-              + String.valueOf((int) pixelToSubpixel(item.centerS().get(2), 2) - (int) m_R2 * 10) + ")");
+          R2_phase_actual += subpixelPhaseImage.getProcessor().getPixelValue(sub_x, sub_y + (int) m_R2 * 10);
+          logger.addInfo(
+              "Got coordinate (" + String.valueOf(sub_x) + "," + String.valueOf(sub_y + (int) m_R2 * 10) + ")");
+          R2_phase_actual += subpixelPhaseImage.getProcessor().getPixelValue(sub_x, sub_y - (int) m_R2 * 10);
+          logger.addInfo(
+              "Got coordinate (" + String.valueOf(sub_x) + "," + String.valueOf(sub_y - (int) m_R2 * 10) + ")");
+          R2_phase_actual += subpixelPhaseImageXZ.getProcessor().getPixelValue(sub_x, sub_z + (int) m_R2 * 10);
+          logger.addInfo(
+              "Got coordinate (" + String.valueOf(sub_x) + "," + String.valueOf(sub_z + (int) m_R2 * 10) + ")");
+          R2_phase_actual += subpixelPhaseImageXZ.getProcessor().getPixelValue(sub_x, sub_z - (int) m_R2 * 10);
+          logger.addInfo(
+              "Got coordinate (" + String.valueOf(sub_x) + "," + String.valueOf(sub_z - (int) m_R2 * 10) + ")");
 
-          R3_phase_actual += subpixelPhaseImage.getProcessor().getPixelValue(
-              (int) pixelToSubpixel(item.centerS().get(0), 0),
-              (int) pixelToSubpixel(item.centerS().get(1), 1) + (int) m_R3 * 10);
-          logger.addInfo("Got coordinate (" + String.valueOf((int) pixelToSubpixel(item.centerS().get(0), 0)) + ","
-              + String.valueOf((int) pixelToSubpixel(item.centerS().get(1), 1) + (int) m_R3 * 10) + ")");
-          R3_phase_actual += subpixelPhaseImage.getProcessor().getPixelValue(
-              (int) pixelToSubpixel(item.centerS().get(0), 0),
-              (int) pixelToSubpixel(item.centerS().get(1), 1) - (int) m_R3 * 10);
-          logger.addInfo("Got coordinate (" + String.valueOf((int) pixelToSubpixel(item.centerS().get(0), 0)) + ","
-              + String.valueOf((int) pixelToSubpixel(item.centerS().get(1), 1) - (int) m_R3 * 10) + ")");
-          R3_phase_actual += subpixelPhaseImageXZ.getProcessor().getPixelValue(
-              (int) pixelToSubpixel(item.centerS().get(0), 0),
-              (int) pixelToSubpixel(item.centerS().get(2), 2) + (int) m_R3 * 10);
-          logger.addInfo("Got coordinate (" + String.valueOf((int) pixelToSubpixel(item.centerS().get(0), 0)) + ","
-              + String.valueOf((int) pixelToSubpixel(item.centerS().get(2), 2) + (int) m_R3 * 10) + ")");
-          R3_phase_actual += subpixelPhaseImageXZ.getProcessor().getPixelValue(
-              (int) pixelToSubpixel(item.centerS().get(0), 0),
-              (int) pixelToSubpixel(item.centerS().get(2), 2) - (int) m_R3 * 10);
-          logger.addInfo("Got coordinate (" + String.valueOf((int) pixelToSubpixel(item.centerS().get(0), 0)) + ","
-              + String.valueOf((int) pixelToSubpixel(item.centerS().get(2), 2) - (int) m_R3 * 10) + ")");
+          R3_phase_actual += subpixelPhaseImage.getProcessor().getPixelValue(sub_x, sub_y + (int) m_R3 * 10);
+          logger.addInfo(
+              "Got coordinate (" + String.valueOf(sub_x) + "," + String.valueOf(sub_y + (int) m_R3 * 10) + ")");
+          R3_phase_actual += subpixelPhaseImage.getProcessor().getPixelValue(sub_x, sub_y - (int) m_R3 * 10);
+          logger.addInfo("Got coordinate (" + String.valueOf(sub_x) + ","
+              + String.valueOf(sub_y - (int) m_R3 * 10) + ")");
+          R3_phase_actual += subpixelPhaseImageXZ.getProcessor().getPixelValue(sub_x, sub_z + (int) m_R3 * 10);
+          logger.addInfo("Got coordinate (" + String.valueOf(sub_x) + ","
+              + String.valueOf(sub_z + (int) m_R3 * 10) + ")");
+          R3_phase_actual += subpixelPhaseImageXZ.getProcessor().getPixelValue(sub_x, sub_z - (int) m_R3 * 10);
+          logger.addInfo("Got coordinate (" + String.valueOf(sub_x) + ","
+              + String.valueOf(sub_z - (int) m_R3 * 10) + ")");
           break;
 
         case Y:
-          R1_phase_actual += subpixelPhaseImageXZ.getProcessor()
-              .getPixelValue((int) pixelToSubpixel(item.centerS().get(0), 0) + (int) m_R1 * 10,
-                  (int) pixelToSubpixel(item.centerS().get(2), 2));
-          R1_phase_actual += subpixelPhaseImageXZ.getProcessor()
-              .getPixelValue((int) pixelToSubpixel(item.centerS().get(0), 0) - (int) m_R1 * 10,
-                  (int) pixelToSubpixel(item.centerS().get(2), 2));
-          R1_phase_actual += subpixelPhaseImageXZ.getProcessor().getPixelValue(
-              (int) pixelToSubpixel(item.centerS().get(0), 0),
-              (int) pixelToSubpixel(item.centerS().get(2), 2) + (int) m_R1 * 10);
-          R1_phase_actual += subpixelPhaseImageXZ.getProcessor().getPixelValue(
-              (int) pixelToSubpixel(item.centerS().get(0), 0),
-              (int) pixelToSubpixel(item.centerS().get(2), 2) - (int) m_R1 * 10);
+          R1_phase_actual += subpixelPhaseImageXZ.getProcessor().getPixelValue(sub_x + (int) m_R1 * 10, sub_z);
+          R1_phase_actual += subpixelPhaseImageXZ.getProcessor().getPixelValue(sub_x - (int) m_R1 * 10, sub_z);
+          R1_phase_actual += subpixelPhaseImageXZ.getProcessor().getPixelValue(sub_x, sub_z + (int) m_R1 * 10);
+          R1_phase_actual += subpixelPhaseImageXZ.getProcessor().getPixelValue(sub_x, sub_z - (int) m_R1 * 10);
 
-          R2_phase_actual += subpixelPhaseImageXZ.getProcessor()
-              .getPixelValue((int) pixelToSubpixel(item.centerS().get(0), 0) + (int) m_R2 * 10,
-                  (int) pixelToSubpixel(item.centerS().get(2), 2));
-          R2_phase_actual += subpixelPhaseImageXZ.getProcessor()
-              .getPixelValue((int) pixelToSubpixel(item.centerS().get(0), 0) - (int) m_R2 * 10,
-                  (int) pixelToSubpixel(item.centerS().get(2), 2));
-          R2_phase_actual += subpixelPhaseImageXZ.getProcessor().getPixelValue(
-              (int) pixelToSubpixel(item.centerS().get(0), 0),
-              (int) pixelToSubpixel(item.centerS().get(2), 2) + (int) m_R2 * 10);
-          R2_phase_actual += subpixelPhaseImageXZ.getProcessor().getPixelValue(
-              (int) pixelToSubpixel(item.centerS().get(0), 0),
-              (int) pixelToSubpixel(item.centerS().get(2), 2) - (int) m_R2 * 10);
+          R2_phase_actual += subpixelPhaseImageXZ.getProcessor().getPixelValue(sub_x + (int) m_R2 * 10, sub_z);
+          R2_phase_actual += subpixelPhaseImageXZ.getProcessor().getPixelValue(sub_x - (int) m_R2 * 10, sub_z);
+          R2_phase_actual += subpixelPhaseImageXZ.getProcessor().getPixelValue(sub_x, sub_z + (int) m_R2 * 10);
+          R2_phase_actual += subpixelPhaseImageXZ.getProcessor().getPixelValue(sub_x, sub_z - (int) m_R2 * 10);
 
-          R3_phase_actual += subpixelPhaseImageXZ.getProcessor()
-              .getPixelValue((int) pixelToSubpixel(item.centerS().get(0), 0) + (int) m_R3 * 10,
-                  (int) pixelToSubpixel(item.centerS().get(2), 2));
-          R3_phase_actual += subpixelPhaseImageXZ.getProcessor()
-              .getPixelValue((int) pixelToSubpixel(item.centerS().get(0), 0) - (int) m_R3 * 10,
-                  (int) pixelToSubpixel(item.centerS().get(2), 2));
-          R3_phase_actual += subpixelPhaseImageXZ.getProcessor().getPixelValue(
-              (int) pixelToSubpixel(item.centerS().get(0), 0),
-              (int) pixelToSubpixel(item.centerS().get(2), 2) + (int) m_R3 * 10);
-          R3_phase_actual += subpixelPhaseImageXZ.getProcessor().getPixelValue(
-              (int) pixelToSubpixel(item.centerS().get(0), 0),
-              (int) pixelToSubpixel(item.centerS().get(2), 2) - (int) m_R3 * 10);
+          R3_phase_actual += subpixelPhaseImageXZ.getProcessor().getPixelValue(sub_x + (int) m_R3 * 10, sub_z);
+          R3_phase_actual += subpixelPhaseImageXZ.getProcessor().getPixelValue(sub_x - (int) m_R3 * 10, sub_z);
+          R3_phase_actual += subpixelPhaseImageXZ.getProcessor().getPixelValue(sub_x, sub_z + (int) m_R3 * 10);
+          R3_phase_actual += subpixelPhaseImageXZ.getProcessor().getPixelValue(sub_x, sub_z - (int) m_R3 * 10);
           break;
 
         case Z:
-          R1_phase_actual += subpixelPhaseImage.getProcessor().getPixelValue(
-              (int) pixelToSubpixel(item.centerS().get(0), 0),
-              (int) pixelToSubpixel(item.centerS().get(1), 1) + (int) m_R1 * 10);
-          R1_phase_actual += subpixelPhaseImage.getProcessor().getPixelValue(
-              (int) pixelToSubpixel(item.centerS().get(0), 0),
-              (int) pixelToSubpixel(item.centerS().get(1), 1) - (int) m_R1 * 10);
-          R1_phase_actual += subpixelPhaseImage.getProcessor()
-              .getPixelValue((int) pixelToSubpixel(item.centerS().get(0), 0) + (int) m_R1 * 10,
-                  (int) pixelToSubpixel(item.centerS().get(1), 1));
-          R1_phase_actual += subpixelPhaseImage.getProcessor()
-              .getPixelValue((int) pixelToSubpixel(item.centerS().get(0), 0) - (int) m_R1 * 10,
-                  (int) pixelToSubpixel(item.centerS().get(1), 1));
+          R1_phase_actual += subpixelPhaseImage.getProcessor().getPixelValue(sub_x, sub_y + (int) m_R1 * 10);
+          R1_phase_actual += subpixelPhaseImage.getProcessor().getPixelValue(sub_x, sub_y - (int) m_R1 * 10);
+          R1_phase_actual += subpixelPhaseImage.getProcessor().getPixelValue(sub_x + (int) m_R1 * 10, sub_y);
+          R1_phase_actual += subpixelPhaseImage.getProcessor().getPixelValue(sub_x - (int) m_R1 * 10, sub_y);
 
-          R2_phase_actual += subpixelPhaseImage.getProcessor().getPixelValue(
-              (int) pixelToSubpixel(item.centerS().get(0), 0),
-              (int) pixelToSubpixel(item.centerS().get(1), 1) + (int) m_R2 * 10);
-          R2_phase_actual += subpixelPhaseImage.getProcessor().getPixelValue(
-              (int) pixelToSubpixel(item.centerS().get(0), 0),
-              (int) pixelToSubpixel(item.centerS().get(1), 1) - (int) m_R2 * 10);
-          R2_phase_actual += subpixelPhaseImage.getProcessor()
-              .getPixelValue((int) pixelToSubpixel(item.centerS().get(0), 0) + (int) m_R2 * 10,
-                  (int) pixelToSubpixel(item.centerS().get(1), 1));
-          R2_phase_actual += subpixelPhaseImage.getProcessor()
-              .getPixelValue((int) pixelToSubpixel(item.centerS().get(0), 0) - (int) m_R2 * 10,
-                  (int) pixelToSubpixel(item.centerS().get(1), 1));
+          R2_phase_actual += subpixelPhaseImage.getProcessor().getPixelValue(sub_x, sub_y + (int) m_R2 * 10);
+          R2_phase_actual += subpixelPhaseImage.getProcessor().getPixelValue(sub_x, sub_y - (int) m_R2 * 10);
+          R2_phase_actual += subpixelPhaseImage.getProcessor().getPixelValue(sub_x + (int) m_R2 * 10, sub_y);
+          R2_phase_actual += subpixelPhaseImage.getProcessor().getPixelValue(sub_x - (int) m_R2 * 10, sub_y);
 
-          R3_phase_actual += subpixelPhaseImage.getProcessor().getPixelValue(
-              (int) pixelToSubpixel(item.centerS().get(0), 0),
-              (int) pixelToSubpixel(item.centerS().get(1), 1) + (int) m_R3 * 10);
-          R3_phase_actual += subpixelPhaseImage.getProcessor().getPixelValue(
-              (int) pixelToSubpixel(item.centerS().get(0), 0),
-              (int) pixelToSubpixel(item.centerS().get(1), 1) - (int) m_R3 * 10);
-          R3_phase_actual += subpixelPhaseImage.getProcessor()
-              .getPixelValue((int) pixelToSubpixel(item.centerS().get(0), 0) + (int) m_R3 * 10,
-                  (int) pixelToSubpixel(item.centerS().get(1), 1));
-          R3_phase_actual += subpixelPhaseImage.getProcessor()
-              .getPixelValue((int) pixelToSubpixel(item.centerS().get(0), 0) - (int) m_R3 * 10,
-                  (int) pixelToSubpixel(item.centerS().get(1), 1));
+          R3_phase_actual += subpixelPhaseImage.getProcessor().getPixelValue(sub_x, sub_y + (int) m_R3 * 10);
+          R3_phase_actual += subpixelPhaseImage.getProcessor().getPixelValue(sub_x, sub_y - (int) m_R3 * 10);
+          R3_phase_actual += subpixelPhaseImage.getProcessor().getPixelValue(sub_x + (int) m_R3 * 10, sub_y);
+          R3_phase_actual += subpixelPhaseImage.getProcessor().getPixelValue(sub_x - (int) m_R3 * 10, sub_y);
           break;
 
         default:
@@ -1808,16 +1711,10 @@ public class Calculate_Magnetic_Moment_3D implements PlugIn {
     double subCenter = (2 * m_R0 + 1) * (10.0 / 2.0);
     double subpixelCoordinate = 0.0;
 
-    // if x axis
-    if (axisFlag == 0) {
-      subpixelCoordinate = subCenter + (coordinate - (double) (item.centerS().get(0).intValue())) * 10.0;
-    }
-    if (axisFlag == 1) {
-      subpixelCoordinate = subCenter + (coordinate - (double) (item.centerS().get(1).intValue())) * 10.0;
-    }
-    if (axisFlag == 2) {
-      subpixelCoordinate = subCenter + (coordinate - (double) (item.centerS().get(2).intValue())) * 10.0;
-    }
+    logger.addVariable("ptsb subcenter", subCenter);
+    logger.addVariable("ptsb coordinate", coordinate);
+
+    subpixelCoordinate = subCenter + (coordinate - (double) (item.subpix_image_center.get(axisFlag))) * 10.0;
 
     return subpixelCoordinate;
   }

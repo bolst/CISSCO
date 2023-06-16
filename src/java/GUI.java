@@ -32,7 +32,6 @@ public class GUI {
             ltf_v2seX1, ltf_v2seX2, ltf_v2seY1, ltf_v2seY2, ltf_v2seZ1, ltf_v2seZ2;
     public LabeledLabel ll_estBkgPhase, ll_grid, ll_rho0, ll_ReRi, ll_ImRi, ll_momenterror, ll_rho0SE, ll_aSE, ll_dChi,
             ll_dChiSE, ll_a, ll_V0;
-    private final String ITALICIZED_I = "\uD835\uDC8A";
 
     public GUI() {
         this.initialize();
@@ -362,10 +361,10 @@ public class GUI {
          * frame.getContentPane().add(lbl_ImRi, "flowx,cell 2 14");
          */
 
-        ll_ReRi = new LabeledLabel("Real(S" + ITALICIZED_I + ") =", "", null);
+        ll_ReRi = new LabeledLabel("<html>Real(S<sub>i</sub>) =</html>", "", null);
         frame.getContentPane().add(ll_ReRi, "flowx,cell 2 13");
 
-        ll_ImRi = new LabeledLabel("Imag(S" + ITALICIZED_I + ") =", "", null);
+        ll_ImRi = new LabeledLabel("<html>Imag(S<sub>i</sub>) =</html>", "", null);
         frame.getContentPane().add(ll_ImRi, "flowx,cell 2 14");
 
         /*
@@ -390,7 +389,7 @@ public class GUI {
          * frame.getContentPane().add(txt_Ri, "cell 2 12");
          */
 
-        ltf_Ri = new LabeledTextField("R" + ITALICIZED_I + " =", "0.0", null, 4);
+        ltf_Ri = new LabeledTextField("<html>R<sub>i</sub> =</html>", "0.0", null, 4);
         frame.getContentPane().add(ltf_Ri, "cell 2 12");
 
         btn_sumRi = new JButton("Sum");
