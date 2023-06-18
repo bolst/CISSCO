@@ -77,18 +77,32 @@ public class ImageItem {
     // Getting ROI parameters
     roi_xi = (int) user_roi.getXBase();
     roi_yi = (int) user_roi.getYBase();
+    roi_zi = (mag_img.getRoi() != null) ? mag_img.getCurrentSlice() - 1 : phase_img.getCurrentSlice() - 1;
+
     // square box dimensions are the larger of roi_dx and roi_dy
     roi_dx = roi_dy = roi_dz = Math.max((int) user_roi_rectangle.getWidth(),
         (int) user_roi_rectangle.getHeight());
 
-    Calculate_Magnetic_Moment_3D.logger.addVariable("roi_dz", roi_dz);
+    roi_zi = roi_zi - roi_dz / 2;
 
-    // roi side lengths must be odd
-    roi_dx = roi_dy = roi_dz = (roi_dx % 2 == 0) ? (roi_dx + 1) : roi_dx;
+    Calculate_Magnetic_Moment_3D.logger.addVariable("roi_d", new Triplet<>(roi_dx, roi_dy, roi_dz).toString());
+
+    // get current slice from whatever image ROI is on
+
+    Calculate_Magnetic_Moment_3D.logger.addVariable("roi before",
+        new Triplet<>(roi_xi, roi_yi, roi_zi).toString() + ',' + new Triplet<>(roi_dx, roi_dy, roi_dz));
+    // making sure roi parameters fit onto image
+    roi_xi = goodROI(mag_img.getWidth(), roi_xi, roi_dx).get(0);
+    roi_dx = goodROI(mag_img.getWidth(), roi_xi, roi_dx).get(1);
+    roi_yi = goodROI(mag_img.getHeight(), roi_yi, roi_dy).get(0);
+    roi_dy = goodROI(mag_img.getHeight(), roi_yi, roi_dy).get(1);
+    int old_roi_zi = roi_zi;
+    roi_zi = goodROI(mag_img.getNSlices(), roi_zi, roi_dz).get(0);
+    roi_dz = goodROI(mag_img.getNSlices(), old_roi_zi, roi_dz).get(1);
 
     // Setting new ROI to rectangle
-    user_roi_rectangle.setBounds(roi_xi, roi_yi, roi_dz,
-        roi_dz);
+    user_roi_rectangle.setBounds(roi_xi, roi_yi, roi_dx,
+        roi_dy);
 
     // Setting new ROI to image
     if (mag_img.getRoi() != null)
@@ -96,51 +110,8 @@ public class ImageItem {
     else
       phase_img.setRoi(user_roi_rectangle);
 
-    Calculate_Magnetic_Moment_3D.logger.addVariable("roi_dz", roi_dz);
-
-    // get current and # of slices from whatever image ROI is on
-    int Sn = (mag_img.getRoi() != null) ? mag_img.getNSlices() : phase_img.getNSlices();
-    int Si = (mag_img.getRoi() != null) ? mag_img.getCurrentSlice() : phase_img.getCurrentSlice();
-
-    // If current slice is too close to begin/end of img - need to fit dz (slice
-    // range) to be within image slice range
-
-    // if ROI extends beyond the 1st slice, then fit dz to be twice
-    // the distance from the 1st slice to the current slice (and + 1 for center)
-    if (Si - roi_dz / 2 < 1) {
-      roi_dz = 2 * Si - 1;
-      roi_zi = 0;
-    }
-    // if ROI extends beyond last slice, then fit dz to be twice the
-    // distance from the last slice to the current slice (and +1 for center)
-    else if (Si + roi_dz / 2 > Sn) {
-      roi_dz = 2 * (Sn - Si) + 1;
-      roi_zi = Sn - roi_dz;
-    }
-    // if slice is ok
-    else {
-      roi_zi = Si - roi_dz / 2 - 1;
-    }
-
-    if (Si - roi_dz / 2 < 1) // if slice is too close to first slice
-    {
-      roi_dz = 2 * Si - 1;
-      roi_zi = 0;
-    } else if (Si + roi_dz / 2 > Sn) // if slice is too close to last slice
-    {
-      roi_dz = 2 * (Sn - Si) + 1;
-      roi_zi = Sn - roi_dz;
-    } else // if slice is ok
-    {
-      roi_zi = Si - roi_dz / 2 - 1;
-    }
-
-    Calculate_Magnetic_Moment_3D.logger.addVariable("roi_xi", roi_xi);
-    Calculate_Magnetic_Moment_3D.logger.addVariable("roi_yi", roi_yi);
-    Calculate_Magnetic_Moment_3D.logger.addVariable("roi_zi", roi_zi);
-    Calculate_Magnetic_Moment_3D.logger.addVariable("roi_dx", roi_dx);
-    Calculate_Magnetic_Moment_3D.logger.addVariable("roi_dy", roi_dy);
-    Calculate_Magnetic_Moment_3D.logger.addVariable("roi_dz", roi_dz);
+    Calculate_Magnetic_Moment_3D.logger.addVariable("roi after",
+        new Triplet<>(roi_xi, roi_yi, roi_zi).toString() + ',' + new Triplet<>(roi_dx, roi_dy, roi_dz));
 
     // ------- Finding innerbox that contains values below threshold
 
@@ -148,23 +119,19 @@ public class ImageItem {
     mag_img.setSlice(roi_zi + 1);
 
     // summing all corners of ROI box in this slice
-    float avgCorners = mag_img.getProcessor().getPixelValue(roi_xi,
-        roi_yi) +
-        mag_img.getProcessor().getPixelValue(roi_xi + roi_dx,
-            roi_yi)
-        + mag_img.getProcessor().getPixelValue(roi_xi,
-            roi_yi + roi_dy)
-        + mag_img.getProcessor().getPixelValue(roi_xi + roi_dx,
-            roi_xi + roi_dy);
+    float avgCorners = mag_img.getProcessor().getPixelValue(roi_xi, roi_yi)
+        + mag_img.getProcessor().getPixelValue(roi_xi + (roi_dx - 1), roi_yi)
+        + mag_img.getProcessor().getPixelValue(roi_xi, roi_yi + (roi_dy - 1))
+        + mag_img.getProcessor().getPixelValue(roi_xi + (roi_dx - 1), roi_xi + (roi_dy - 1));
 
     // setting slice to ending ROI point in the z
-    mag_img.setSlice(roi_zi + roi_dz + 1);
+    mag_img.setSlice(roi_zi + roi_dz);
 
     // adding these corners of the ROI box in this slice
     avgCorners += mag_img.getProcessor().getPixelValue(roi_xi, roi_yi)
-        + mag_img.getProcessor().getPixelValue(roi_xi + roi_dx, roi_yi)
-        + mag_img.getProcessor().getPixelValue(roi_xi, roi_yi + roi_dy)
-        + mag_img.getProcessor().getPixelValue(roi_xi + roi_dx, roi_xi + roi_dy);
+        + mag_img.getProcessor().getPixelValue(roi_xi + (roi_dx - 1), roi_yi)
+        + mag_img.getProcessor().getPixelValue(roi_xi, roi_yi + (roi_dy - 1))
+        + mag_img.getProcessor().getPixelValue(roi_xi + (roi_dx - 1), roi_xi + (roi_dy - 1));
 
     // dividing by 8 for average
     avgCorners /= 8.0;
@@ -1036,4 +1003,35 @@ public class ImageItem {
     center_s.set(2, z);
   }
 
+  /**
+   * Ensures the roi size in the nth direction does not extend past the image
+   * size in the nth direction
+   * 
+   * @param img_size size of image in nth direction
+   * @param point    initial coordinate of ROI in the nth direction
+   * @param delta    size of ROI in nth direction
+   * @return a Triplet with contents being the fitted point, the fitted delta,
+   *         then null
+   */
+  private Triplet<Integer> goodROI(int img_size, int point, int delta) {
+
+    // if point + delta extends past image size, restrict delta to only go to the
+    // image edge
+    if (point + delta > img_size) {
+      delta = img_size - point;
+      // delta must be odd but our point must account for the change
+      point = (delta % 2 == 0) ? (point - 1) : point;
+    }
+
+    // if point is negative (this is mainly for if a user picks an ROI near the 0th
+    // slice)
+    if (point < 0) {
+      delta = delta + point;
+      point = 0;
+    }
+
+    delta = (delta % 2 == 0) ? delta + 1 : delta;
+
+    return new Triplet<Integer>(point, delta, null);
+  }
 }

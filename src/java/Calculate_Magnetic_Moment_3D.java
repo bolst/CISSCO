@@ -147,32 +147,29 @@ public class Calculate_Magnetic_Moment_3D implements PlugIn {
     }
   }
 
-  /*
-   * If the estimate center button is clicked:
-   * The program takes the ROI that the user draws.
-   * The program finds the minimum voxel value in this box and this is called
-   * Center_L.
-   * Then, the program takes all the values in the user-drawn ROI that are below
-   * the % defined by the user (defaulted to 50). These values are put into a new
-   * box, or the inner box. The center of this box is Center_M
-   * The program then sums the X Y and Z planes and determines where each plane is
-   * minimal. Where the X Y and Z planes are minimal, this is called center_s.
-   * This center_s is fed into a function to find "RCenter". This is the estimated
-   * radius of the object around the estimated center.
-   * The center is estimated along with RCenter by the end of this.
-   */
+  // -------------------------------------------
+  // "Estimate Center/Radii"
+  // -------------------------------------------
   public static void est_center_rad() {
 
     try {
 
+      // new ImageItem object, passing in the Window titles, along
+      // with M% and equitorial phase value
       item = new ImageItem(s1MagWindowTitle,
           s1PhaseWindowTitle,
           Integer.parseInt(gui.ltf_M.getValue()),
           Double.parseDouble(gui.ltf_eqPhase.getValue()));
+
+      // calculating each center
       item.calcCenterL();
       item.calcCenterM();
       item.calcCenterS();
+
+      // setting GUI bkg phase to estimate bkg phase
       gui.ll_estBkgPhase.setValue(String.valueOf(Math.round(item.estBkg() * 100.0) / 100.0));
+
+      // grabbing center_s from item
       double center_sx = item.centerS().get(0);
       double center_sy = item.centerS().get(1);
       double center_sz = item.centerS().get(2);
