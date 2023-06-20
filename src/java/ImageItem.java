@@ -24,6 +24,7 @@ public class ImageItem {
   private double m_R0;
   private double estMagMoment;
   private double R1PhaseCalc, R2PhaseCalc, R3PhaseCalc;
+  private double[][][] phase_nobkg;
 
   private final int grid = 10;
   private final double m_ROuterFrom = 0.2;
@@ -627,36 +628,59 @@ public class ImageItem {
   }
 
   public double estBkg() {
+
+    // Initialize 3d array for phase values w/ removed background phase
+    phase_nobkg = new double[roi_dx + 1][roi_dy + 1][roi_dz + 1];
+    // Populate array with corresponding values
+    for (int iz = 0; iz <= roi_dz; iz++) {
+      phase_img.setSlice(roi_zi + iz + 1);
+      for (int iy = 0; iy <= roi_dy; iy++) {
+        for (int ix = 0; ix <= roi_dx; ix++) {
+          phase_nobkg[ix][iy][iz] = phase_img.getProcessor().getPixelValue(roi_xi + ix, roi_yi + iy);
+        }
+      }
+    }
+
     // ---------- Begin to find estimated background phase
     phase_img.setSlice(roi_zi + 1);
-    bkgPhase = Math
-        .abs(phase_img.getProcessor().getPixelValue(roi_xi, roi_yi)) +
-        Math.abs(phase_img.getProcessor().getPixelValue(roi_xi + roi_dx,
-            roi_yi))
-        +
-        Math.abs(phase_img.getProcessor().getPixelValue(roi_xi,
-            roi_yi + roi_dy))
-        +
-        Math.abs(phase_img.getProcessor().getPixelValue(roi_xi + roi_dx,
-            roi_yi + roi_dy));
+    bkgPhase = Math.abs(phase_img.getProcessor().getPixelValue(roi_xi, roi_yi))
+        + Math.abs(phase_img.getProcessor().getPixelValue(roi_xi + roi_dx, roi_yi))
+        + Math.abs(phase_img.getProcessor().getPixelValue(roi_xi, roi_yi + roi_dy))
+        + Math.abs(phase_img.getProcessor().getPixelValue(roi_xi + roi_dx, roi_yi + roi_dy));
 
     phase_img.setSlice(roi_zi + roi_dz + 1);
-    bkgPhase += Math
-        .abs(phase_img.getProcessor().getPixelValue(roi_xi, roi_yi)) +
-        Math.abs(phase_img.getProcessor().getPixelValue(roi_xi + roi_dx,
-            roi_yi))
-        +
-        Math.abs(phase_img.getProcessor().getPixelValue(roi_xi,
-            roi_yi + roi_dy))
-        +
-        Math.abs(phase_img.getProcessor().getPixelValue(roi_xi + roi_dx,
-            roi_yi + roi_dy));
+    bkgPhase += Math.abs(phase_img.getProcessor().getPixelValue(roi_xi, roi_yi))
+        + Math.abs(phase_img.getProcessor().getPixelValue(roi_xi + roi_dx, roi_yi))
+        + Math.abs(phase_img.getProcessor().getPixelValue(roi_xi, roi_yi + roi_dy))
+        + Math.abs(phase_img.getProcessor().getPixelValue(roi_xi + roi_dx, roi_yi + roi_dy));
 
     bkgPhase /= 8.0;
 
     return bkgPhase;
 
     // ---------- end to find background phase
+  }
+
+  public void remove_bkg() {
+    for (int iz = 0; iz <= roi_dz; iz++) {
+      phase_img.setSlice(roi_zi + iz + 1);
+      for (int iy = 0; iy <= roi_dy; iy++) {
+        for (int ix = 0; ix <= roi_dx; ix++) {
+          phase_nobkg[ix][iy][iz] -= bkgPhase;
+        }
+      }
+    }
+  }
+
+  public double phase_noBkg(int i, int j, int k) {
+    if (i < 0 || i > roi_dx)
+      return 0.0;
+    if (j < 0 || j > roi_dy)
+      return 0.0;
+    if (k < 0 || k > roi_dz)
+      return 0.0;
+
+    return phase_nobkg[i][j][k];
   }
 
   public void calcR0123() {

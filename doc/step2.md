@@ -21,7 +21,7 @@ Because the first element of an array in Java or C++ is labeled to be the zeroth
 
 The y-axis of images is inverted between ImageJ and SPIN. Here is an example. Assume that the dimension of the y-axis is 32, with indices running from 0 to 31. Also assume that we have y = 17.45 in ImageJ. Because the images shown in SPIN are inverted from images shown in ImageJ, we have y = 31 - 17.45 = 13.55 for SPIN.
 
-g. Average phase values from the 8 corner voxels of the large box determined from Step 2a. Subtract this average phase value from phase images of all voxels inside the large box.
+g. ~~Average phase values from the 8 corner voxels of the large box determined from Step 2a. Subtract this average phase value from phase images of all voxels inside the large box.~~
 
 h. From Step 2d, assign phase values to be zero for those voxels with low magnitude intensities. Take absolute value of phase inside the large box determined from Step 2a. The procedures here are limited to this Step 2.
 
