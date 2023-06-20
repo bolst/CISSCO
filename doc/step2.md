@@ -3,19 +3,19 @@
 Use magnitude images to estimate the center of the object at the pixel level. First, a user draws a rectangle which encloses the object. Second, our program adds intensities along each direction within the rectangle. When the sum of the intensities along each direction is minimal, that coordinate provides us the center of the object. This idea assumes that the intensities inside the object are zero, while the intensities outside the object are a constant. (This procedure may become insensitive if a box is too large. We are fine-tuning this procedure below.)
 
 # Step 2:
-a. The user draws a rectangle enclosing the spherical object displayed on one slice. The Java code will take the larger of the width and length of the rectangle and use that size to place a 3D box enclosing the object.
+a. ~~The user draws a rectangle enclosing the spherical object displayed on one slice. The Java code will take the larger of the width and length of the rectangle and use that size to place a 3D box enclosing the object.~~
 
-b. Record corner coordinates of the 3D box around the object. Find the averaged magnitude intensity based on the coordinates of 8 corners of the box.
+b. ~~Record corner coordinates of the 3D box around the object. Find the averaged magnitude intensity based on the coordinates of 8 corners of the box.~~
 
-c. Find the voxel with the lowest magnitude intensity inside the box. Label this voxel as Center_L.
+c. ~~Find the voxel with the lowest magnitude intensity inside the box. Label this voxel as Center_L.~~
 
-d. Consider a fraction (around 50%) of the averaged magnitude intensity from Step 2b. Allow the user to change this fraction through the GUI. Identify all voxels with magnitude intensities lower than that fraction of the averaged intensity inside the box.
+d. ~~Consider a fraction (around 50%) of the averaged magnitude intensity from Step 2b. Allow the user to change this fraction through the GUI. Identify all voxels with magnitude intensities lower than that fraction of the averaged intensity inside the box.~~
 
-e. Determine the smallest box that contains all voxels identified from the previous Step 2d. Record the coordinates of 8 corners of this box. Label the center of this box as Center_M. If the difference between the two coordinates is an odd number, the middle coordinate (or pixel) between the two corner coordinates is the coordinate for Center_M. However, if the difference between the two coordinates is an even number, 0.5 pixel should be added to the middle coordinate (or pixel).
+e. ~~Determine the smallest box that contains all voxels identified from the previous Step 2d. Record the coordinates of 8 corners of this box. Label the center of this box as Center_M. If the difference between the two coordinates is an even number, the middle coordinate (or pixel) between the two corner coordinates is the coordinate for Center_M. However, if the difference between the two coordinates is an odd number, 0.5 pixel should be added to the middle coordinate (or pixel).~~
 
 At this stage, we can see whether Center_M agrees well with the actual center of the object. Typically, due to the presence of Gibbs ringing, Center_L is not Center_M. In addition, we can further try the following:
 
-f. At each coordinate along each axis, add all magnitude intensities inside the smallest box determined from the previous Step 2e. These additions are performed over a plane which is perpendicular to the axis. The minimal value among these sums along each axis leads to the coordinate of a center. Label this center as Center_S, which is not identical to Center_M.
+f. ~~At each coordinate along each axis, add all magnitude intensities inside the smallest box determined from the previous Step 2e. These additions are performed over a plane which is perpendicular to the axis. The minimal value among these sums along each axis leads to the coordinate of a center. Label this center as Center_S, which is not identical to Center_M.~~
 
 Because the first element of an array in Java or C++ is labeled to be the zeroth element, the GUI display along the slice direction needs to subtract one. Thus we add “-1” next to the z-coordinate in Step 2.
 
