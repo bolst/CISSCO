@@ -16,7 +16,7 @@ public class ImageItem {
   private double roi_mag_belowM_sumX, roi_mag_belowM_sumY, roi_mag_belowM_sumZ;
   public int roi_xi, roi_yi, roi_zi, roi_dx, roi_dy, roi_dz;
   public int roi_mag_belowM_xi, roi_mag_belowM_yi, roi_mag_belowM_zi,
-      roi_mag_belowM_Dx, roi_mag_belowM_Dy, roi_mag_belowM_Dz;
+      roi_mag_belowM_dx, roi_mag_belowM_dy, roi_mag_belowM_dz;
   public int M;
   private double RCenter;
   private double phaseValue;
@@ -46,12 +46,37 @@ public class ImageItem {
     }
   }
 
+  public boolean imagesOpen(String mag_title, String phase_title) {
+    return WindowManager.getImage(mag_title) != null && WindowManager.getImage(phase_title) != null;
+  }
+
+  public Roi getROI(String mag_title, String phase_title) {
+    if (!imagesOpen(mag_title, phase_title)) {
+      return null;
+    }
+
+    ImagePlus mag_image;
+    ImagePlus phase_image;
+    try {
+      mag_image = WindowManager.getImage(mag_title);
+      phase_image = WindowManager.getImage(phase_title);
+    } catch (Exception exc) {
+      return null;
+    }
+
+    if (mag_image.getRoi() == null && phase_image.getRoi() == null) {
+      return null;
+    }
+
+    return (mag_image.getRoi() != null) ? mag_image.getRoi() : phase_image.getRoi();
+  }
+
   public ImageItem(String magTitle, String phaseTitle, int M_pct, double pV) {
     M = M_pct;
     phaseValue = pV;
 
     // If mag and phase images are not open
-    if (WindowManager.getImage(magTitle) == null || WindowManager.getImage(phaseTitle) == null) {
+    if (!imagesOpen(magTitle, phaseTitle)) {
       throw new IllegalStateException("No magnitude or phase file open.");
     }
 
@@ -96,15 +121,19 @@ public class ImageItem {
     roi_dx = goodROI(mag_img.getWidth(), roi_xi, roi_dx).get(1);
     roi_yi = goodROI(mag_img.getHeight(), roi_yi, roi_dy).get(0);
     roi_dy = goodROI(mag_img.getHeight(), roi_yi, roi_dy).get(1);
+    // saving old initial z position because of how goodROI(int,int,int) is
+    // written...
+    // having a negative initial z (which is only possible in the slice direction)
+    // has a direct correlation with how roi_dz is calculated
     int old_roi_zi = roi_zi;
     roi_zi = goodROI(mag_img.getNSlices(), roi_zi, roi_dz).get(0);
     roi_dz = goodROI(mag_img.getNSlices(), old_roi_zi, roi_dz).get(1);
 
-    // Setting new ROI to rectangle
+    // Setting new ROI parameters to rectangle object
     user_roi_rectangle.setBounds(roi_xi, roi_yi, roi_dx,
         roi_dy);
 
-    // Setting new ROI to image
+    // Setting new ROI/rectangle to image
     if (mag_img.getRoi() != null)
       mag_img.setRoi(user_roi_rectangle);
     else
@@ -113,7 +142,9 @@ public class ImageItem {
     Calculate_Magnetic_Moment_3D.logger.addVariable("roi after",
         new Triplet<>(roi_xi, roi_yi, roi_zi).toString() + ',' + new Triplet<>(roi_dx, roi_dy, roi_dz));
 
-    // ------- Finding innerbox that contains values below threshold
+    // ----------------------------------------------------------------------------
+    // Finding average mag intensity of box corners (2b of step2.md)
+    // ----------------------------------------------------------------------------
 
     // setting slice to starting ROI point in the z
     mag_img.setSlice(roi_zi + 1);
@@ -136,9 +167,12 @@ public class ImageItem {
     // dividing by 8 for average
     avgCorners /= 8.0;
 
+    // ----------------------------------------------------------------------------
+    // Finding region that contains values below M% (2d of step2.md)
+    // ----------------------------------------------------------------------------
+
     // 3d array mapping the inner box that will be made
     double[][][] roi_mag_belowM = new double[roi_dx][roi_dy][roi_dz];
-
     // flooding roi_mag_belowM with -1's so valid points can
     // be easily distingushed
     for (int i = 0; i < roi_dx; i++) {
@@ -149,37 +183,33 @@ public class ImageItem {
       }
     }
 
-    // a new ROI is defined with all the values in the user's ROI that are less than
-    // this
+    // a new ROI will be defined with all the values in the user's ROI that are less
+    // than this value:
     double newbox_max = avgCorners * (double) M / 100.0;
+    Calculate_Magnetic_Moment_3D.logger.addVariable("M% val", newbox_max);
+
+    // ----------------------------------------------------------------------------
+    // Finding corners of new ROI (1/2 of 2e in step2.md)
+    // ----------------------------------------------------------------------------
+    roi_mag_belowM_xi = roi_xi + roi_dx;
+    roi_mag_belowM_yi = roi_yi + roi_dy;
+    roi_mag_belowM_zi = roi_zi + roi_dz;
+    roi_mag_belowM_dx = 0;
+    roi_mag_belowM_dy = 0;
+    roi_mag_belowM_dz = 0;
 
     // getting all pixel values that are below value
     for (int dz = 0; dz < roi_dz; dz++) {
       mag_img.setSlice(roi_zi + dz + 1);
       for (int dx = 0; dx < roi_dx; dx++) {
         for (int dy = 0; dy < roi_dy; dy++) {
-          if (mag_img.getProcessor().getPixelValue(roi_xi + dx, roi_yi + dy) < newbox_max) // if below value
+          double mag_intensity = mag_img.getProcessor().getPixelValue(roi_xi + dx, roi_yi + dy);
+          if (mag_intensity < newbox_max) // if below value
           {
-            // place value into box
-            roi_mag_belowM[dx][dy][dz] = mag_img.getProcessor().getPixelValue(roi_xi + dx, roi_yi + dy);
-          }
-        }
-      }
-    }
+            // store value in array
+            roi_mag_belowM[dx][dy][dz] = mag_intensity;
 
-    roi_mag_belowM_xi = roi_xi + roi_dx;
-    roi_mag_belowM_yi = roi_yi + roi_dy;
-    roi_mag_belowM_zi = roi_zi + roi_dz;
-    roi_mag_belowM_Dx = 0;
-    roi_mag_belowM_Dy = 0;
-    roi_mag_belowM_Dz = 0;
-
-    // putting original corner of small box into variables
-    // stores the smallest indices that have values not equal to -1.0
-    for (int dz = 0; dz < roi_dz; dz++) {
-      for (int dx = 0; dx < roi_dx; dx++) {
-        for (int dy = 0; dy < roi_dy; dy++) {
-          if (roi_mag_belowM[dx][dy][dz] != -1.0) {
+            // getting smallest coordinate
             if (roi_xi + dx < roi_mag_belowM_xi) {
               roi_mag_belowM_xi = roi_xi + dx;
             }
@@ -189,32 +219,24 @@ public class ImageItem {
             if (roi_zi + dz < roi_mag_belowM_zi) {
               roi_mag_belowM_zi = roi_zi + dz;
             }
-          }
-        }
-      }
-    }
 
-    // putting size of small box into variables
-    // stores the smallest size that contains all values below newbox_max
-    for (int dz = 0; dz < roi_dz; dz++) {
-      for (int dx = 0; dx < roi_dx; dx++) {
-        for (int dy = 0; dy < roi_dy; dy++) {
-          if (roi_mag_belowM[dx][dy][dz] != -1.0) {
-            if (roi_mag_belowM_Dx < dx + roi_xi - roi_mag_belowM_xi) {
-              roi_mag_belowM_Dx = dx + roi_xi - roi_mag_belowM_xi;
+            // getting largest delta
+            if (dx + roi_xi - roi_mag_belowM_xi > roi_mag_belowM_dx) {
+              roi_mag_belowM_dx = dx + roi_xi - roi_mag_belowM_xi;
             }
-            if (roi_mag_belowM_Dy < dy + roi_yi - roi_mag_belowM_yi) {
-              roi_mag_belowM_Dy = dy + roi_yi - roi_mag_belowM_yi;
+            if (dy + roi_yi - roi_mag_belowM_yi > roi_mag_belowM_dy) {
+              roi_mag_belowM_dy = dy + roi_yi - roi_mag_belowM_yi;
             }
-            if (roi_mag_belowM_Dz < dz + roi_zi - roi_mag_belowM_zi) {
-              roi_mag_belowM_Dz = dz + roi_zi - roi_mag_belowM_zi;
+            if (dz + roi_zi - roi_mag_belowM_zi > roi_mag_belowM_dz) {
+              roi_mag_belowM_dz = dz + roi_zi - roi_mag_belowM_zi;
             }
           }
         }
       }
     }
 
-    // ------ End finding innerbox
+    // Remainder of step2 implementation is in other functions in this class
+
   }
 
   /*
@@ -801,49 +823,52 @@ public class ImageItem {
   // Function to calculate center_m, i.e. center of small ROI
   // =====================================================================================
   public void calcCenterM() {
+
+    // ----------------------------------------------------------------------------
+    // Finding center_m (i.e., center of M% region) (2/2 of 2e of step2.md)
+    // ----------------------------------------------------------------------------
+
     center_m = new Triplet<Double>(0.0, 0.0, 0.0);
+    int x1 = roi_mag_belowM_xi;
+    int y1 = roi_mag_belowM_yi;
+    int z1 = roi_mag_belowM_zi;
+    int x2 = roi_mag_belowM_xi + roi_mag_belowM_dx;
+    int y2 = roi_mag_belowM_yi + roi_mag_belowM_dy;
+    int z2 = roi_mag_belowM_zi + roi_mag_belowM_dz;
+    Calculate_Magnetic_Moment_3D.logger.addVariable("CM xyz1",
+        String.valueOf(x1) + ',' + String.valueOf(y1) + ',' + String.valueOf(z1));
+    Calculate_Magnetic_Moment_3D.logger.addVariable("CM xyz2",
+        String.valueOf(x2) + ',' + String.valueOf(y2) + ',' + String.valueOf(z2));
 
-    // Making Center_M the small box to start
-    // center_m.set(0, (double) (roi_mag_belowM_xi + roi_mag_belowM_xi +
-    // roi_mag_belowM_Dx));
-    // center_m.set(1, (double) (roi_mag_belowM_yi + roi_mag_belowM_yi +
-    // roi_mag_belowM_Dy));
-    // center_m.set(2, (double) (roi_mag_belowM_zi + roi_mag_belowM_zi +
-    // roi_mag_belowM_Dz));
-
-    // Center of the box is Center_M
-
-    // I am realizing this chunk of code is literally doing the same thing in
-    // both if else statements? Refactored underneath this commented block
     /*
-     * if ((int) center_mx % 2 == 0.0) {
-     * center_mx /= 2.0;
-     * center_mx += 0.5;
+     * if ((x2 - x1) % 2 == 0) {
+     * center_m.set(0, (double) (x1 + (x2 - x1) / 2));
      * } else {
-     * center_mx = (center_mx + 1.0) / 2.0;
+     * center_m.set(0, (double) (x1 + (x2 - x1) / 2 + 0.5));
      * }
-     * if ((int) center_my % 2.0 == 0.0) {
-     * center_my /= 2.0;
-     * center_my += 0.5;
+     * 
+     * if ((y2 - y1) % 2 == 0) {
+     * center_m.set(1, (double) (y1 + (y2 - y1) / 2));
      * } else {
-     * center_my = (center_mz + 1.0) / 2.0;
+     * center_m.set(1, (double) (y1 + (y2 - y1) / 2 + 0.5));
      * }
-     * if ((int) center_mz % 2.0 == 0.0) {
-     * center_mz /= 2.0;
-     * center_mz += 0.5;
+     * 
+     * if ((z2 - z1) % 2 == 0) {
+     * center_m.set(2, (double) (z1 + (z2 - z1) / 2));
      * } else {
-     * center_mz = (center_mz + 1.0) / 2.0;
+     * center_m.set(2, (double) (z1 + (z2 - z1) / 2 + 0.5));
      * }
      */
 
-    // center_m.set(0, center_m.get(0) / 2.0 + 0.5);
-    // center_m.set(1, center_m.get(1) / 2.0 + 0.5);
-    // center_m.set(2, center_m.get(2) / 2.0 + 0.5);
-
-    // center_m is center of small ROI
-    center_m.set(0, (double) roi_mag_belowM_xi + 0.5 * (double) (roi_mag_belowM_Dx + 1));
-    center_m.set(1, (double) roi_mag_belowM_yi + 0.5 * (double) (roi_mag_belowM_Dy + 1));
-    center_m.set(2, (double) roi_mag_belowM_zi + 0.5 * (double) (roi_mag_belowM_Dz + 1));
+    // So instead of the above calculation, we can simply do the following and get
+    // the same result. No matter if the difference is even or odd, the center of
+    // the range can be calculated by adding half the difference to the initial
+    // coordinate
+    // Also note that (and assume x1 and x2 are casted as doubles):
+    // x1 + (x2-x1)/2.0 = 0.5*(x1 + x2)
+    center_m.set(0, 0.5 * (double) (x1 + x2));
+    center_m.set(1, 0.5 * (double) (y1 + y2));
+    center_m.set(2, 0.5 * (double) (z1 + z2));
 
     Calculate_Magnetic_Moment_3D.logger.addVariable("center_m", center_m);
   }
@@ -857,33 +882,33 @@ public class ImageItem {
 
     // ------ Begin summing planes in innerbox
     // Initializing arrays for sums of planes in small box
-    double[] innerBox_sumOfXPlane = new double[roi_mag_belowM_Dx + 1];
-    double[] innerBox_sumOfYPlane = new double[roi_mag_belowM_Dy + 1];
-    double[] innerBox_sumOfZPlane = new double[roi_mag_belowM_Dz + 1];
+    double[] innerBox_sumOfXPlane = new double[roi_mag_belowM_dx + 1];
+    double[] innerBox_sumOfYPlane = new double[roi_mag_belowM_dy + 1];
+    double[] innerBox_sumOfZPlane = new double[roi_mag_belowM_dz + 1];
 
     Calculate_Magnetic_Moment_3D.logger.addVariable("rmb xi", roi_mag_belowM_xi);
     Calculate_Magnetic_Moment_3D.logger.addVariable("rmb yi", roi_mag_belowM_yi);
     Calculate_Magnetic_Moment_3D.logger.addVariable("rmb zi", roi_mag_belowM_zi);
-    Calculate_Magnetic_Moment_3D.logger.addVariable("rmb dx", roi_mag_belowM_Dx);
-    Calculate_Magnetic_Moment_3D.logger.addVariable("rmb dy", roi_mag_belowM_Dy);
-    Calculate_Magnetic_Moment_3D.logger.addVariable("rmb dx", roi_mag_belowM_Dz);
+    Calculate_Magnetic_Moment_3D.logger.addVariable("rmb dx", roi_mag_belowM_dx);
+    Calculate_Magnetic_Moment_3D.logger.addVariable("rmb dy", roi_mag_belowM_dy);
+    Calculate_Magnetic_Moment_3D.logger.addVariable("rmb dx", roi_mag_belowM_dz);
 
     // Summing z plane and putting it into array
-    for (int k = 0; k <= roi_mag_belowM_Dz; k++) {
+    for (int k = 0; k <= roi_mag_belowM_dz; k++) {
       mag_img.setSlice(k + roi_mag_belowM_zi + 1);
       innerBox_sumOfZPlane[k] = 0;
-      for (int i = 0; i <= roi_mag_belowM_Dx; i++) {
-        for (int j = 0; j <= roi_mag_belowM_Dy; j++) {
+      for (int i = 0; i <= roi_mag_belowM_dx; i++) {
+        for (int j = 0; j <= roi_mag_belowM_dy; j++) {
           innerBox_sumOfZPlane[k] += mag_img.getProcessor().getPixelValue(i + roi_mag_belowM_xi, j + roi_mag_belowM_yi);
         }
       }
     }
 
     // Summing x plane and putting it into array
-    for (int i = 0; i <= roi_mag_belowM_Dx; i++) {
+    for (int i = 0; i <= roi_mag_belowM_dx; i++) {
       innerBox_sumOfXPlane[i] = 0;
-      for (int j = 0; j <= roi_mag_belowM_Dy; j++) {
-        for (int k = 0; k <= roi_mag_belowM_Dz; k++) {
+      for (int j = 0; j <= roi_mag_belowM_dy; j++) {
+        for (int k = 0; k <= roi_mag_belowM_dz; k++) {
           mag_img.setSlice(k + roi_mag_belowM_zi + 1);
           innerBox_sumOfXPlane[i] += mag_img.getProcessor().getPixelValue(i + roi_mag_belowM_xi, j + roi_mag_belowM_yi);
         }
@@ -891,11 +916,11 @@ public class ImageItem {
     }
 
     // Summing y plane and putting it into array
-    for (int j = 0; j <= roi_mag_belowM_Dy; j++) {
+    for (int j = 0; j <= roi_mag_belowM_dy; j++) {
       innerBox_sumOfYPlane[j] = 0;
-      for (int k = 0; k <= roi_mag_belowM_Dz; k++) {
+      for (int k = 0; k <= roi_mag_belowM_dz; k++) {
         mag_img.setSlice(k + roi_mag_belowM_zi + 1);
-        for (int i = 0; i <= roi_mag_belowM_Dx; i++) {
+        for (int i = 0; i <= roi_mag_belowM_dx; i++) {
           innerBox_sumOfYPlane[j] += mag_img.getProcessor().getPixelValue(i + roi_mag_belowM_xi, j + roi_mag_belowM_yi);
         }
       }
@@ -910,12 +935,8 @@ public class ImageItem {
 
     // ---------- begin to find Center_S
 
-    center_s.set(0, (double) roi_mag_belowM_xi);
-    center_s.set(1, (double) roi_mag_belowM_yi);
-    center_s.set(2, (double) roi_mag_belowM_zi);
-
     // Finding minimum x plane and putting it into center_s.get(0)
-    for (int i = 0; i <= roi_mag_belowM_Dx; i++) {
+    for (int i = 0; i <= roi_mag_belowM_dx; i++) {
       if (innerBox_sumOfXPlane[i] < roi_mag_belowM_sumX) {
         roi_mag_belowM_sumX = innerBox_sumOfXPlane[i];
         center_s.set(0, (double) (i + roi_mag_belowM_xi));
@@ -923,7 +944,7 @@ public class ImageItem {
     }
 
     // Finding minimum y plane and putting it into center_s.get(1)
-    for (int j = 0; j <= roi_mag_belowM_Dy; j++) {
+    for (int j = 0; j <= roi_mag_belowM_dy; j++) {
       if (innerBox_sumOfYPlane[j] < roi_mag_belowM_sumY) {
         roi_mag_belowM_sumY = innerBox_sumOfYPlane[j];
         center_s.set(1, (double) (j + roi_mag_belowM_yi));
@@ -931,7 +952,7 @@ public class ImageItem {
     }
 
     // Finding minimum z plane and putting it into center_s.get(2)
-    for (int k = 0; k <= roi_mag_belowM_Dz; k++) {
+    for (int k = 0; k <= roi_mag_belowM_dz; k++) {
       if (innerBox_sumOfZPlane[k] < roi_mag_belowM_sumZ) {
         roi_mag_belowM_sumZ = innerBox_sumOfZPlane[k];
         center_s.set(2, (double) (k + roi_mag_belowM_zi));
@@ -1033,5 +1054,15 @@ public class ImageItem {
     delta = (delta % 2 == 0) ? delta + 1 : delta;
 
     return new Triplet<Integer>(point, delta, null);
+  }
+
+  /**
+   * Function to set slice of both mag and phase images
+   * 
+   * @param i slice #
+   */
+  public void setSlice(int i) {
+    mag_img.setSlice(i);
+    phase_img.setSlice(i);
   }
 }

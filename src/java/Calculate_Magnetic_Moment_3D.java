@@ -13,6 +13,8 @@ import javax.swing.filechooser.FileSystemView;
 import java.io.File;
 import java.util.Scanner;
 
+import ij.IJ;
+import ij.ImageJ;
 // ImageJ tool imports
 import ij.ImagePlus;
 import ij.gui.*;
@@ -46,6 +48,27 @@ public class Calculate_Magnetic_Moment_3D implements PlugIn {
   private static final String PLUS_MINUS = "\u00B1";
 
   public static void main(String[] args) {
+
+    // Uncomment this if you are debugging in IntelliJ
+
+    /*
+     * // set the plugins.dir property to make the plugin appear in the Plugins menu
+     * Class<?> clazz = Calculate_Magnetic_Moment_3D.class;
+     * String url = clazz.getResource("/" + clazz.getName().replace('.', '/') +
+     * ".class").toString();
+     * String pluginsDir = url.substring("file:".length(), url.length() -
+     * clazz.getName().length() - ".class".length());
+     * System.setProperty("plugins.dir", pluginsDir);
+     * 
+     * // start ImageJ
+     * new ImageJ();
+     * 
+     * // run the plugin
+     * IJ.runPlugIn(clazz.getName(), "");
+     * // IJ.runPlugIn(clazz.getName(),"batch"); // Running the plugin to test batch
+     * // processing.
+     */
+
   }
 
   // Function to run CMM3D (plug-in)
@@ -60,6 +83,15 @@ public class Calculate_Magnetic_Moment_3D implements PlugIn {
   public static void load_mag_phase_images() {
     // clearVariables();
     try {
+
+      // if there are already images open close them
+      if (WindowManager.getImage(s1MagWindowTitle) != null) {
+        WindowManager.getImage(s1MagWindowTitle).close();
+      }
+      if (WindowManager.getImage(s1PhaseWindowTitle) != null) {
+        WindowManager.getImage(s1PhaseWindowTitle).close();
+      }
+
       // Initializing file choosing window
       JFileChooser initialFileChooserWindow;
 
@@ -154,6 +186,29 @@ public class Calculate_Magnetic_Moment_3D implements PlugIn {
 
     try {
 
+      // if a center was already calculated and a new ROI is drawn, clear previously
+      // calculated center
+      if (item != null) {
+        ImageItem new_item = new ImageItem(s1MagWindowTitle,
+            s1PhaseWindowTitle,
+            Integer.parseInt(gui.ltf_M.getValue()),
+            Double.parseDouble(gui.ltf_eqPhase.getValue()));
+
+        // if the ROI was changed
+        if (new_item.roi_xi != item.roi_xi ||
+            new_item.roi_yi != item.roi_yi ||
+            new_item.roi_zi != item.roi_zi ||
+            new_item.roi_dx != item.roi_dx ||
+            new_item.roi_dy != item.roi_dy ||
+            new_item.roi_dz != item.roi_dz) {
+          gui.ltf_rcx.setValue("0.0");
+          gui.ltf_rcy.setValue("0.0");
+          gui.ltf_rcz.setValue("0.0");
+
+          new_item = null; // don't need this anymore
+        }
+      }
+
       // new ImageItem object, passing in the Window titles, along
       // with M% and equitorial phase value
       item = new ImageItem(s1MagWindowTitle,
@@ -213,6 +268,9 @@ public class Calculate_Magnetic_Moment_3D implements PlugIn {
       jni.setMagMoment(Double.parseDouble(gui.ltf_eqPhase.getValue()) * Math.pow(RCenter, 3));
 
       estimateCenterRadii_isClicked = true;
+
+      // setting slice to center
+      item.setSlice((int) Double.parseDouble(gui.ltf_rcz.getValue()));
 
     } catch (Exception exc) {
       JOptionPane.showMessageDialog(gui.frame, exc);
@@ -465,9 +523,9 @@ public class Calculate_Magnetic_Moment_3D implements PlugIn {
           Double.parseDouble(gui.ltf_rcy.getValue()),
           Double.parseDouble(gui.ltf_rcz.getValue()) - 1.0);
       jni.setPhaseXYMatrix(subpixelPhaseMatrix);
-      jni.setSmallBox(item.roi_mag_belowM_xi, item.roi_mag_belowM_yi, item.roi_mag_belowM_zi, item.roi_mag_belowM_Dx,
-          item.roi_mag_belowM_Dy,
-          item.roi_mag_belowM_Dz);
+      jni.setSmallBox(item.roi_mag_belowM_xi, item.roi_mag_belowM_yi, item.roi_mag_belowM_zi, item.roi_mag_belowM_dx,
+          item.roi_mag_belowM_dy,
+          item.roi_mag_belowM_dz);
       jni.setCenterL(item.centerL().get(0), item.centerL().get(1), item.centerL().get(2));
       jni.setCenterM(item.centerM().get(0), item.centerM().get(1), item.centerM().get(2));
       jni.setCenterS(item.centerS().get(0), item.centerS().get(1), item.centerS().get(2));
@@ -1751,9 +1809,9 @@ public class Calculate_Magnetic_Moment_3D implements PlugIn {
         double R3PhaseCalc = estimatedPValue / Math.pow(Double.parseDouble(gui.ltf_r3.getValue()), 3);
 
         jni.setR123PhaseCalc(R1PhaseCalc, R2PhaseCalc, R3PhaseCalc);
-        jni.setSmallBox(item.roi_mag_belowM_xi, item.roi_mag_belowM_yi, item.roi_mag_belowM_zi, item.roi_mag_belowM_Dx,
-            item.roi_mag_belowM_Dy,
-            item.roi_mag_belowM_Dz);
+        jni.setSmallBox(item.roi_mag_belowM_xi, item.roi_mag_belowM_yi, item.roi_mag_belowM_zi, item.roi_mag_belowM_dx,
+            item.roi_mag_belowM_dy,
+            item.roi_mag_belowM_dz);
         jni.setCenterL(item.centerL().get(0), item.centerL().get(1), item.centerL().get(2));
         jni.setCenterM(item.centerM().get(0), item.centerM().get(1), item.centerM().get(2));
 
