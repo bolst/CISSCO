@@ -75,10 +75,9 @@ public class Calculate_Magnetic_Moment_3D implements PlugIn {
     gui = new GUI();
   }
 
-  /*
-   * If the step 1 open button is clicked - this simply just prompts the user to
-   * open a magnitude and phase image
-   */
+  // =====================================================================================
+  // "Load Magnitude and Phase Images"
+  // =====================================================================================
   public static void load_mag_phase_images() {
     // clearVariables();
     try {
@@ -178,9 +177,9 @@ public class Calculate_Magnetic_Moment_3D implements PlugIn {
     }
   }
 
-  // -------------------------------------------
+  // =====================================================================================
   // "Estimate Center/Radii"
-  // -------------------------------------------
+  // =====================================================================================
   public static void est_center_rad() {
 
     try {
@@ -281,23 +280,14 @@ public class Calculate_Magnetic_Moment_3D implements PlugIn {
 
   }
 
-  /*
-   * If the generate subpixel button is clicked:
-   * The program takes the values of distance m_R0 from the center and puts it in
-   * a box. So the size of the box will be 2 * m_R0 + 1.
-   * The box is then interpolated into 1000 subvoxels per voxel. This will be
-   * displayed as the subpixel images. One for each orthogonal view (XY and XZ)
-   * per image (phase and mag).
-   * So since we have the mag and phase matrices, we can calculate the real and
-   * imaginary matrices, since real numbers are defined by (mag * cos(phase)) and
-   * imaginary numbers are defined by (mag * sin(phase)).
-   */
+  // =====================================================================================
+  // "Generate Subpixel Grid/Data"
+  // =====================================================================================
   public static void gen_subpix() {
     updateVariables();
 
-    // pass "center" of subpixel images to item
-    // every conversion of pixel to subpixel or vice versa
-    // needs this value
+    // pass step 2 estimated center to item. This is needed for subpixel/pixel
+    // coordinate conversions
     item.subpix_image_center = new Triplet<Double>(item.centerS().get(0), item.centerS().get(1), item.centerS().get(2));
     logger.addVariable("subpix image center", item.subpix_image_center.toString());
 
@@ -1741,9 +1731,7 @@ public class Calculate_Magnetic_Moment_3D implements PlugIn {
           }
         }
       }
-    } else
-
-    {
+    } else {
       JOptionPane.showMessageDialog(gui.frame, "Error: No background phase found.");
     }
 
