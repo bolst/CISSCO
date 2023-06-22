@@ -3,7 +3,6 @@
  * @version 3.12, May 5, 2023
  */
 
-// imports
 import java.awt.Color;
 import java.util.ArrayList;
 import java.lang.Math;
@@ -47,27 +46,27 @@ public class Calculate_Magnetic_Moment_3D implements PlugIn {
   private static final String ACCEPTED_FILE_TYPE = "nii";
   private static final String PLUS_MINUS = "\u00B1";
 
+  private static final boolean DEBUG = false;
+
   public static void main(String[] args) {
 
-    // Uncomment this if you are debugging in IntelliJ
+    if (DEBUG) {
+      // set the plugins.dir property to make the plugin appear in the Plugins menu
+      Class<?> clazz = Calculate_Magnetic_Moment_3D.class;
+      String url = clazz.getResource("/" + clazz.getName().replace('.', '/') +
+          ".class").toString();
+      String pluginsDir = url.substring("file:".length(), url.length() -
+          clazz.getName().length() - ".class".length());
+      System.setProperty("plugins.dir", pluginsDir);
 
-    /*
-     * // set the plugins.dir property to make the plugin appear in the Plugins menu
-     * Class<?> clazz = Calculate_Magnetic_Moment_3D.class;
-     * String url = clazz.getResource("/" + clazz.getName().replace('.', '/') +
-     * ".class").toString();
-     * String pluginsDir = url.substring("file:".length(), url.length() -
-     * clazz.getName().length() - ".class".length());
-     * System.setProperty("plugins.dir", pluginsDir);
-     * 
-     * // start ImageJ
-     * new ImageJ();
-     * 
-     * // run the plugin
-     * IJ.runPlugIn(clazz.getName(), "");
-     * // IJ.runPlugIn(clazz.getName(),"batch"); // Running the plugin to test batch
-     * // processing.
-     */
+      // start ImageJ
+      new ImageJ();
+
+      // run the plugin
+      IJ.runPlugIn(clazz.getName(), "");
+      // IJ.runPlugIn(clazz.getName(),"batch"); // Running the plugin to test batch
+      // processing.
+    }
 
   }
 
@@ -252,6 +251,9 @@ public class Calculate_Magnetic_Moment_3D implements PlugIn {
       // RCenter = estimateRCenter((int)(item.centerS().get(0)),
       // (int)(item.centerS().get(1)),
       // (int)(item.centerS().get(2)));
+
+      // removing background phase then estimating rcenter
+      item.remove_bkg();
       double RCenter = item.estimateRCenter();
 
       // Updating GUI
@@ -265,7 +267,8 @@ public class Calculate_Magnetic_Moment_3D implements PlugIn {
           Double.parseDouble(gui.ltf_rcy.getValue()),
           Double.parseDouble(gui.ltf_rcz.getValue()) - 1.0,
           Double.parseDouble(gui.ltf_eqPhase.getValue()));
-      jni.setMagMoment(Double.parseDouble(gui.ltf_eqPhase.getValue()) * Math.pow(RCenter, 3));
+      jni.setMagMoment(Double.parseDouble(gui.ltf_eqPhase.getValue()) *
+          Math.pow(RCenter, 3));
 
       estimateCenterRadii_isClicked = true;
 
@@ -1751,10 +1754,10 @@ public class Calculate_Magnetic_Moment_3D implements PlugIn {
    * Function to convert voxel coordinate to subvoxel image coordinates
    *
    * @param coordinate the voxel position
-   * 
+   *
    * @param axisFlag flag for what axis coordinate is in(0 for X, 1 for Y, 2 for
    * Z)
-   * 
+   *
    * @return the subpixel coordinate
    */
   public static double pixelToSubpixel(double coordinate, int axisFlag) {
@@ -1777,7 +1780,7 @@ public class Calculate_Magnetic_Moment_3D implements PlugIn {
   /*
    * Function to update global variables in Java
    * Updates the variables to whatever values are in the respective textboxes
-   * 
+   *
    * This function was written so that every time a button is clicked the
    * variables that go with each textbox can be updated - there are also some
    * functions in here that format the textboxes so that they have to be

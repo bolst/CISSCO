@@ -23,9 +23,9 @@ The y-axis of images is inverted between ImageJ and SPIN. Here is an example. As
 
 g. ~~Average phase values from the 8 corner voxels of the large box determined from Step 2a. Subtract this average phase value from phase images of all voxels inside the large box.~~
 
-h. From Step 2d, assign phase values to be zero for those voxels with low magnitude intensities. Take absolute value of phase inside the large box determined from Step 2a. The procedures here are limited to this Step 2.
+h. ~~From Step 2d, assign phase values to be zero for those voxels with low magnitude intensities. Take absolute value of phase inside the large box determined from Step 2a. The procedures here are limited to this Step 2.~~
 
-i. Because phase values along the MRI field direction are twice of the phase values on the equatorial plane at the same distance from the center of the spherical object, based on the three coordinates of Center_S, identify the MRI field direction, which is considered to be the MRI z-direction.
+i. ~~Because phase values along the MRI field direction are twice of the phase values on the equatorial plane at the same distance from the center of the spherical object, based on the three coordinates of Center_S, identify the MRI field direction, which is considered to be the MRI z-direction.~~
 
 (Note: Find out the highest absolute phase value and its corresponding voxel index along all three axes through Center_S.)
 

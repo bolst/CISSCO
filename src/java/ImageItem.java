@@ -1,6 +1,5 @@
 import java.awt.Rectangle;
 import javax.swing.JOptionPane;
-
 import ij.ImagePlus;
 import ij.gui.*;
 import ij.WindowManager;
@@ -254,8 +253,8 @@ public class ImageItem {
    *
    * @return A string value ("x", "y", or "z") of the MRI field direction
    */
-  private Axis calculateMRIAxis(int accuracy,
-      double[] XP,
+
+  private Axis calculateMRIAxis(double[] XP,
       double[] XN,
       double[] YP,
       double[] YN,
@@ -276,11 +275,16 @@ public class ImageItem {
 
     // Calculating ratio of each direction
     // The non-MRI field directions should have a ratio of ~1
-    // The field that is responsible of the ratio not near 1 is the MRI field
+    // The field that is responsible for the ratio not near 1 is the MRI field
     // direction
 
-    // requested accuracy cannot surpass the array lengths
-    accuracy = Math.min(accuracy, XP.length - dr - 1);
+    // dr + accuracy cannot surpass size of smallest array
+    int accuracy = Math.min(XP.length - dr - 1, XN.length - dr - 1);
+    accuracy = Math.min(accuracy, YP.length - dr - 1);
+    accuracy = Math.min(accuracy, YN.length - dr - 1);
+    accuracy = Math.min(accuracy, ZP.length - dr - 1);
+    accuracy = Math.min(accuracy, ZN.length - dr - 1);
+    accuracy++;
     double avgX = 0.0;
     double avgY = 0.0;
     double avgZ = 0.0;
@@ -358,7 +362,7 @@ public class ImageItem {
     switch (axis) {
       case X:
         if (direction) {
-          for (int i = 0; i < grid + 1; i++) {
+          for (int i = 0; i < values.length; i++) {
             if (Math.abs(
                 mag_img.getProcessor().getPixelValue(i + r0, center_s.get(1).intValue())) < maxMagValue) {
               values[i] = 0.0;
@@ -366,7 +370,7 @@ public class ImageItem {
           }
           return;
         } else {
-          for (int i = 0; i < grid + 1; i++) {
+          for (int i = 0; i < values.length; i++) {
             if (Math.abs(mag_img.getProcessor().getPixelValue(r0 - i, center_s.get(1).intValue())) < maxMagValue) {
               values[i] = 0.0;
             }
@@ -375,14 +379,14 @@ public class ImageItem {
         }
       case Y:
         if (direction) {
-          for (int i = 0; i < grid + 1; i++) {
+          for (int i = 0; i < values.length; i++) {
             if (Math.abs(mag_img.getProcessor().getPixelValue(center_s.get(0).intValue(), i + r0)) < maxMagValue) {
               values[i] = 0.0;
             }
           }
           return;
         } else {
-          for (int i = 0; i < grid + 1; i++) {
+          for (int i = 0; i < values.length; i++) {
             if (Math.abs(mag_img.getProcessor().getPixelValue(center_s.get(0).intValue(), r0 - i)) < maxMagValue) {
               values[i] = 0.0;
             }
@@ -391,7 +395,7 @@ public class ImageItem {
         }
       case Z:
         if (direction) {
-          for (int i = 0; i < grid + 1; i++) {
+          for (int i = 0; i < values.length; i++) {
             mag_img.setSlice(i + r0 + 1);
             if (Math.abs(mag_img.getProcessor().getPixelValue(center_s.get(0).intValue(),
                 center_s.get(1).intValue())) < maxMagValue) {
@@ -400,7 +404,7 @@ public class ImageItem {
           }
           return;
         } else {
-          for (int i = 0; i < grid + 1; i++) {
+          for (int i = 0; i < values.length; i++) {
             mag_img.setSlice(r0 - i + 1);
             if (Math.abs(mag_img.getProcessor().getPixelValue(center_s.get(0).intValue(),
                 center_s.get(1).intValue())) < maxMagValue) {
@@ -436,7 +440,7 @@ public class ImageItem {
      * estimate how far from the center a phase value of 1 is
      */
 
-    for (int i = 0; i < grid; i++) {
+    for (int i = 0; i < phaseVals_pos.length - 1; i++) {
       // this condition is if the current voxel is nested between two voxels greater
       // and less than the user-defined phase value
       if ((phaseVals_pos[i] > phaseValue) && (phaseVals_pos[i + 1] < phaseValue)) {
@@ -450,7 +454,7 @@ public class ImageItem {
     }
 
     // Same thing as above just the opposite direction
-    for (int i = 0; i < grid; i++) {
+    for (int i = 0; i < phaseVals_neg.length - 1; i++) {
       if ((phaseVals_neg[i] > phaseValue) && (phaseVals_neg[i + 1] < phaseValue)) {
         if (interpolation(phaseValue, phaseVals_neg[i], phaseVals_neg[i + 1], i, i + 1) > 1.6) {
           r2 = interpolation(phaseValue, phaseVals_neg[i], phaseVals_neg[i + 1], i, i + 1);
@@ -503,46 +507,134 @@ public class ImageItem {
     return y1 + ((x - x1) / (x2 - x1)) * (y2 - y1);
   }
 
+  // =====================================================================================
+  // Function to estimate background phase by averaging corners of user-drawn ROI
+  // This function also initializes the array in which these removed-bkg phase
+  // values are stored in
+  // =====================================================================================
+  public double estBkg() {
+
+    // Initialize 3d array for phase values w/ removed background phase
+    phase_nobkg = new double[roi_dx + 1][roi_dy + 1][roi_dz + 1];
+    // Populate array with corresponding values
+    for (int iz = 0; iz <= roi_dz; iz++) {
+      phase_img.setSlice(roi_zi + iz + 1);
+      for (int iy = 0; iy <= roi_dy; iy++) {
+        for (int ix = 0; ix <= roi_dx; ix++) {
+          phase_nobkg[ix][iy][iz] = phase_img.getProcessor().getPixelValue(roi_xi + ix, roi_yi + iy);
+        }
+      }
+    }
+
+    // ---------- Begin to find estimated background phase
+    phase_img.setSlice(roi_zi + 1);
+    bkgPhase = phase_img.getProcessor().getPixelValue(roi_xi, roi_yi)
+        + phase_img.getProcessor().getPixelValue(roi_xi + roi_dx, roi_yi)
+        + phase_img.getProcessor().getPixelValue(roi_xi, roi_yi + roi_dy)
+        + phase_img.getProcessor().getPixelValue(roi_xi + roi_dx, roi_yi + roi_dy);
+
+    phase_img.setSlice(roi_zi + roi_dz + 1);
+    bkgPhase += phase_img.getProcessor().getPixelValue(roi_xi, roi_yi)
+        + phase_img.getProcessor().getPixelValue(roi_xi + roi_dx, roi_yi)
+        + phase_img.getProcessor().getPixelValue(roi_xi, roi_yi + roi_dy)
+        + phase_img.getProcessor().getPixelValue(roi_xi + roi_dx, roi_yi + roi_dy);
+
+    bkgPhase /= 8.0;
+
+    return bkgPhase;
+
+    // ---------- end to find background phase
+  }
+
+  // =====================================================================================
+  // Function to remove current background phase from phase_nobkg array
+  // =====================================================================================
+  public void remove_bkg() {
+    for (int iz = 0; iz <= roi_dz; iz++) {
+      phase_img.setSlice(roi_zi + iz + 1);
+      for (int iy = 0; iy <= roi_dy; iy++) {
+        for (int ix = 0; ix <= roi_dx; ix++) {
+          phase_nobkg[ix][iy][iz] -= bkgPhase;
+        }
+      }
+    }
+  }
+
+  // =====================================================================================
+  // Function to access phase values with removed background
+  // =====================================================================================
+  public double phase_noBkg(int i, int j, int k) {
+    int x = i - roi_xi;
+    int y = j - roi_yi;
+    int z = k - roi_zi;
+
+    if (x < 0 || x > roi_dx)
+      return Double.NaN;
+    if (y < 0 || y > roi_dy)
+      return Double.NaN;
+    if (z < 0 || z > roi_dz)
+      return Double.NaN;
+
+    return phase_nobkg[x][y][z];
+  }
+
   public double estimateRCenter() {
     int csx = center_s.get(0).intValue();
     int csy = center_s.get(1).intValue();
     int csz = center_s.get(2).intValue();
-
-    // Phase values for each direction
-    double[] phaseVals_xPos = new double[grid + 1];
-    double[] phaseVals_yPos = new double[grid + 1];
-    double[] phaseVals_zPos = new double[grid + 1];
-    double[] phaseVals_xNeg = new double[grid + 1];
-    double[] phaseVals_yNeg = new double[grid + 1];
-    double[] phaseVals_zNeg = new double[grid + 1];
-    Calculate_Magnetic_Moment_3D.logger.addVariable("pvp array size", grid + 1);
-
-    // Setting slice to initial z
-    phase_img.setSlice(csz + 1);
-
     Calculate_Magnetic_Moment_3D.logger.addVariable("csx", csx);
     Calculate_Magnetic_Moment_3D.logger.addVariable("csy", csy);
     Calculate_Magnetic_Moment_3D.logger.addVariable("csz", csz);
+
+    // Phase values for each direction
+    int xp_size = roi_xi + roi_dx - csx + 1;
+    int xn_size = csx - roi_xi + 1;
+    int yp_size = roi_yi + roi_dy - csy + 1;
+    int yn_size = csy - roi_yi + 1;
+    int zp_size = roi_zi + roi_dz - csz + 1;
+    int zn_size = csz - roi_zi + 1;
+    double[] phaseVals_xPos = new double[xp_size];
+    double[] phaseVals_yPos = new double[yp_size];
+    double[] phaseVals_zPos = new double[zp_size];
+    double[] phaseVals_xNeg = new double[xn_size];
+    double[] phaseVals_yNeg = new double[yn_size];
+    double[] phaseVals_zNeg = new double[zn_size];
+
+    // Setting slice to center_sz
+    phase_img.setSlice(csz + 1);
+
     // putting phase values into array, following respectively for other 5 loops
-    for (int i = 0; i < grid + 1; i++) {
-      phaseVals_xPos[i] = Math.abs((double) phase_img.getProcessor().getPixelValue(i + csx, csy));
+    for (int i = 0; i < xp_size; i++) {
+      // phaseVals_xPos[i] = Math.abs((double)
+      // phase_img.getProcessor().getPixelValue(i + csx, csy));
+      phaseVals_xPos[i] = Math.abs(this.phase_noBkg(csx + i, csy, csz));
     }
-    for (int i = 0; i < grid + 1; i++) {
-      phaseVals_xNeg[i] = Math.abs((double) phase_img.getProcessor().getPixelValue(csx - i, csy));
+    for (int i = 0; i < xn_size; i++) {
+      // phaseVals_xNeg[i] = Math.abs((double)
+      // phase_img.getProcessor().getPixelValue(csx - i, csy));
+      phaseVals_xNeg[i] = Math.abs(this.phase_noBkg(csx - i, csy, csz));
     }
-    for (int j = 0; j < grid + 1; j++) {
-      phaseVals_yPos[j] = Math.abs((double) phase_img.getProcessor().getPixelValue(csx, j + csy));
+    for (int j = 0; j < yp_size; j++) {
+      // phaseVals_yPos[j] = Math.abs((double)
+      // phase_img.getProcessor().getPixelValue(csx, j + csy));
+      phaseVals_yPos[j] = Math.abs(this.phase_noBkg(csx, csy + j, csz));
     }
-    for (int j = 0; j < grid + 1; j++) {
-      phaseVals_yNeg[j] = Math.abs((double) phase_img.getProcessor().getPixelValue(csx, csy - j));
+    for (int j = 0; j < yn_size; j++) {
+      // phaseVals_yNeg[j] = Math.abs((double)
+      // phase_img.getProcessor().getPixelValue(csx, csy - j));
+      phaseVals_yNeg[j] = Math.abs(this.phase_noBkg(csx, csy - j, csz));
     }
-    for (int k = 0; k < grid + 1; k++) {
-      phase_img.setSlice(k + csz + 1);
-      phaseVals_zPos[k] = Math.abs((double) phase_img.getProcessor().getPixelValue(csx, csy));
+    for (int k = 0; k < zp_size; k++) {
+      // phase_img.setSlice(k + csz + 1);
+      // phaseVals_zPos[k] = Math.abs((double)
+      // phase_img.getProcessor().getPixelValue(csx, csy));
+      phaseVals_zPos[k] = Math.abs(this.phase_noBkg(csx, csy, csz + k));
     }
-    for (int k = 0; k < grid + 1; k++) {
-      phase_img.setSlice(csz - k + 1);
-      phaseVals_zNeg[k] = Math.abs((double) phase_img.getProcessor().getPixelValue(csx, csy));
+    for (int k = 0; k < zn_size; k++) {
+      // phase_img.setSlice(csz - k + 1);
+      // phaseVals_zNeg[k] = Math.abs((double)
+      // phase_img.getProcessor().getPixelValue(csx, csy));
+      phaseVals_zNeg[k] = Math.abs(this.phase_noBkg(csx, csy, csz - k));
     }
 
     // Getting threshold (should be 50 unless user changes it)
@@ -566,8 +658,7 @@ public class ImageItem {
     double[] phaseVals_neg;
     int center_mri_axis;
     // String neglectedAxis;
-    switch (calculateMRIAxis(grid - 2,
-        phaseVals_xPos,
+    switch (calculateMRIAxis(phaseVals_xPos,
         phaseVals_xNeg,
         phaseVals_yPos,
         phaseVals_yNeg,
@@ -625,62 +716,6 @@ public class ImageItem {
     Calculate_Magnetic_Moment_3D.logger.addVariable("MRI_axis", MRI_axis);
     // returning the estimated radius along the MRI field direction
     return calculateRC(center_mri_axis, MRI_axis, phaseVals_pos, phaseVals_neg);
-  }
-
-  public double estBkg() {
-
-    // Initialize 3d array for phase values w/ removed background phase
-    phase_nobkg = new double[roi_dx + 1][roi_dy + 1][roi_dz + 1];
-    // Populate array with corresponding values
-    for (int iz = 0; iz <= roi_dz; iz++) {
-      phase_img.setSlice(roi_zi + iz + 1);
-      for (int iy = 0; iy <= roi_dy; iy++) {
-        for (int ix = 0; ix <= roi_dx; ix++) {
-          phase_nobkg[ix][iy][iz] = phase_img.getProcessor().getPixelValue(roi_xi + ix, roi_yi + iy);
-        }
-      }
-    }
-
-    // ---------- Begin to find estimated background phase
-    phase_img.setSlice(roi_zi + 1);
-    bkgPhase = Math.abs(phase_img.getProcessor().getPixelValue(roi_xi, roi_yi))
-        + Math.abs(phase_img.getProcessor().getPixelValue(roi_xi + roi_dx, roi_yi))
-        + Math.abs(phase_img.getProcessor().getPixelValue(roi_xi, roi_yi + roi_dy))
-        + Math.abs(phase_img.getProcessor().getPixelValue(roi_xi + roi_dx, roi_yi + roi_dy));
-
-    phase_img.setSlice(roi_zi + roi_dz + 1);
-    bkgPhase += Math.abs(phase_img.getProcessor().getPixelValue(roi_xi, roi_yi))
-        + Math.abs(phase_img.getProcessor().getPixelValue(roi_xi + roi_dx, roi_yi))
-        + Math.abs(phase_img.getProcessor().getPixelValue(roi_xi, roi_yi + roi_dy))
-        + Math.abs(phase_img.getProcessor().getPixelValue(roi_xi + roi_dx, roi_yi + roi_dy));
-
-    bkgPhase /= 8.0;
-
-    return bkgPhase;
-
-    // ---------- end to find background phase
-  }
-
-  public void remove_bkg() {
-    for (int iz = 0; iz <= roi_dz; iz++) {
-      phase_img.setSlice(roi_zi + iz + 1);
-      for (int iy = 0; iy <= roi_dy; iy++) {
-        for (int ix = 0; ix <= roi_dx; ix++) {
-          phase_nobkg[ix][iy][iz] -= bkgPhase;
-        }
-      }
-    }
-  }
-
-  public double phase_noBkg(int i, int j, int k) {
-    if (i < 0 || i > roi_dx)
-      return 0.0;
-    if (j < 0 || j > roi_dy)
-      return 0.0;
-    if (k < 0 || k > roi_dz)
-      return 0.0;
-
-    return phase_nobkg[i][j][k];
   }
 
   public void calcR0123() {
@@ -870,13 +905,13 @@ public class ImageItem {
      * } else {
      * center_m.set(0, (double) (x1 + (x2 - x1) / 2 + 0.5));
      * }
-     * 
+     *
      * if ((y2 - y1) % 2 == 0) {
      * center_m.set(1, (double) (y1 + (y2 - y1) / 2));
      * } else {
      * center_m.set(1, (double) (y1 + (y2 - y1) / 2 + 0.5));
      * }
-     * 
+     *
      * if ((z2 - z1) % 2 == 0) {
      * center_m.set(2, (double) (z1 + (z2 - z1) / 2));
      * } else {
@@ -1051,7 +1086,7 @@ public class ImageItem {
   /**
    * Ensures the roi size in the nth direction does not extend past the image
    * size in the nth direction
-   * 
+   *
    * @param img_size size of image in nth direction
    * @param point    initial coordinate of ROI in the nth direction
    * @param delta    size of ROI in nth direction
@@ -1082,7 +1117,7 @@ public class ImageItem {
 
   /**
    * Function to set slice of both mag and phase images
-   * 
+   *
    * @param i slice #
    */
   public void setSlice(int i) {
