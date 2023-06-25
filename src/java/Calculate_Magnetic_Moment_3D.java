@@ -455,11 +455,9 @@ public class Calculate_Magnetic_Moment_3D implements PlugIn {
     }
   }
 
-  /*
-   * If the remove background phase button is clicked:
-   * The program takes the subpixel XY and XZ matrices and removes the estimated
-   * background phase
-   */
+  // =====================================================================================
+  // "Remove Bkg"
+  // =====================================================================================
   public static void remove_bkg() {
 
     // passing values C++ needs
@@ -493,11 +491,9 @@ public class Calculate_Magnetic_Moment_3D implements PlugIn {
     JOptionPane.showMessageDialog(gui.frame, "Removed Background Phase (" + String.valueOf(bkg_phase) + ')');
   }
 
-  /*
-   * If the estimate subpixel center button is clicked:
-   * The program feeds the subpixel matrices into C++ and C++ handles the
-   * calculations using Amoeba and other functions from Numerical Recipes
-   */
+  // =====================================================================================
+  // "Estimate Subpixel Center"
+  // =====================================================================================
   public static void est_subpix_ctr() {
 
     // updateVariables();
@@ -576,9 +572,9 @@ public class Calculate_Magnetic_Moment_3D implements PlugIn {
      * written out, and may have to be compiled to view.
      */
 
-    int sub_x = (int) pixelToSubpixel(item.centerS().get(0), 0);
-    int sub_y = (int) pixelToSubpixel(item.centerS().get(1), 1);
-    int sub_z = (int) pixelToSubpixel(item.centerS().get(2), 2);
+    int sub_x = (int) pixelToSubpixel(centerX_pixelCoordinates, 0);
+    int sub_y = (int) pixelToSubpixel(centerY_pixelCoordinates, 1);
+    int sub_z = (int) pixelToSubpixel(centerZ_pixelCoordinates, 2);
 
     // Creating a new ROIS for the XY mag image
     roiImgMag = new ROIS("MXY");
@@ -618,14 +614,22 @@ public class Calculate_Magnetic_Moment_3D implements PlugIn {
 
   }
 
-  /*
-   * If the redraw center button is clicked:
-   * This part of the program is all GUI. This basically just checks the subpixel
-   * center and RCenter values in the GUI and updates the subpixel image ROIs to
-   * correspond
-   */
+  // =====================================================================================
+  // "Redraw Center"
+  // =====================================================================================
   public static void redraw_center() {
-    updateVariables();
+    // updateVariables();
+
+    // we need this to be true in order to have sufficient values in the GUI
+    boolean condition = (WindowManager.getImage(subMagTitle) != null && WindowManager.getImage(subMagXZTitle) != null
+        && WindowManager.getImage(subPhaseTitle) != null && WindowManager.getImage(subPhaseXZTitle) != null)
+        && !(gui.ltf_spx.getValue().isEmpty() || gui.ltf_spy.getValue().isEmpty() || gui.ltf_spz.getValue().isEmpty());
+
+    // if the condition doesn't pass, tell the user then return
+    if (!condition) {
+      JOptionPane.showMessageDialog(gui.frame, "Error: subpixel images/center not generated/calculated");
+      return;
+    }
 
     // get rcenter from GUI
     double RCenter = Double.parseDouble(gui.ltf_rc.getValue());
@@ -633,75 +637,54 @@ public class Calculate_Magnetic_Moment_3D implements PlugIn {
     // update item center based off current subcenter GUI values
     item.setCenterSX(Double.parseDouble(gui.ltf_spx.getValue()));
     item.setCenterSY(Double.parseDouble(gui.ltf_spy.getValue()));
-    item.setCenterSZ(Double.parseDouble(gui.ltf_spz.getValue()));
-    logger.addVariable("Center set as", String.valueOf(Double.parseDouble(gui.ltf_spx.getValue()))
-        + ',' + String.valueOf(Double.parseDouble(gui.ltf_spy.getValue())) + ','
+    item.setCenterSZ(Double.parseDouble(gui.ltf_spz.getValue()) - 1.0);
+    logger.addVariable("Center redrawn as", String.valueOf(Double.parseDouble(gui.ltf_spx.getValue()))
+        + ',' + String.valueOf(Double.parseDouble(gui.ltf_spy.getValue()) - 1.0) + ','
         + String.valueOf(Double.parseDouble(gui.ltf_spz.getValue())));
     logger.addVariable("Center returned values", String.valueOf(item.centerS().get(0)) + ','
         + String.valueOf(item.centerS().get(1)) + ',' + String.valueOf(item.centerS().get(2)));
 
-    // pass values to c++
-    double m_R0 = item.m_R0();
-    jni.setmVariables(grid, m_R0, RCenter,
-        Double.parseDouble(gui.ltf_rcx.getValue()),
-        Double.parseDouble(gui.ltf_rcy.getValue()),
-        Double.parseDouble(gui.ltf_rcz.getValue()) - 1.0,
-        Double.parseDouble(gui.ltf_eqPhase.getValue()));
+    // This is basically a repetition from the btn_estSubC code
 
-    // condition for button to function
-    boolean condition = (WindowManager.getImage(subMagTitle) != null && WindowManager.getImage(subMagXZTitle) != null
-        && WindowManager.getImage(subPhaseTitle) != null && WindowManager.getImage(subPhaseXZTitle) != null)
-        && !(gui.ltf_spx.getValue().isEmpty() || gui.ltf_spy.getValue().isEmpty() || gui.ltf_spz.getValue().isEmpty());
+    // getting sub center
+    int sub_x = (int) pixelToSubpixel(item.centerS().get(0), 0);
+    int sub_y = (int) pixelToSubpixel(item.centerS().get(1), 1);
+    int sub_z = (int) pixelToSubpixel(item.centerS().get(2), 2);
+    logger.addVariable("subxyz (in redraw)",
+        String.valueOf(sub_x) + ',' + String.valueOf(sub_y) + ',' + String.valueOf(sub_z));
 
-    if (condition) {
-
-      // This is basically a repetition from the btn_estSubC code
-
-      // getting sub center
-      int sub_x = (int) pixelToSubpixel(item.centerS().get(0), 0);
-      int sub_y = (int) pixelToSubpixel(item.centerS().get(1), 1);
-      int sub_z = (int) pixelToSubpixel(item.centerS().get(2), 2);
-      logger.addVariable("subxyz (in redraw)",
-          String.valueOf(sub_x) + ',' + String.valueOf(sub_y) + ',' + String.valueOf(sub_z));
-
-      roiImgMag.clear();
-      roiImgMag.addPointROI("Center", sub_x, sub_y);
-      if (gui.chkbx_showrc.isSelected()) {
-        roiImgMag.addCircleROI("RCenter", sub_x, sub_y, RCenter * 10.0);
-      }
-      roiImgMag.displayROIS();
-
-      roiImgMagXZ.clear();
-      roiImgMagXZ.addPointROI("Center", sub_x, sub_z);
-      if (gui.chkbx_showrc.isSelected()) {
-        roiImgMagXZ.addCircleROI("RCenter", sub_x, sub_z, RCenter * 10.0);
-      }
-      roiImgMagXZ.displayROIS();
-
-      roiImgPhase.clear();
-      roiImgPhase.addPointROI("Center", sub_x, sub_y);
-      if (gui.chkbx_showrc.isSelected()) {
-        roiImgPhase.addCircleROI("RCenter", sub_x, sub_y, RCenter * 10.0);
-      }
-      roiImgPhase.displayROIS();
-
-      roiImgPhaseXZ.clear();
-      roiImgPhaseXZ.addPointROI("Center", sub_x, sub_z);
-      if (gui.chkbx_showrc.isSelected()) {
-        roiImgPhaseXZ.addCircleROI("RCenter", sub_x, sub_z, RCenter * 10.0);
-      }
-      roiImgPhaseXZ.displayROIS();
-    } else {
-      JOptionPane.showMessageDialog(gui.frame, "Error: Subpixel center not found");
+    roiImgMag.clear();
+    roiImgMag.addPointROI("Center", sub_x, sub_y);
+    if (gui.chkbx_showrc.isSelected()) {
+      roiImgMag.addCircleROI("RCenter", sub_x, sub_y, RCenter * 10.0);
     }
+    roiImgMag.displayROIS();
+
+    roiImgMagXZ.clear();
+    roiImgMagXZ.addPointROI("Center", sub_x, sub_z);
+    if (gui.chkbx_showrc.isSelected()) {
+      roiImgMagXZ.addCircleROI("RCenter", sub_x, sub_z, RCenter * 10.0);
+    }
+    roiImgMagXZ.displayROIS();
+
+    roiImgPhase.clear();
+    roiImgPhase.addPointROI("Center", sub_x, sub_y);
+    if (gui.chkbx_showrc.isSelected()) {
+      roiImgPhase.addCircleROI("RCenter", sub_x, sub_y, RCenter * 10.0);
+    }
+    roiImgPhase.displayROIS();
+
+    roiImgPhaseXZ.clear();
+    roiImgPhaseXZ.addPointROI("Center", sub_x, sub_z);
+    if (gui.chkbx_showrc.isSelected()) {
+      roiImgPhaseXZ.addCircleROI("RCenter", sub_x, sub_z, RCenter * 10.0);
+    }
+    roiImgPhaseXZ.displayROIS();
   }
 
-  /*
-   * If the verify radii button is clicked:
-   * The three radii (m_R1, m_R2, m_R3) are displayed on the images. The program
-   * also averages 4 points for each radius, the points are where the radii
-   * intercept the equitorial axis
-   */
+  // =====================================================================================
+  // "Verify Radii"
+  // =====================================================================================
   public static void verify_radii() {
     updateVariables();
     double m_R1 = Double.parseDouble(gui.ltf_r1.getValue());
