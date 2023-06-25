@@ -1105,8 +1105,8 @@ public class Calculate_Magnetic_Moment_3D implements PlugIn {
         } else {
           gui.ll_momenterror.setValue(String.valueOf(Math.round(jni.getUncertainty() * 100.0) / 100.0));
         }
-        gui.ll_dChi.setValue(String.valueOf(Math.round(jni.getChi() * 100.0) / 100.0) + " ppm");
-        gui.ll_a.setValue(String.valueOf(Math.round(jni.getA() * 100.0) / 100.0) + " pixels");
+        gui.ll_dChi.setValue(String.valueOf(Math.round(jni.getChi() * 100.0) / 100.0));
+        gui.ll_a.setValue(String.valueOf(Math.round(jni.getA() * 100.0) / 100.0));
         gui.ll_rho0.setValue(String.valueOf(Math.round(jni.getSpinDensity() * 100.0) / 100.0));
       } else {
         JOptionPane.showMessageDialog(gui.frame, errorMessage_Mag);
@@ -1461,8 +1461,8 @@ public class Calculate_Magnetic_Moment_3D implements PlugIn {
       jni.calcSusceptibility();
 
       // Getting values from C++ and setting to GUI
-      gui.ll_a.setValue(String.valueOf(Math.round(jni.getA() * 100.0) / 100.0) + " pixels");
-      gui.ll_dChi.setValue(String.valueOf(Math.round(jni.getChi() * 100.0) / 100.0) + " ppm");
+      gui.ll_a.setValue(String.valueOf(Math.round(jni.getA() * 100.0) / 100.0));
+      gui.ll_dChi.setValue(String.valueOf(Math.round(jni.getChi() * 100.0) / 100.0));
     }
   }
 
@@ -1679,7 +1679,7 @@ public class Calculate_Magnetic_Moment_3D implements PlugIn {
         double da = (a * dV0) / (3 * V0);
         // Adding to GUI
         gui.ll_aSE.setValue(String.valueOf(Math.round(a * 100.0) / 100.0) + " " + PLUS_MINUS + " "
-            + String.valueOf(Math.round(da * 100.0) / 100.0) + " pixels");
+            + String.valueOf(Math.round(da * 100.0) / 100.0));
         logger.addVariable("a", a);
         logger.addVariable("da", da);
 
@@ -1695,7 +1695,7 @@ public class Calculate_Magnetic_Moment_3D implements PlugIn {
 
         // Setting to GUI
         gui.ll_dChiSE.setValue(String.valueOf(Math.round(dChi * 100.0) / 100.0) + " " + PLUS_MINUS + " "
-            + String.valueOf(Math.round(d_dChi * 100.0) / 100.0) + " ppm");
+            + String.valueOf(Math.round(d_dChi * 100.0) / 100.0));
       }
     } else {
       JOptionPane.showMessageDialog(gui.frame, "Error: no spin echo image found");
