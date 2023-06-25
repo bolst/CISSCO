@@ -9,6 +9,22 @@ extern "C" {
 #endif
 /*
  * Class:     JNIMethods
+ * Method:    passGenSubpixelValues
+ * Signature: (DIDD)V
+ */
+JNIEXPORT void JNICALL Java_JNIMethods_passGenSubpixelValues
+  (JNIEnv *, jobject, jdouble, jint, jdouble, jdouble);
+
+/*
+ * Class:     JNIMethods
+ * Method:    passCalcSubCenterValues
+ * Signature: (IIIIIIDDDDDDDDDDDDDD)V
+ */
+JNIEXPORT void JNICALL Java_JNIMethods_passCalcSubCenterValues
+  (JNIEnv *, jobject, jint, jint, jint, jint, jint, jint, jdouble, jdouble, jdouble, jdouble, jdouble, jdouble, jdouble, jdouble, jdouble, jdouble, jdouble, jdouble, jdouble, jdouble);
+
+/*
+ * Class:     JNIMethods
  * Method:    setmVariables
  * Signature: (IDDDDDD)V
  */

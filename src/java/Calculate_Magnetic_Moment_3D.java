@@ -36,7 +36,6 @@ public class Calculate_Magnetic_Moment_3D implements PlugIn {
       subMagTitle, subMagXZTitle, subPhaseTitle, subPhaseXZTitle, V1XY_Title, V1XZ_Title, s1MagWindowTitle,
       s1PhaseWindowTitle, s5MagWindowTitle, s5PhaseWindowTitle, s6MagWindowTitle, s6PhaseWindowTitle, s7WindowTitle;
 
-  private static double m_R0;
   private static float[][] subpixelMagMatrix, subpixelMagMatrixXZ, subpixelPhaseMatrix, subpixelPhaseMatrixXZ;
 
   public static boolean estimateCenterRadii_isClicked = false;
@@ -82,13 +81,8 @@ public class Calculate_Magnetic_Moment_3D implements PlugIn {
     // clearVariables();
     try {
 
-      // if there are already images open close them
-      if (WindowManager.getImage(s1MagWindowTitle) != null) {
-        WindowManager.getImage(s1MagWindowTitle).close();
-      }
-      if (WindowManager.getImage(s1PhaseWindowTitle) != null) {
-        WindowManager.getImage(s1PhaseWindowTitle).close();
-      }
+      // close all windows
+      WindowManager.closeAllWindows();
 
       // Initializing file choosing window
       JFileChooser initialFileChooserWindow;
@@ -216,7 +210,9 @@ public class Calculate_Magnetic_Moment_3D implements PlugIn {
 
       // calculating each center
       item.calcCenterL();
+      jni.setCenterL(item.centerL().get(0), item.centerL().get(1), item.centerL().get(2));
       item.calcCenterM();
+      jni.setCenterM(item.centerM().get(0), item.centerM().get(1), item.centerM().get(2));
       item.calcCenterS();
 
       // setting GUI bkg phase to estimate bkg phase
@@ -259,7 +255,7 @@ public class Calculate_Magnetic_Moment_3D implements PlugIn {
       gui.ltf_rc.setValue(String.valueOf(Math.round(RCenter * 10.0) / 10.0));
 
       item.calcR0123();
-      m_R0 = item.m_R0();
+      double m_R0 = item.m_R0();
 
       jni.setmVariables(grid, m_R0, RCenter,
           Double.parseDouble(gui.ltf_rcx.getValue()),
@@ -284,7 +280,7 @@ public class Calculate_Magnetic_Moment_3D implements PlugIn {
   // "Generate Subpixel Grid/Data"
   // =====================================================================================
   public static void gen_subpix() {
-    updateVariables();
+    // updateVariables();
 
     // pass step 2 estimated center to item. This is needed for subpixel/pixel
     // coordinate conversions
@@ -312,6 +308,8 @@ public class Calculate_Magnetic_Moment_3D implements PlugIn {
       ImagePlus magnitudeImage = WindowManager.getImage(s1MagWindowTitle);
       ImagePlus phaseImage = WindowManager.getImage(s1PhaseWindowTitle);
       logger.addInfo("Got images");
+
+      double m_R0 = item.m_R0();
 
       // Size of new images
       int size_subpixelimg = (int) ((2 * m_R0 + 1) * grid);
@@ -360,12 +358,7 @@ public class Calculate_Magnetic_Moment_3D implements PlugIn {
 
       // Passing necessary variables to C++
       double RCenter = Double.parseDouble(gui.ltf_rc.getValue());
-      jni.setmVariables(grid, m_R0, RCenter,
-          Double.parseDouble(gui.ltf_rcx.getValue()),
-          Double.parseDouble(gui.ltf_rcy.getValue()),
-          Double.parseDouble(gui.ltf_rcz.getValue()) - 1.0,
-          Double.parseDouble(gui.ltf_eqPhase.getValue()));
-      jni.setBackPhase(item.bkgPhase);
+      jni.passGenSubpixelValues(m_R0, grid, RCenter, item.bkgPhase);
       jni.setRealImagNumbers(croppedRealNumbers3D, croppedImaginaryNumbers3D);
 
       // Generate subpixel in C++
@@ -454,7 +447,7 @@ public class Calculate_Magnetic_Moment_3D implements PlugIn {
       subpixelPhaseImageXZ.show();
 
       // Passing matrices to C++
-      jni.setRealImagNumbers(croppedRealNumbers3D, croppedImaginaryNumbers3D);
+      // jni.setRealImagNumbers(croppedRealNumbers3D, croppedImaginaryNumbers3D);
       jni.setPhaseXYMatrix(subpixelPhaseMatrix);
       jni.setPhaseXZMatrix(subpixelPhaseMatrixXZ);
       jni.setMagXYMatrix(subpixelMagMatrix);
@@ -468,22 +461,36 @@ public class Calculate_Magnetic_Moment_3D implements PlugIn {
    * background phase
    */
   public static void remove_bkg() {
-    updateVariables();
 
-    if (gui.ll_estBkgPhase.getValue().isEmpty()) {
-      JOptionPane.showMessageDialog(gui.frame, "Error: No background phase found.");
-    } else
+    // passing values C++ needs
+    // jni.setXYZ(,,);
+    // jni.setmR123(,,);
 
-    {
-      // Removing BG phase in C++
-      jni.removeBackgroundPhase(item.bkgPhase);
-
-      // Removing BG phase in Java
-      removeBGPhase(subpixelPhaseMatrix);
-      removeBGPhase(subpixelPhaseMatrixXZ);
-      // removeBGPhase(item.bkgPhase);
-      JOptionPane.showMessageDialog(gui.frame, "Removed Background Phase!");
+    // if subpixel images are not generated
+    if (subpixelMagImage == null || subpixelMagImageXZ == null || subpixelPhaseImage == null
+        || subpixelPhaseImageXZ == null) {
+      JOptionPane.showMessageDialog(gui.frame, "Error: subpixel images not generated");
+      return;
     }
+
+    double bkg_phase = 0.0;
+
+    // not sure how this warning would ever present itself, but including as a
+    // safeguard just in case
+    if (item == null) {
+      JOptionPane.showMessageDialog(gui.frame, "Warning: no background phase found. Continuing with a value of 0.0");
+    } else {
+      bkg_phase = item.bkgPhase;
+    }
+
+    // Removing BG phase in C++
+    jni.removeBackgroundPhase(bkg_phase);
+
+    // Removing BG phase in Java
+    // removeBGPhase(subpixelPhaseMatrix);
+    // removeBGPhase(subpixelPhaseMatrixXZ);
+
+    JOptionPane.showMessageDialog(gui.frame, "Removed Background Phase (" + String.valueOf(bkg_phase) + ')');
   }
 
   /*
@@ -492,13 +499,13 @@ public class Calculate_Magnetic_Moment_3D implements PlugIn {
    * calculations using Amoeba and other functions from Numerical Recipes
    */
   public static void est_subpix_ctr() {
-    updateVariables();
-    double RCenter = Double.parseDouble(gui.ltf_rc.getValue());
-    jni.setmVariables(grid, m_R0, RCenter,
-        Double.parseDouble(gui.ltf_rcx.getValue()),
-        Double.parseDouble(gui.ltf_rcy.getValue()),
-        Double.parseDouble(gui.ltf_rcz.getValue()) - 1.0,
-        Double.parseDouble(gui.ltf_eqPhase.getValue()));
+
+    // updateVariables();
+    // jni.setmVariables(grid, m_R0, RCenter,
+    // Double.parseDouble(gui.ltf_rcx.getValue()),
+    // Double.parseDouble(gui.ltf_rcy.getValue()),
+    // Double.parseDouble(gui.ltf_rcz.getValue()) - 1.0,
+    // Double.parseDouble(gui.ltf_eqPhase.getValue()));
 
     // condition for program to continue, must have generated subpixel and estimated
     // a center and RCenter
@@ -509,101 +516,106 @@ public class Calculate_Magnetic_Moment_3D implements PlugIn {
         && (WindowManager.getImage(subMagTitle) != null && WindowManager.getImage(subMagXZTitle) != null
             && WindowManager.getImage(subPhaseTitle) != null && WindowManager.getImage(subPhaseXZTitle) != null);
 
-    if (condition) {
-
-      // Passing necessary data to C++
-      jni.setXYZ(Double.parseDouble(gui.ltf_rcx.getValue()),
-          Double.parseDouble(gui.ltf_rcy.getValue()),
-          Double.parseDouble(gui.ltf_rcz.getValue()) - 1.0);
-      jni.setPhaseXYMatrix(subpixelPhaseMatrix);
-      jni.setSmallBox(item.roi_mag_belowM_xi, item.roi_mag_belowM_yi, item.roi_mag_belowM_zi, item.roi_mag_belowM_dx,
-          item.roi_mag_belowM_dy,
-          item.roi_mag_belowM_dz);
-      jni.setCenterL(item.centerL().get(0), item.centerL().get(1), item.centerL().get(2));
-      jni.setCenterM(item.centerM().get(0), item.centerM().get(1), item.centerM().get(2));
-      jni.setCenterS(item.centerS().get(0), item.centerS().get(1), item.centerS().get(2));
-
-      // Calculating subpixel center, if there are no errors then the returned string
-      // will be empty
-      subCenterErrorMessage = jni.estimateSubpixelCenter();
-
-      if (subCenterErrorMessage.compareTo("") == 0) {
-
-        // Getting estimated subpixel centers from C++ in terms of pixels
-        double centerX_pixelCoordinates = jni.getSubX();
-        double centerY_pixelCoordinates = jni.getSubY();
-        double centerZ_pixelCoordinates = jni.getSubZ();
-
-        // Update center_s to be the estimated subpixel center
-        item.centerS().set(0, centerX_pixelCoordinates);
-        item.centerS().set(1, centerY_pixelCoordinates);
-        item.centerS().set(2, centerZ_pixelCoordinates);
-
-        // Setting pixel values to GUI, because the coordinates are relative to the
-        // uploaded images
-        gui.ltf_spx.setValue(String.valueOf(Math.round(centerX_pixelCoordinates * 100.0) / 100.0));
-        gui.ltf_spy.setValue(String.valueOf(Math.round(centerY_pixelCoordinates * 100.0) / 100.0));
-        gui.ltf_spz.setValue(String.valueOf(Math.round(centerZ_pixelCoordinates * 100.0) / 100.0 + 1.0));
-
-        // ---------- begin to put ROIs on images
-
-        /*
-         * The following is used for displaying the centers and RCenter on the images.
-         * The program uses another class I built called ROIS that basically handles
-         * ImageJ's RoiManager in a better way. ImageJ makes it very annoying to display
-         * multiple ROI's on an image, so this way the code is much easier to read and
-         * is not repetitively long. You can read the ROIS Javadoc, as it is already
-         * written out, and may have to be compiled to view.
-         */
-
-        int sub_x = (int) pixelToSubpixel(item.centerS().get(0), 0);
-        int sub_y = (int) pixelToSubpixel(item.centerS().get(1), 1);
-        int sub_z = (int) pixelToSubpixel(item.centerS().get(2), 2);
-
-        // Creating a new ROIS for the XY mag image
-        roiImgMag = new ROIS("MXY");
-        // Adding the center as a point to the list
-        roiImgMag.addPointROI("Center", sub_x, sub_y);
-        if (gui.chkbx_showrc.isSelected()) {
-          // If the box is selected, adds RCenter circle ROI to the list
-          roiImgMag.addCircleROI("RCenter", sub_x, sub_y, RCenter * 10.0);
-        }
-        // Displays the ROIS on the image
-        roiImgMag.displayROIS();
-
-        // The next 3 blocks of code follow the same logic as described above
-
-        roiImgMagXZ = new ROIS("MXZ");
-        roiImgMagXZ.addPointROI("Center", sub_x, sub_z);
-        if (gui.chkbx_showrc.isSelected()) {
-          roiImgMagXZ.addCircleROI("RCenter", sub_x, sub_z, RCenter * 10.0);
-        }
-        roiImgMagXZ.displayROIS();
-
-        roiImgPhase = new ROIS("PXY");
-        roiImgPhase.addPointROI("Center", sub_x, sub_y);
-        if (gui.chkbx_showrc.isSelected()) {
-          roiImgPhase.addCircleROI("RCenter", sub_x, sub_y, RCenter * 10.0);
-        }
-        roiImgPhase.displayROIS();
-
-        roiImgPhaseXZ = new ROIS("PXZ");
-        roiImgPhaseXZ.addPointROI("Center", sub_x, sub_z);
-        if (gui.chkbx_showrc.isSelected()) {
-          roiImgPhaseXZ.addCircleROI("RCenter", sub_x, sub_z, RCenter * 10.0);
-        }
-        roiImgPhaseXZ.displayROIS();
-
-        // ---------- end to put ROIS on images
-
-      } else {
-        // Display the error message in a message box if needed
-        JOptionPane.showMessageDialog(gui.frame, subCenterErrorMessage);
-      }
-    } else {
-      // Display error message if insufficient data is in program
+    // if the condition to proceed is false, display message and return
+    if (!condition) {
       JOptionPane.showMessageDialog(gui.frame, "Error: Subpixel images not generated and/or step 2 was not completed");
+      return;
     }
+
+    // passing needed values to C++
+
+    double RCenter = Double.parseDouble(gui.ltf_rc.getValue());
+    double m_R0 = item.m_R0();
+    double csx = Double.parseDouble(gui.ltf_rcx.getValue());
+    double csy = Double.parseDouble(gui.ltf_rcy.getValue());
+    double csz = Double.parseDouble(gui.ltf_rcz.getValue()) - 1.0;
+    int c2x = (int) csx;
+    int c2y = (int) csy;
+    int c2z = (int) csz;
+    jni.passCalcSubCenterValues(item.roi_mag_belowM_xi, item.roi_mag_belowM_dx, item.roi_mag_belowM_yi,
+        item.roi_mag_belowM_dy, item.roi_mag_belowM_zi, item.roi_mag_belowM_dz, RCenter, m_R0,
+        item.centerL().get(0), item.centerL().get(1), item.centerL().get(2),
+        item.centerM().get(0), item.centerM().get(1), item.centerM().get(2),
+        csx, csy, csz,
+        (double) c2x, (double) c2y, (double) c2z);
+
+    // Calculating subpixel center, if there are no errors then the returned string
+    // will be empty
+    subCenterErrorMessage = jni.estimateSubpixelCenter();
+
+    // if C++ sends back an error message
+    if (subCenterErrorMessage.compareTo("") != 0) {
+      JOptionPane.showMessageDialog(gui.frame, subCenterErrorMessage);
+      return;
+    }
+
+    // Getting estimated subpixel centers from C++ in terms of pixels
+    double centerX_pixelCoordinates = jni.getSubX();
+    double centerY_pixelCoordinates = jni.getSubY();
+    double centerZ_pixelCoordinates = jni.getSubZ();
+
+    // Update center_s to be the estimated subpixel center
+    item.centerS().set(0, centerX_pixelCoordinates);
+    item.centerS().set(1, centerY_pixelCoordinates);
+    item.centerS().set(2, centerZ_pixelCoordinates);
+
+    // Setting pixel values to GUI, because the coordinates are relative to the
+    // uploaded images
+    gui.ltf_spx.setValue(String.valueOf(Math.round(centerX_pixelCoordinates * 100.0) / 100.0));
+    gui.ltf_spy.setValue(String.valueOf(Math.round(centerY_pixelCoordinates * 100.0) / 100.0));
+    gui.ltf_spz.setValue(String.valueOf(Math.round(centerZ_pixelCoordinates * 100.0) / 100.0 + 1.0));
+
+    // ---------- begin to put ROIs on images
+
+    /*
+     * The following is used for displaying the centers and RCenter on the images.
+     * The program uses another class I built called ROIS that basically handles
+     * ImageJ's RoiManager in a better way. ImageJ makes it very annoying to display
+     * multiple ROI's on an image, so this way the code is much easier to read and
+     * is not repetitively long. You can read the ROIS Javadoc, as it is already
+     * written out, and may have to be compiled to view.
+     */
+
+    int sub_x = (int) pixelToSubpixel(item.centerS().get(0), 0);
+    int sub_y = (int) pixelToSubpixel(item.centerS().get(1), 1);
+    int sub_z = (int) pixelToSubpixel(item.centerS().get(2), 2);
+
+    // Creating a new ROIS for the XY mag image
+    roiImgMag = new ROIS("MXY");
+    // Adding the center as a point to the list
+    roiImgMag.addPointROI("Center", sub_x, sub_y);
+    if (gui.chkbx_showrc.isSelected()) {
+      // If the box is selected, adds RCenter circle ROI to the list
+      roiImgMag.addCircleROI("RCenter", sub_x, sub_y, RCenter * 10.0);
+    }
+    // Displays the ROIS on the image
+    roiImgMag.displayROIS();
+
+    // The next 3 blocks of code follow the same logic as described above
+
+    roiImgMagXZ = new ROIS("MXZ");
+    roiImgMagXZ.addPointROI("Center", sub_x, sub_z);
+    if (gui.chkbx_showrc.isSelected()) {
+      roiImgMagXZ.addCircleROI("RCenter", sub_x, sub_z, RCenter * 10.0);
+    }
+    roiImgMagXZ.displayROIS();
+
+    roiImgPhase = new ROIS("PXY");
+    roiImgPhase.addPointROI("Center", sub_x, sub_y);
+    if (gui.chkbx_showrc.isSelected()) {
+      roiImgPhase.addCircleROI("RCenter", sub_x, sub_y, RCenter * 10.0);
+    }
+    roiImgPhase.displayROIS();
+
+    roiImgPhaseXZ = new ROIS("PXZ");
+    roiImgPhaseXZ.addPointROI("Center", sub_x, sub_z);
+    if (gui.chkbx_showrc.isSelected()) {
+      roiImgPhaseXZ.addCircleROI("RCenter", sub_x, sub_z, RCenter * 10.0);
+    }
+    roiImgPhaseXZ.displayROIS();
+
+    // ---------- end to put ROIS on images
+
   }
 
   /*
@@ -629,6 +641,7 @@ public class Calculate_Magnetic_Moment_3D implements PlugIn {
         + String.valueOf(item.centerS().get(1)) + ',' + String.valueOf(item.centerS().get(2)));
 
     // pass values to c++
+    double m_R0 = item.m_R0();
     jni.setmVariables(grid, m_R0, RCenter,
         Double.parseDouble(gui.ltf_rcx.getValue()),
         Double.parseDouble(gui.ltf_rcy.getValue()),
@@ -918,6 +931,7 @@ public class Calculate_Magnetic_Moment_3D implements PlugIn {
         int x_px = item.centerS().get(0).intValue();
         int y_spx = (int) pixelToSubpixel(item.centerS().get(1).intValue(), 1);
         // Adding phase values to both ArrayLists
+        double m_R0 = item.m_R0();
         for (int i = x_px - (int) m_R0,
             c = 0; i <= x_px + (int) m_R0; i++, c++) {
           intensity
@@ -972,6 +986,7 @@ public class Calculate_Magnetic_Moment_3D implements PlugIn {
         int x_spx = (int) pixelToSubpixel(item.centerS().get(0).intValue(), 0);
         int y_px = item.centerS().get(1).intValue();
         // Adding phase values to both ArrayLists
+        double m_R0 = item.m_R0();
         for (int i = y_px - (int) m_R0,
             c = 0; i <= y_px + m_R0; i++, c++) {
           intensity
@@ -1027,6 +1042,7 @@ public class Calculate_Magnetic_Moment_3D implements PlugIn {
         int z_px = item.centerS().get(2).intValue();
 
         // Adding phase values to both ArrayLists
+        double m_R0 = item.m_R0();
         for (int i = z_px - (int) m_R0,
             c = 0; i <= z_px + m_R0; i++, c++) {
           intensity
@@ -1687,58 +1703,6 @@ public class Calculate_Magnetic_Moment_3D implements PlugIn {
   }
 
   /*
-   * Function to remove background phase
-   *
-   * @param phaseVals 3D array of phase values
-   */
-  public static void removeBGPhase(double[][][] phaseVals) {
-
-    // Background phase must have a value to continue
-    if (!gui.ll_estBkgPhase.getValue().isEmpty()) {
-
-      // Removing background phase from all data points in matrix
-      for (int k = item.roi_zi; k < item.roi_zi + item.roi_dz; k++) {
-        for (int i = item.roi_xi; i < item.roi_xi + item.roi_dx; i++) {
-          for (int j = item.roi_yi; j < item.roi_yi + item.roi_dy; j++) {
-            phaseVals[i][j][k] = Math.abs(phaseVals[i][j][k] - item.bkgPhase);
-          }
-        }
-      }
-    } else
-
-    {
-      JOptionPane.showMessageDialog(gui.frame, "Error: No background phase found.");
-    }
-
-    return;
-  }
-
-  /*
-   * Function to remove background phase
-   *
-   * @param phaseVals 2D array of phase values
-   */
-  public static void removeBGPhase(float[][] phaseVals) {
-
-    if (!gui.ll_estBkgPhase.getValue().isEmpty()) {
-      int subpix_size = (int) ((2 * m_R0 + 1) * grid);
-      for (int i = 0; i < subpix_size; i++) {
-        for (int j = 0; j < subpix_size; j++) {
-          if (phaseVals[i][j] > 0) {
-            phaseVals[i][j] = phaseVals[i][j] - (float) item.bkgPhase;
-          } else if (phaseVals[i][j] < 0) {
-            phaseVals[i][j] = phaseVals[i][j] + (float) item.bkgPhase;
-          }
-        }
-      }
-    } else {
-      JOptionPane.showMessageDialog(gui.frame, "Error: No background phase found.");
-    }
-
-    return;
-  }
-
-  /*
    * Function to convert voxel coordinate to subvoxel image coordinates
    *
    * @param coordinate the voxel position
@@ -1754,6 +1718,7 @@ public class Calculate_Magnetic_Moment_3D implements PlugIn {
     // 2
     // The + 4.9 moves it from the middle of the subpixel to the maximum edge
     // because this is how ImageJ handles the voxel locations
+    double m_R0 = item.m_R0();
     double subCenter = (2 * m_R0 + 1) * (10.0 / 2.0);
     double subpixelCoordinate = 0.0;
 

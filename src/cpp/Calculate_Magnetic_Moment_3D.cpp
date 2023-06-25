@@ -134,6 +134,55 @@ float ***firstLevel(JNIEnv *env, jobjectArray arr)
 /******************************************************************************************************************/
 /******************************************************************************************************************/
 
+JNIEXPORT void JNICALL Java_JNIMethods_passGenSubpixelValues(JNIEnv *env, jobject thisObj,
+                                                             jdouble jm_R0,
+                                                             jint jm_SubPixels,
+                                                             jdouble jm_RCenter,
+                                                             jdouble jm_BackPhase)
+{
+    m_R0 = jm_R0;
+    m_SubPixels = jm_SubPixels;
+    m_RCenter = jm_RCenter;
+    m_BackPhase = jm_BackPhase;
+}
+
+JNIEXPORT void JNICALL Java_JNIMethods_passCalcSubCenterValues(JNIEnv *env, jobject thisObj,
+                                                               jint jsmallx, jint jsmalldx, jint jsmally, jint jsmalldy, jint jsmallz, jint jsmalldz,
+                                                               jdouble jm_RCenter, jdouble jm_R0,
+                                                               jdouble jclx, jdouble jcly, jdouble jclz,
+                                                               jdouble jcmx, jdouble jcmy, jdouble jcmz,
+                                                               jdouble jcsx, jdouble jcsy, jdouble jcsz,
+                                                               jdouble jcx2, jdouble jcy2, jdouble jcz2)
+{
+    smallBox_X = jsmallx;
+    smallBox_XSize = jsmalldx;
+    smallBox_Y = jsmally;
+    smallBox_YSize = jsmalldy;
+    smallBox_Z = jsmallz;
+    smallBox_ZSize = jsmalldz;
+
+    m_RCenter = jm_RCenter;
+    m_R0 = jm_R0;
+
+    centerL_x = jclx;
+    centerL_y = jcly;
+    centerL_z = jclz;
+
+    centerM_x = jcmx;
+    centerM_y = jcmy;
+    centerM_z = jcmz;
+
+    centerS_x = jcsx;
+    centerS_y = jcsy;
+    centerS_z = jcsz;
+
+    m_CenterX2 = jcx2;
+    m_CenterY2 = jcy2;
+    m_CenterZ2 = jcz2;
+
+    return;
+}
+
 JNIEXPORT void JNICALL Java_JNIMethods_setmVariables(JNIEnv *env, jobject thisObj, jint nm_SubPixels, jdouble nm_R0, jdouble nm_RCenter, jdouble nm_CenterX2, jdouble nm_CenterY2, jdouble nm_CenterZ2, jdouble nmphasevalue)
 {
     m_SubPixels = nm_SubPixels;
@@ -489,8 +538,7 @@ double subpixelToPixel(double coordinate, int axisFlag)
 
     return voxelCoordinate;
 }
-// Function to remove BG phase and interpolate real and imag matrices. This is the C++ function that is called from C++ - see Java_JNIMethods_removeBackgroundPhase
-// for the other similar function that is called from Java
+// Function to remove BG phase and interpolate real and imag matrices
 void removeBGPhaseAndInterpolateVoxels(double bPhase)
 {
 

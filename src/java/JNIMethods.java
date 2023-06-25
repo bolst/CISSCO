@@ -40,6 +40,15 @@ class JNIMethods {
         }
     }
 
+    native void passGenSubpixelValues(double jm_R0, int jm_SubPixels, double jm_RCenter, double jm_BackPhase);
+
+    native void passCalcSubCenterValues(int jsmallX, int jsmallDX, int jsmallY, int jsmallDY, int jsmallZ, int jsmallDZ,
+            double jm_RCenter, double jm_R0,
+            double jclx, double jcly, double jclz,
+            double jcmx, double jcmy, double jcmz,
+            double jcsx, double jcsy, double jcsz,
+            double jcx2, double jcy2, double jcz2);
+
     native void setmVariables(int jm_SubPixels, double jm_R0, double jm_RCenter,
             double jm_CenterX2, double jm_CenterY2, double jm_CenterZ2, double jphaseValue);
 
