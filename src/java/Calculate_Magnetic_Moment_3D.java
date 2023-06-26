@@ -686,7 +686,18 @@ public class Calculate_Magnetic_Moment_3D implements PlugIn {
   // "Verify Radii"
   // =====================================================================================
   public static void verify_radii() {
-    updateVariables();
+    // updateVariables();
+
+    boolean condition = (WindowManager.getImage(subMagTitle) != null && WindowManager.getImage(subMagXZTitle) != null
+        && WindowManager.getImage(subPhaseTitle) != null && WindowManager.getImage(subPhaseXZTitle) != null)
+        && !(gui.ltf_spx.getValue().isEmpty() || gui.ltf_spy.getValue().isEmpty() || gui.ltf_spz.getValue().isEmpty());
+
+    // if condition doesn't pass then tell user and return
+    if (!condition) {
+      JOptionPane.showMessageDialog(gui.frame, "Error: Insufficient data to verify radii");
+      return;
+    }
+
     double m_R1 = Double.parseDouble(gui.ltf_r1.getValue());
     double m_R2 = Double.parseDouble(gui.ltf_r2.getValue());
     double m_R3 = Double.parseDouble(gui.ltf_r3.getValue());
@@ -694,194 +705,196 @@ public class Calculate_Magnetic_Moment_3D implements PlugIn {
     // update item center based off current subcenter GUI values
     item.setCenterSX(Double.parseDouble(gui.ltf_spx.getValue()));
     item.setCenterSY(Double.parseDouble(gui.ltf_spy.getValue()));
-    item.setCenterSZ(Double.parseDouble(gui.ltf_spz.getValue()));
+    item.setCenterSZ(Double.parseDouble(gui.ltf_spz.getValue()) - 1.0);
 
-    boolean condition = (WindowManager.getImage(subMagTitle) != null && WindowManager.getImage(subMagXZTitle) != null
-        && WindowManager.getImage(subPhaseTitle) != null && WindowManager.getImage(subPhaseXZTitle) != null)
-        && !(gui.ltf_spx.getValue().isEmpty() || gui.ltf_spy.getValue().isEmpty() || gui.ltf_spz.getValue().isEmpty());
+    int sub_x = (int) pixelToSubpixel(item.centerS().get(0), 0);
+    int sub_y = (int) pixelToSubpixel(item.centerS().get(1), 1);
+    int sub_z = (int) pixelToSubpixel(item.centerS().get(2), 2);
 
-    if (condition) {
+    // Clearing ROI list
+    roiImgMag.clear();
+    // Adding center ROI to list
+    roiImgMag.addPointROI("Center", sub_x, sub_y);
+    // Adding R1 to list
+    roiImgMag.addCircleROI("MR1", sub_x, sub_y, m_R1 * 10.0);
+    // Adding R2 to list
+    roiImgMag.addCircleROI("MR2", sub_x, sub_y, m_R2 * 10.0);
+    // Adding R3 to list
+    roiImgMag.addCircleROI("MR3", sub_x, sub_y, m_R3 * 10.0);
+    // Displaying list
+    roiImgMag.displayROIS();
 
-      int sub_x = (int) pixelToSubpixel(item.centerS().get(0), 0);
-      int sub_y = (int) pixelToSubpixel(item.centerS().get(1), 1);
-      int sub_z = (int) pixelToSubpixel(item.centerS().get(2), 2);
+    // The same logic as above is followed for the next three blocks
 
-      // Clearing ROI list
-      roiImgMag.clear();
-      // Adding center ROI to list
-      roiImgMag.addPointROI("Center", sub_x, sub_y);
-      // Adding R1 to list
-      roiImgMag.addCircleROI("MR1", sub_x, sub_y, m_R1 * 10.0);
-      // Adding R2 to list
-      roiImgMag.addCircleROI("MR2", sub_x, sub_y, m_R2 * 10.0);
-      // Adding R3 to list
-      roiImgMag.addCircleROI("MR3", sub_x, sub_y, m_R3 * 10.0);
-      // Displaying list
-      roiImgMag.displayROIS();
+    roiImgMagXZ.clear();
+    roiImgMagXZ.addPointROI("Center", sub_x, sub_z);
+    roiImgMagXZ.addCircleROI("MR1", sub_x, sub_z, m_R1 * 10.0);
+    roiImgMagXZ.addCircleROI("MR2", sub_x, sub_z, m_R2 * 10.0);
+    roiImgMagXZ.addCircleROI("MR3", sub_x, sub_z, m_R3 * 10.0);
+    roiImgMagXZ.displayROIS();
 
-      // The same logic as above is followed for the next three blocks
+    roiImgPhase.clear();
+    roiImgPhase.addPointROI("Center", sub_x, sub_y);
+    roiImgPhase.addCircleROI("MR1", sub_x, sub_y, m_R1 * 10.0);
+    roiImgPhase.addCircleROI("MR2", sub_x, sub_y, m_R2 * 10.0);
+    roiImgPhase.addCircleROI("MR3", sub_x, sub_y, m_R3 * 10.0);
+    roiImgPhase.displayROIS();
 
-      roiImgMagXZ.clear();
-      roiImgMagXZ.addPointROI("Center", sub_x, sub_z);
-      roiImgMagXZ.addCircleROI("MR1", sub_x, sub_z, m_R1 * 10.0);
-      roiImgMagXZ.addCircleROI("MR2", sub_x, sub_z, m_R2 * 10.0);
-      roiImgMagXZ.addCircleROI("MR3", sub_x, sub_z, m_R3 * 10.0);
-      roiImgMagXZ.displayROIS();
+    roiImgPhaseXZ.clear();
+    roiImgPhaseXZ.addPointROI("Center", sub_x, sub_z);
+    roiImgPhaseXZ.addCircleROI("MR1", sub_x, sub_z, m_R1 * 10.0);
+    roiImgPhaseXZ.addCircleROI("MR2", sub_x, sub_z, m_R2 * 10.0);
+    roiImgPhaseXZ.addCircleROI("MR3", sub_x, sub_z, m_R3 * 10.0);
+    roiImgPhaseXZ.displayROIS();
 
-      roiImgPhase.clear();
-      roiImgPhase.addPointROI("Center", sub_x, sub_y);
-      roiImgPhase.addCircleROI("MR1", sub_x, sub_y, m_R1 * 10.0);
-      roiImgPhase.addCircleROI("MR2", sub_x, sub_y, m_R2 * 10.0);
-      roiImgPhase.addCircleROI("MR3", sub_x, sub_y, m_R3 * 10.0);
-      roiImgPhase.displayROIS();
+    float R1_phase_actual = 0;
+    float R2_phase_actual = 0;
+    float R3_phase_actual = 0;
 
-      roiImgPhaseXZ.clear();
-      roiImgPhaseXZ.addPointROI("Center", sub_x, sub_z);
-      roiImgPhaseXZ.addCircleROI("MR1", sub_x, sub_z, m_R1 * 10.0);
-      roiImgPhaseXZ.addCircleROI("MR2", sub_x, sub_z, m_R2 * 10.0);
-      roiImgPhaseXZ.addCircleROI("MR3", sub_x, sub_z, m_R3 * 10.0);
-      roiImgPhaseXZ.displayROIS();
+    // Summing up all phase values where the radii and equitorial axis intercept
+    switch (item.MRIAxis()) {
+      case X:
+        R1_phase_actual += subpixelPhaseImage.getProcessor().getPixelValue(sub_x, sub_y + (int) m_R1 * 10);
+        logger.addInfo(
+            "Got coordinate (" + String.valueOf(sub_x) + "," + String.valueOf(sub_y + (int) m_R1 * 10) + ")");
+        R1_phase_actual += subpixelPhaseImage.getProcessor().getPixelValue(sub_x, sub_y - (int) m_R1 * 10);
+        logger.addInfo(
+            "Got coordinate (" + String.valueOf(sub_x) + "," + String.valueOf(sub_y - (int) m_R1 * 10) + ")");
+        R1_phase_actual += subpixelPhaseImageXZ.getProcessor().getPixelValue(sub_x, sub_z + (int) m_R1 * 10);
+        logger.addInfo(
+            "Got coordinate (" + String.valueOf(sub_x) + "," + String.valueOf(sub_z + (int) m_R1 * 10) + ")");
+        R1_phase_actual += subpixelPhaseImageXZ.getProcessor().getPixelValue(sub_x, sub_z - (int) m_R1 * 10);
+        logger.addInfo(
+            "Got coordinate (" + String.valueOf(sub_x) + "," + String.valueOf(sub_z - (int) m_R1 * 10) + ")");
 
-      float R1_phase_actual = 0;
-      float R2_phase_actual = 0;
-      float R3_phase_actual = 0;
+        R2_phase_actual += subpixelPhaseImage.getProcessor().getPixelValue(sub_x, sub_y + (int) m_R2 * 10);
+        logger.addInfo(
+            "Got coordinate (" + String.valueOf(sub_x) + "," + String.valueOf(sub_y + (int) m_R2 * 10) + ")");
+        R2_phase_actual += subpixelPhaseImage.getProcessor().getPixelValue(sub_x, sub_y - (int) m_R2 * 10);
+        logger.addInfo(
+            "Got coordinate (" + String.valueOf(sub_x) + "," + String.valueOf(sub_y - (int) m_R2 * 10) + ")");
+        R2_phase_actual += subpixelPhaseImageXZ.getProcessor().getPixelValue(sub_x, sub_z + (int) m_R2 * 10);
+        logger.addInfo(
+            "Got coordinate (" + String.valueOf(sub_x) + "," + String.valueOf(sub_z + (int) m_R2 * 10) + ")");
+        R2_phase_actual += subpixelPhaseImageXZ.getProcessor().getPixelValue(sub_x, sub_z - (int) m_R2 * 10);
+        logger.addInfo(
+            "Got coordinate (" + String.valueOf(sub_x) + "," + String.valueOf(sub_z - (int) m_R2 * 10) + ")");
 
-      // Summing up all phase values where the radii and equitorial axis intercept
-      switch (item.MRIAxis()) {
-        case X:
-          R1_phase_actual += subpixelPhaseImage.getProcessor().getPixelValue(sub_x, sub_y + (int) m_R1 * 10);
-          logger.addInfo(
-              "Got coordinate (" + String.valueOf(sub_x) + "," + String.valueOf(sub_y + (int) m_R1 * 10) + ")");
-          R1_phase_actual += subpixelPhaseImage.getProcessor().getPixelValue(sub_x, sub_y - (int) m_R1 * 10);
-          logger.addInfo(
-              "Got coordinate (" + String.valueOf(sub_x) + "," + String.valueOf(sub_y - (int) m_R1 * 10) + ")");
-          R1_phase_actual += subpixelPhaseImageXZ.getProcessor().getPixelValue(sub_x, sub_z + (int) m_R1 * 10);
-          logger.addInfo(
-              "Got coordinate (" + String.valueOf(sub_x) + "," + String.valueOf(sub_z + (int) m_R1 * 10) + ")");
-          R1_phase_actual += subpixelPhaseImageXZ.getProcessor().getPixelValue(sub_x, sub_z - (int) m_R1 * 10);
-          logger.addInfo(
-              "Got coordinate (" + String.valueOf(sub_x) + "," + String.valueOf(sub_z - (int) m_R1 * 10) + ")");
+        R3_phase_actual += subpixelPhaseImage.getProcessor().getPixelValue(sub_x, sub_y + (int) m_R3 * 10);
+        logger.addInfo(
+            "Got coordinate (" + String.valueOf(sub_x) + "," + String.valueOf(sub_y + (int) m_R3 * 10) + ")");
+        R3_phase_actual += subpixelPhaseImage.getProcessor().getPixelValue(sub_x, sub_y - (int) m_R3 * 10);
+        logger.addInfo("Got coordinate (" + String.valueOf(sub_x) + ","
+            + String.valueOf(sub_y - (int) m_R3 * 10) + ")");
+        R3_phase_actual += subpixelPhaseImageXZ.getProcessor().getPixelValue(sub_x, sub_z + (int) m_R3 * 10);
+        logger.addInfo("Got coordinate (" + String.valueOf(sub_x) + ","
+            + String.valueOf(sub_z + (int) m_R3 * 10) + ")");
+        R3_phase_actual += subpixelPhaseImageXZ.getProcessor().getPixelValue(sub_x, sub_z - (int) m_R3 * 10);
+        logger.addInfo("Got coordinate (" + String.valueOf(sub_x) + ","
+            + String.valueOf(sub_z - (int) m_R3 * 10) + ")");
+        break;
 
-          R2_phase_actual += subpixelPhaseImage.getProcessor().getPixelValue(sub_x, sub_y + (int) m_R2 * 10);
-          logger.addInfo(
-              "Got coordinate (" + String.valueOf(sub_x) + "," + String.valueOf(sub_y + (int) m_R2 * 10) + ")");
-          R2_phase_actual += subpixelPhaseImage.getProcessor().getPixelValue(sub_x, sub_y - (int) m_R2 * 10);
-          logger.addInfo(
-              "Got coordinate (" + String.valueOf(sub_x) + "," + String.valueOf(sub_y - (int) m_R2 * 10) + ")");
-          R2_phase_actual += subpixelPhaseImageXZ.getProcessor().getPixelValue(sub_x, sub_z + (int) m_R2 * 10);
-          logger.addInfo(
-              "Got coordinate (" + String.valueOf(sub_x) + "," + String.valueOf(sub_z + (int) m_R2 * 10) + ")");
-          R2_phase_actual += subpixelPhaseImageXZ.getProcessor().getPixelValue(sub_x, sub_z - (int) m_R2 * 10);
-          logger.addInfo(
-              "Got coordinate (" + String.valueOf(sub_x) + "," + String.valueOf(sub_z - (int) m_R2 * 10) + ")");
+      case Y:
+        R1_phase_actual += subpixelPhaseImageXZ.getProcessor().getPixelValue(sub_x + (int) m_R1 * 10, sub_z);
+        R1_phase_actual += subpixelPhaseImageXZ.getProcessor().getPixelValue(sub_x - (int) m_R1 * 10, sub_z);
+        R1_phase_actual += subpixelPhaseImageXZ.getProcessor().getPixelValue(sub_x, sub_z + (int) m_R1 * 10);
+        R1_phase_actual += subpixelPhaseImageXZ.getProcessor().getPixelValue(sub_x, sub_z - (int) m_R1 * 10);
 
-          R3_phase_actual += subpixelPhaseImage.getProcessor().getPixelValue(sub_x, sub_y + (int) m_R3 * 10);
-          logger.addInfo(
-              "Got coordinate (" + String.valueOf(sub_x) + "," + String.valueOf(sub_y + (int) m_R3 * 10) + ")");
-          R3_phase_actual += subpixelPhaseImage.getProcessor().getPixelValue(sub_x, sub_y - (int) m_R3 * 10);
-          logger.addInfo("Got coordinate (" + String.valueOf(sub_x) + ","
-              + String.valueOf(sub_y - (int) m_R3 * 10) + ")");
-          R3_phase_actual += subpixelPhaseImageXZ.getProcessor().getPixelValue(sub_x, sub_z + (int) m_R3 * 10);
-          logger.addInfo("Got coordinate (" + String.valueOf(sub_x) + ","
-              + String.valueOf(sub_z + (int) m_R3 * 10) + ")");
-          R3_phase_actual += subpixelPhaseImageXZ.getProcessor().getPixelValue(sub_x, sub_z - (int) m_R3 * 10);
-          logger.addInfo("Got coordinate (" + String.valueOf(sub_x) + ","
-              + String.valueOf(sub_z - (int) m_R3 * 10) + ")");
-          break;
+        R2_phase_actual += subpixelPhaseImageXZ.getProcessor().getPixelValue(sub_x + (int) m_R2 * 10, sub_z);
+        R2_phase_actual += subpixelPhaseImageXZ.getProcessor().getPixelValue(sub_x - (int) m_R2 * 10, sub_z);
+        R2_phase_actual += subpixelPhaseImageXZ.getProcessor().getPixelValue(sub_x, sub_z + (int) m_R2 * 10);
+        R2_phase_actual += subpixelPhaseImageXZ.getProcessor().getPixelValue(sub_x, sub_z - (int) m_R2 * 10);
 
-        case Y:
-          R1_phase_actual += subpixelPhaseImageXZ.getProcessor().getPixelValue(sub_x + (int) m_R1 * 10, sub_z);
-          R1_phase_actual += subpixelPhaseImageXZ.getProcessor().getPixelValue(sub_x - (int) m_R1 * 10, sub_z);
-          R1_phase_actual += subpixelPhaseImageXZ.getProcessor().getPixelValue(sub_x, sub_z + (int) m_R1 * 10);
-          R1_phase_actual += subpixelPhaseImageXZ.getProcessor().getPixelValue(sub_x, sub_z - (int) m_R1 * 10);
+        R3_phase_actual += subpixelPhaseImageXZ.getProcessor().getPixelValue(sub_x + (int) m_R3 * 10, sub_z);
+        R3_phase_actual += subpixelPhaseImageXZ.getProcessor().getPixelValue(sub_x - (int) m_R3 * 10, sub_z);
+        R3_phase_actual += subpixelPhaseImageXZ.getProcessor().getPixelValue(sub_x, sub_z + (int) m_R3 * 10);
+        R3_phase_actual += subpixelPhaseImageXZ.getProcessor().getPixelValue(sub_x, sub_z - (int) m_R3 * 10);
+        break;
 
-          R2_phase_actual += subpixelPhaseImageXZ.getProcessor().getPixelValue(sub_x + (int) m_R2 * 10, sub_z);
-          R2_phase_actual += subpixelPhaseImageXZ.getProcessor().getPixelValue(sub_x - (int) m_R2 * 10, sub_z);
-          R2_phase_actual += subpixelPhaseImageXZ.getProcessor().getPixelValue(sub_x, sub_z + (int) m_R2 * 10);
-          R2_phase_actual += subpixelPhaseImageXZ.getProcessor().getPixelValue(sub_x, sub_z - (int) m_R2 * 10);
+      case Z:
+        R1_phase_actual += subpixelPhaseImage.getProcessor().getPixelValue(sub_x, sub_y + (int) m_R1 * 10);
+        R1_phase_actual += subpixelPhaseImage.getProcessor().getPixelValue(sub_x, sub_y - (int) m_R1 * 10);
+        R1_phase_actual += subpixelPhaseImage.getProcessor().getPixelValue(sub_x + (int) m_R1 * 10, sub_y);
+        R1_phase_actual += subpixelPhaseImage.getProcessor().getPixelValue(sub_x - (int) m_R1 * 10, sub_y);
 
-          R3_phase_actual += subpixelPhaseImageXZ.getProcessor().getPixelValue(sub_x + (int) m_R3 * 10, sub_z);
-          R3_phase_actual += subpixelPhaseImageXZ.getProcessor().getPixelValue(sub_x - (int) m_R3 * 10, sub_z);
-          R3_phase_actual += subpixelPhaseImageXZ.getProcessor().getPixelValue(sub_x, sub_z + (int) m_R3 * 10);
-          R3_phase_actual += subpixelPhaseImageXZ.getProcessor().getPixelValue(sub_x, sub_z - (int) m_R3 * 10);
-          break;
+        R2_phase_actual += subpixelPhaseImage.getProcessor().getPixelValue(sub_x, sub_y + (int) m_R2 * 10);
+        R2_phase_actual += subpixelPhaseImage.getProcessor().getPixelValue(sub_x, sub_y - (int) m_R2 * 10);
+        R2_phase_actual += subpixelPhaseImage.getProcessor().getPixelValue(sub_x + (int) m_R2 * 10, sub_y);
+        R2_phase_actual += subpixelPhaseImage.getProcessor().getPixelValue(sub_x - (int) m_R2 * 10, sub_y);
 
-        case Z:
-          R1_phase_actual += subpixelPhaseImage.getProcessor().getPixelValue(sub_x, sub_y + (int) m_R1 * 10);
-          R1_phase_actual += subpixelPhaseImage.getProcessor().getPixelValue(sub_x, sub_y - (int) m_R1 * 10);
-          R1_phase_actual += subpixelPhaseImage.getProcessor().getPixelValue(sub_x + (int) m_R1 * 10, sub_y);
-          R1_phase_actual += subpixelPhaseImage.getProcessor().getPixelValue(sub_x - (int) m_R1 * 10, sub_y);
+        R3_phase_actual += subpixelPhaseImage.getProcessor().getPixelValue(sub_x, sub_y + (int) m_R3 * 10);
+        R3_phase_actual += subpixelPhaseImage.getProcessor().getPixelValue(sub_x, sub_y - (int) m_R3 * 10);
+        R3_phase_actual += subpixelPhaseImage.getProcessor().getPixelValue(sub_x + (int) m_R3 * 10, sub_y);
+        R3_phase_actual += subpixelPhaseImage.getProcessor().getPixelValue(sub_x - (int) m_R3 * 10, sub_y);
+        break;
 
-          R2_phase_actual += subpixelPhaseImage.getProcessor().getPixelValue(sub_x, sub_y + (int) m_R2 * 10);
-          R2_phase_actual += subpixelPhaseImage.getProcessor().getPixelValue(sub_x, sub_y - (int) m_R2 * 10);
-          R2_phase_actual += subpixelPhaseImage.getProcessor().getPixelValue(sub_x + (int) m_R2 * 10, sub_y);
-          R2_phase_actual += subpixelPhaseImage.getProcessor().getPixelValue(sub_x - (int) m_R2 * 10, sub_y);
-
-          R3_phase_actual += subpixelPhaseImage.getProcessor().getPixelValue(sub_x, sub_y + (int) m_R3 * 10);
-          R3_phase_actual += subpixelPhaseImage.getProcessor().getPixelValue(sub_x, sub_y - (int) m_R3 * 10);
-          R3_phase_actual += subpixelPhaseImage.getProcessor().getPixelValue(sub_x + (int) m_R3 * 10, sub_y);
-          R3_phase_actual += subpixelPhaseImage.getProcessor().getPixelValue(sub_x - (int) m_R3 * 10, sub_y);
-          break;
-
-        default:
-          JOptionPane.showMessageDialog(gui.frame, "Error in Verify Radii: No MRI field axis found");
-          break;
-      }
-
-      // Dividing each phase sum by 4 for average
-      R1_phase_actual /= 4.0;
-      R2_phase_actual /= 4.0;
-      R3_phase_actual /= 4.0;
-      // Removing background phase off each phase value
-      R1_phase_actual -= item.bkgPhase;
-      R2_phase_actual -= item.bkgPhase;
-      R3_phase_actual -= item.bkgPhase;
-
-      gui.lbl_r1phaseAct.setText(String.valueOf(Math.round(R1_phase_actual * 100.0) / 100.0));
-      gui.lbl_r2phaseAct.setText(String.valueOf(Math.round(R2_phase_actual * 100.0) / 100.0));
-      gui.lbl_r3phaseAct.setText(String.valueOf(Math.round(R3_phase_actual * 100.0) / 100.0));
-    } else {
-      JOptionPane.showMessageDialog(gui.frame, "Error: Insufficient data to verify radii");
+      default:
+        JOptionPane.showMessageDialog(gui.frame, "Error in Verify Radii: No MRI field axis found");
+        break;
     }
+
+    // Dividing each phase sum by 4 for average
+    R1_phase_actual /= 4.0;
+    R2_phase_actual /= 4.0;
+    R3_phase_actual /= 4.0;
+    // Removing background phase off each phase value
+    R1_phase_actual -= item.bkgPhase;
+    R2_phase_actual -= item.bkgPhase;
+    R3_phase_actual -= item.bkgPhase;
+
+    gui.lbl_r1phaseAct.setText(String.valueOf(Math.round(R1_phase_actual * 100.0) / 100.0));
+    gui.lbl_r2phaseAct.setText(String.valueOf(Math.round(R2_phase_actual * 100.0) / 100.0));
+    gui.lbl_r3phaseAct.setText(String.valueOf(Math.round(R3_phase_actual * 100.0) / 100.0));
   }
 
-  /*
-   * If the estimate bkg and spin density button is clicked:
-   * The program calls C++ to calculate the background phase and spin density
-   * based off of the three radii and their phase values
-   */
+  // =====================================================================================
+  // "Estimate Bkg & rho_0"
+  // =====================================================================================
   public static void est_bkg_dens() {
-    updateVariables();
+    // updateVariables();
 
     // Condition for code to run - all radii must be found and the subpixel images
     // and center must be found
     boolean condition = !(gui.ltf_r1.getValue().isEmpty()) && !(gui.ltf_r2.getValue().isEmpty())
         && !(gui.ltf_r3.getValue().isEmpty())
         && !(gui.ltf_spx.getValue().isEmpty() || gui.ltf_spy.getValue().isEmpty() || gui.ltf_spz.getValue().isEmpty())
+        && !gui.ltf_eqPhase.getValue().isEmpty()
         && (WindowManager.getImage(subMagTitle) != null && WindowManager.getImage(subMagXZTitle) != null
             && WindowManager.getImage(subPhaseTitle) != null && WindowManager.getImage(subPhaseXZTitle) != null);
 
-    if (condition) {
-
-      // Calling C++ to calculate background phase and spin density
-      jni.estBkgAndSpinDensity();
-
-      // Getting calculated background phase from C++
-      item.bkgPhase = Math.abs(jni.getBkg());
-
-      // Getting calculated spin density from C++
-      double spinDensity = jni.getSpinDensity();
-
-      logger.addVariable("estimatedBackgroundPhase", item.bkgPhase);
-      logger.addVariable("spinDensity", spinDensity);
-
-      // Setting background phase and spin density to GUI
-      gui.ll_estBkgPhase.setValue(String.valueOf(Math.round(item.bkgPhase * 100.0) / 100.0));
-      gui.ll_rho0.setValue(String.valueOf(Math.round(spinDensity * 100.0) / 100.0));
-    } else {
+    if (!condition) {
       JOptionPane.showMessageDialog(gui.frame,
           "Error: Insufficient data to calculate spin density and background phase");
+      return;
     }
+
+    // passing required values to C++
+    double eq_phase = Double.parseDouble(gui.ltf_eqPhase.getValue());
+    double RCenter = Double.parseDouble(gui.ltf_rc.getValue());
+    double mag_mom = eq_phase * Math.pow(RCenter, 3);
+    double r1 = Double.parseDouble(gui.ltf_r1.getValue());
+    double r2 = Double.parseDouble(gui.ltf_r2.getValue());
+    double r3 = Double.parseDouble(gui.ltf_r3.getValue());
+    double cx = Double.parseDouble(gui.ltf_spx.getValue());
+    double cy = Double.parseDouble(gui.ltf_spy.getValue());
+    double cz = Double.parseDouble(gui.ltf_spz.getValue()) - 1.0;
+    jni.passSpinDensValues(cx, cy, cz, r1, r2, r3, item.bkgPhase, mag_mom);
+
+    // Calling C++ to calculate background phase and spin density
+    jni.estBkgAndSpinDensity();
+
+    // Getting calculated background phase from C++
+    item.bkgPhase = Math.abs(jni.getBkg());
+
+    // Getting calculated spin density from C++
+    double spinDensity = jni.getSpinDensity();
+
+    logger.addVariable("estimatedBackgroundPhase", item.bkgPhase);
+    logger.addVariable("spinDensity", spinDensity);
+
+    // Setting background phase and spin density to GUI
+    gui.ll_estBkgPhase.setValue(String.valueOf(Math.round(item.bkgPhase * 100.0) / 100.0));
+    gui.ll_rho0.setValue(String.valueOf(Math.round(spinDensity * 100.0) / 100.0));
   }
 
   /*
@@ -897,45 +910,58 @@ public class Calculate_Magnetic_Moment_3D implements PlugIn {
         && (WindowManager.getImage(subMagTitle) != null && WindowManager.getImage(subMagXZTitle) != null
             && WindowManager.getImage(subPhaseTitle) != null && WindowManager.getImage(subPhaseXZTitle) != null);
 
-    if (condition) {
+    if (!condition) {
+      JOptionPane.showMessageDialog(gui.frame, "Error: Subpixel images/center not generated/calculated");
+      return;
+    }
 
-      // Initializing plot object for graph
-      Plot xPlot = new Plot("X-Profile", "Location", "Phase");
+    // Initializing plot object for graph
+    Plot xPlot = new Plot("X-Profile", "Location", "Phase");
 
-      // Initializing ArrayLists for graph values on each axis
-      ArrayList<Double> intensity = new ArrayList<Double>();
-      ArrayList<Double> location = new ArrayList<Double>();
+    // Initializing ArrayLists for graph values on each axis
+    ArrayList<Double> intensity = new ArrayList<Double>();
+    ArrayList<Double> location = new ArrayList<Double>();
 
-      // Setting colour components of graph
-      xPlot.setColor(Color.RED, Color.BLACK);
+    // Setting colour components of graph
+    xPlot.setColor(Color.RED, Color.BLACK);
 
-      try {
+    try {
 
-        int x_px = item.centerS().get(0).intValue();
-        int y_spx = (int) pixelToSubpixel(item.centerS().get(1).intValue(), 1);
-        // Adding phase values to both ArrayLists
-        double m_R0 = item.m_R0();
-        for (int i = x_px - (int) m_R0,
-            c = 0; i <= x_px + (int) m_R0; i++, c++) {
-          intensity
-              .add((double) subpixelPhaseMatrix[(int) pixelToSubpixel(i, 0)][y_spx]);
-          location.add((double) (i - x_px));
-          if (i != x_px - (int) m_R0)
-            xPlot.drawLine(location.get(c - 1), intensity.get(c - 1), location.get(c), intensity.get(c));
-        }
-      } catch (Exception exc) {
-        JOptionPane.showMessageDialog(gui.frame, exc.toString());
+      // int x_px = item.centerS().get(0).intValue();
+      int x_px = (int) Double.parseDouble(gui.ltf_rcx.getValue());
+      // int y_spx = (int) pixelToSubpixel(item.centerS().get(1).intValue(), 1);
+      int y_spx = (int) pixelToSubpixel((int) Double.parseDouble(gui.ltf_rcy.getValue()), 1);
+      logger.addVariable("x_px, y_spx", String.valueOf(x_px) + ',' + String.valueOf(y_spx));
+
+      // Adding phase values to both ArrayLists
+      double m_R0 = item.m_R0();
+      logger.addVariable("m_R0", m_R0);
+
+      for (int i = x_px - (int) m_R0,
+          c = 0; i <= x_px + (int) m_R0; i++, c++) {
+        logger.addVariable("uhhhhh",
+            String.valueOf((int) pixelToSubpixel(i, 0)) + ',' + y_spx + ',' + String.valueOf(i - x_px));
+
+        intensity.add((double) subpixelPhaseMatrix[(int) pixelToSubpixel(i, 0)][y_spx]);
+        location.add((double) (i - x_px));
+
+        if (i != x_px - (int) m_R0)
+          xPlot.drawLine(location.get(c - 1), intensity.get(c - 1), location.get(c), intensity.get(c));
+
       }
 
-      try {
-        // Adding points to graph and displaying
-        xPlot.addPoints(location, intensity, ij.gui.Plot.DIAMOND);
-        xPlot.show();
-      } catch (Exception exc) {
-        JOptionPane.showMessageDialog(gui.frame, exc.toString());
-      }
-    } else {
-      JOptionPane.showMessageDialog(gui.frame, "Error: Subpixel images not generated");
+    } catch (Exception exc) {
+      JOptionPane.showMessageDialog(gui.frame, exc.toString());
+      return;
+    }
+
+    try {
+      // Adding points to graph and displaying
+      xPlot.addPoints(location, intensity, ij.gui.Plot.DIAMOND);
+      xPlot.show();
+    } catch (Exception exc) {
+      JOptionPane.showMessageDialog(gui.frame, exc.toString());
+      return;
     }
   }
 

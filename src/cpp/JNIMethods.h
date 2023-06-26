@@ -25,6 +25,14 @@ JNIEXPORT void JNICALL Java_JNIMethods_passCalcSubCenterValues
 
 /*
  * Class:     JNIMethods
+ * Method:    passSpinDensValues
+ * Signature: (DDDDDDDD)V
+ */
+JNIEXPORT void JNICALL Java_JNIMethods_passSpinDensValues
+  (JNIEnv *, jobject, jdouble, jdouble, jdouble, jdouble, jdouble, jdouble, jdouble, jdouble);
+
+/*
+ * Class:     JNIMethods
  * Method:    setmVariables
  * Signature: (IDDDDDD)V
  */

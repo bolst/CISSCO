@@ -183,6 +183,24 @@ JNIEXPORT void JNICALL Java_JNIMethods_passCalcSubCenterValues(JNIEnv *env, jobj
     return;
 }
 
+JNIEXPORT void JNICALL Java_JNIMethods_passSpinDensValues(JNIEnv *env, jobject thisObj, jdouble jm_cx, jdouble jm_cy, jdouble jm_cz,
+                                                          jdouble jm_r1, jdouble jm_r2, jdouble jm_r3,
+                                                          jdouble jm_bkgphase, jdouble jm_magmom)
+{
+    m_CenterX = jm_cx;
+    m_CenterY = jm_cy;
+    m_CenterZ = jm_cz;
+
+    m_R1 = jm_r1;
+    m_R2 = jm_r2;
+    m_R3 = jm_r3;
+
+    BkgPhase = jm_bkgphase;
+    m_MagMoment = jm_magmom;
+
+    return;
+}
+
 JNIEXPORT void JNICALL Java_JNIMethods_setmVariables(JNIEnv *env, jobject thisObj, jint nm_SubPixels, jdouble nm_R0, jdouble nm_RCenter, jdouble nm_CenterX2, jdouble nm_CenterY2, jdouble nm_CenterZ2, jdouble nmphasevalue)
 {
     m_SubPixels = nm_SubPixels;

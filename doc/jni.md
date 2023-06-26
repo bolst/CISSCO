@@ -36,13 +36,22 @@ However for this button, "Generate Subpixel Grid/Data" must be clicked first, wh
 | m_SubPixels | grid |
 | smallBox_X,Y,Z | item.roi_mag_belowM_x,y,zi|
 | smallBox_X,Y,ZSize | item.roi_mag_belowM_dx,y,z|
-| m_RCenter | RCenter |
+| m_RCenter | gui -> rc |
 | m_R0 | item.m_R0 |
 | centerL_x,y,z | item.CenterL() |
 | centerM_x,y,z | item.CenterM() |
 | centerS_x,y,z | gui->ltf_rcx,y,z |
 | m_CenterX,Y,Z2 | (int) Double.parseDouble(gui.ltf_rcx,y,z.getValue()) |
 
+
+## Estimate Bkg & Spin Density
+| C++         | Java        |
+| ----------- | ----------- |
+| __CalculateSpinDensity(double, ... ,double, double*, double*)__ | **jni.estBkgAndSpinDensity()** |
+| m_CenterX,Y,Z | gui -> ltf_spx,y,z |
+| m_R1,2,3 | gui -> ltf_r1,2,3 |
+| BkgPhase | item.bkgPhase |
+| m_MagMoment | gui -> ltf_eqPhase * (gui -> rc)^3 |
 
 
 ## Misc

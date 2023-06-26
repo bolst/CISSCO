@@ -49,6 +49,9 @@ class JNIMethods {
             double jcsx, double jcsy, double jcsz,
             double jcx2, double jcy2, double jcz2);
 
+    native void passSpinDensValues(double jm_cx, double jm_cy, double jm_cz, double jm_r1, double jm_r2, double jm_r3,
+            double jm_bkgphase, double jm_magmom);
+
     native void setmVariables(int jm_SubPixels, double jm_R0, double jm_RCenter,
             double jm_CenterX2, double jm_CenterY2, double jm_CenterZ2, double jphaseValue);
 
