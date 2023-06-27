@@ -1077,10 +1077,9 @@ public class Calculate_Magnetic_Moment_3D implements PlugIn {
     }
   }
 
-  /*
-   * If the calculate magnetic moment button is clicked:
-   * C++ calculates magnetic moment
-   */
+  // =====================================================================================
+  // "Calculate Magnetic Moment"
+  // =====================================================================================
   public static void calc_mag_moment() {
     updateVariables();
 

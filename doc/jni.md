@@ -53,6 +53,11 @@ However for this button, "Generate Subpixel Grid/Data" must be clicked first, wh
 | BkgPhase | item.bkgPhase |
 | m_MagMoment | gui -> ltf_eqPhase * (gui -> rc)^3 |
 
+## Calculate Magnetic Moment
+| C++         | Java        |
+| ----------- | ----------- |
+| **OnBnClickedCalcmagmoment()** | **jni.calculateMagneticMoment()** |
+
 
 ## Misc
 | C++         | Java        |

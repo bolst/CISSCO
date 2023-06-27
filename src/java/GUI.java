@@ -26,12 +26,12 @@ public class GUI {
             btn_plotX, btn_plotY,
             btn_plotZ, btn_calcMagMom, btn_loadSimImg, btn_sumRi;
     public LabeledTextField ltf_eqPhase, ltf_rc, ltf_r1, ltf_r2, ltf_r3, ltf_rcx, ltf_rcy, ltf_rcz, ltf_M, ltf_spx,
-            ltf_spy, ltf_spz, ltf_magMom,
+            ltf_spy, ltf_spz,
             ltf_TEFirst, ltf_TELast, ltf_B0, ltf_RChi, ltf_sigSE, ltf_eps12, ltf_eps23, ltf_snr, ltf_Ri, ltf_secondImgX,
             ltf_secondImgY, ltf_secondImgZ, ltf_v1seX1, ltf_v1seX2, ltf_v1seY1, ltf_v1seY2, ltf_v1seZ1, ltf_v1seZ2,
             ltf_v2seX1, ltf_v2seX2, ltf_v2seY1, ltf_v2seY2, ltf_v2seZ1, ltf_v2seZ2;
     public LabeledLabel ll_estBkgPhase, ll_grid, ll_rho0, ll_ReRi, ll_ImRi, ll_momenterror, ll_rho0SE, ll_aSE, ll_dChi,
-            ll_dChiSE, ll_a, ll_V0;
+            ll_dChiSE, ll_a, ll_V0, ltf_magMom;
 
     public GUI() {
         this.initialize();
@@ -311,7 +311,7 @@ public class GUI {
          * frame.getContentPane().add(lbl_magMomUnit, "cell 2 10");
          */
 
-        ltf_magMom = new LabeledTextField("|p|=", "0.0", "<html>radians*pixel<sup>3</sup></html>", 4);
+        ltf_magMom = new LabeledLabel("|p|=", "0.0", "<html>radians*pixel<sup>3</sup></html>");
         frame.getContentPane().add(ltf_magMom, "cell 2 10");
 
         btn_loadSimImg = new JButton("Load Simulated Images");
