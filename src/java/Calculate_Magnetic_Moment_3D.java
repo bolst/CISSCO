@@ -858,7 +858,7 @@ public class Calculate_Magnetic_Moment_3D implements PlugIn {
     boolean condition = !(gui.ltf_r1.getValue().isEmpty()) && !(gui.ltf_r2.getValue().isEmpty())
         && !(gui.ltf_r3.getValue().isEmpty())
         && !(gui.ltf_spx.getValue().isEmpty() || gui.ltf_spy.getValue().isEmpty() || gui.ltf_spz.getValue().isEmpty())
-        && !gui.ltf_eqPhase.getValue().isEmpty()
+        && !gui.ltf_magMom.getValue().isEmpty()
         && (WindowManager.getImage(subMagTitle) != null && WindowManager.getImage(subMagXZTitle) != null
             && WindowManager.getImage(subPhaseTitle) != null && WindowManager.getImage(subPhaseXZTitle) != null);
 
@@ -869,9 +869,7 @@ public class Calculate_Magnetic_Moment_3D implements PlugIn {
     }
 
     // passing required values to C++
-    double eq_phase = Double.parseDouble(gui.ltf_eqPhase.getValue());
-    double RCenter = Double.parseDouble(gui.ltf_rc.getValue());
-    double mag_mom = eq_phase * Math.pow(RCenter, 3);
+    double mag_mom = Double.parseDouble(gui.ltf_magMom.getValue());
     double r1 = Double.parseDouble(gui.ltf_r1.getValue());
     double r2 = Double.parseDouble(gui.ltf_r2.getValue());
     double r3 = Double.parseDouble(gui.ltf_r3.getValue());
@@ -1081,7 +1079,7 @@ public class Calculate_Magnetic_Moment_3D implements PlugIn {
   // "Calculate Magnetic Moment"
   // =====================================================================================
   public static void calc_mag_moment() {
-    updateVariables();
+    // updateVariables();
 
     // Condition for code to run - radii, RCenter, subpixel center and images must
     // be found
@@ -1092,36 +1090,52 @@ public class Calculate_Magnetic_Moment_3D implements PlugIn {
             && WindowManager.getImage(subPhaseTitle) != null && WindowManager.getImage(subPhaseXZTitle) != null)
         && !gui.ltf_rc.getValue().isEmpty();
 
-    if (condition) {
-      String errorMessage_Mag;
-
-      // Calculating magnetic moment in C++, if function returns empty string then no
-      // error message
-      errorMessage_Mag = jni.calculateMagneticMoment();
-
-      if (errorMessage_Mag.compareTo("") == 0) {
-        // Getting various values from C++ as a result of the function to calculate the
-        // magnetic moment being ran
-        gui.lbl_r1phaseCalc.setText(String.valueOf(Math.round(jni.getMR1Calc() * 100.0) / 100.0));
-        gui.lbl_r2phaseCalc.setText(String.valueOf(Math.round(jni.getMR2Calc() * 100.0) / 100.0));
-        gui.lbl_r3phaseCalc.setText(String.valueOf(Math.round(jni.getMR3Calc() * 100.0) / 100.0));
-        gui.ltf_magMom.setValue(String.valueOf(Math.round(jni.getMagMoment() * 100.0) / 100.0));
-        if (jni.getUncertainty() == -1.0) {
-          gui.ll_momenterror.setValue("");
-          JOptionPane.showMessageDialog(gui.frame,
-              "<html>Error: Cannot calculate error\nMake sure SNR, &epsilon;12 and &epsilon;23 are set.");
-        } else {
-          gui.ll_momenterror.setValue(String.valueOf(Math.round(jni.getUncertainty() * 100.0) / 100.0));
-        }
-        gui.ll_dChi.setValue(String.valueOf(Math.round(jni.getChi() * 100.0) / 100.0));
-        gui.ll_a.setValue(String.valueOf(Math.round(jni.getA() * 100.0) / 100.0));
-        gui.ll_rho0.setValue(String.valueOf(Math.round(jni.getSpinDensity() * 100.0) / 100.0));
-      } else {
-        JOptionPane.showMessageDialog(gui.frame, errorMessage_Mag);
-      }
-    } else {
+    if (!condition) {
       JOptionPane.showMessageDialog(gui.frame, "Error: insufficient data to calculate magnetic moment");
+      return;
     }
+
+    String errorMessage_Mag;
+
+    double r1 = Double.parseDouble(gui.ltf_r1.getValue());
+    double r2 = Double.parseDouble(gui.ltf_r2.getValue());
+    double r3 = Double.parseDouble(gui.ltf_r3.getValue());
+    double csx = Double.parseDouble(gui.ltf_spx.getValue());
+    double csy = Double.parseDouble(gui.ltf_spy.getValue());
+    double csz = Double.parseDouble(gui.ltf_spz.getValue()) - 1.0;
+    double mr0 = item.m_R0();
+    double bkg_phase = item.bkgPhase;
+    double rchi = Double.parseDouble(gui.ltf_RChi.getValue());
+    double b0 = Double.parseDouble(gui.ltf_B0.getValue());
+    double tefirst = Double.parseDouble(gui.ltf_TEFirst.getValue());
+    double snr = Double.parseDouble(gui.ltf_snr.getValue());
+    jni.passMagMomValues(r1, r2, r3, csx, csy, csz, mr0, bkg_phase, rchi, b0, tefirst, snr);
+
+    // Calculating magnetic moment in C++, if function returns empty string then no
+    // error message
+    errorMessage_Mag = jni.calculateMagneticMoment();
+
+    if (errorMessage_Mag.compareTo("") != 0) {
+      JOptionPane.showMessageDialog(gui.frame, errorMessage_Mag);
+      return;
+    }
+
+    // Getting various values from C++ as a result of the function to calculate the
+    // magnetic moment being ran
+    gui.lbl_r1phaseCalc.setText(String.valueOf(Math.round(jni.getMR1Calc() * 100.0) / 100.0));
+    gui.lbl_r2phaseCalc.setText(String.valueOf(Math.round(jni.getMR2Calc() * 100.0) / 100.0));
+    gui.lbl_r3phaseCalc.setText(String.valueOf(Math.round(jni.getMR3Calc() * 100.0) / 100.0));
+    gui.ltf_magMom.setValue(String.valueOf(Math.round(jni.getMagMoment() * 100.0) / 100.0));
+    if (jni.getUncertainty() == -1.0) {
+      gui.ll_momenterror.setValue("");
+      JOptionPane.showMessageDialog(gui.frame,
+          "<html>Error: Cannot calculate error, make sure SNR, &epsilon;12 and &epsilon;23 are set.</html>");
+    } else {
+      gui.ll_momenterror.setValue(String.valueOf(Math.round(jni.getUncertainty() * 100.0) / 100.0));
+    }
+    gui.ll_dChi.setValue(String.valueOf(Math.round(jni.getChi() * 100.0) / 100.0));
+    gui.ll_a.setValue(String.valueOf(Math.round(jni.getA() * 100.0) / 100.0));
+    gui.ll_rho0.setValue(String.valueOf(Math.round(jni.getSpinDensity() * 100.0) / 100.0));
   }
 
   /*

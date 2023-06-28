@@ -267,7 +267,7 @@ public class GUI {
         frame.getContentPane().add(btn_plotZ, "cell 8 8");
 
         btn_estBkgDens = new JButton("<html>Estimate Bkg & &rho;<sub>0</sub></html>");
-        frame.getContentPane().add(btn_estBkgDens, "cell 1 9,growx");
+        frame.getContentPane().add(btn_estBkgDens, "cell 1 10,growx");
 
         /*
          * JLabel lbl_rho0 = new JLabel("<html>&rho;0 =</html>");
@@ -277,7 +277,7 @@ public class GUI {
          * frame.getContentPane().add(lbl_rho0val, "cell 2 9");
          */
         ll_rho0 = new LabeledLabel("<html>&rho;<sub>0</sub> =</html>", "", null);
-        frame.getContentPane().add(ll_rho0, "flowx,cell 2 9");
+        frame.getContentPane().add(ll_rho0, "flowx,cell 2 10");
 
         /*
          * lbl_estBkgPhase = new JLabel("Estimated Background Phase =");
@@ -291,13 +291,13 @@ public class GUI {
          */
 
         ll_estBkgPhase = new LabeledLabel("Estimated Background Phase =", "0.0", "radians");
-        frame.getContentPane().add(ll_estBkgPhase, "cell 4 9");
+        frame.getContentPane().add(ll_estBkgPhase, "cell 4 10");
 
         lbl_stepfive = new JLabel("5.");
-        frame.getContentPane().add(lbl_stepfive, "cell 0 10");
+        frame.getContentPane().add(lbl_stepfive, "cell 0 9");
 
         btn_calcMagMom = new JButton("Calculate Magnetic Moment");
-        frame.getContentPane().add(btn_calcMagMom, "cell 1 10,growx");
+        frame.getContentPane().add(btn_calcMagMom, "cell 1 9,growx");
 
         /*
          * lbl_magMom = new JLabel("|p|=");
@@ -312,7 +312,7 @@ public class GUI {
          */
 
         ltf_magMom = new LabeledLabel("|p|=", "0.0", "<html>radians*pixel<sup>3</sup></html>");
-        frame.getContentPane().add(ltf_magMom, "cell 2 10");
+        frame.getContentPane().add(ltf_magMom, "cell 2 9");
 
         btn_loadSimImg = new JButton("Load Simulated Images");
         frame.getContentPane().add(btn_loadSimImg, "cell 1 11,growx");

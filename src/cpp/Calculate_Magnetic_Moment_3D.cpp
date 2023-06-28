@@ -183,6 +183,31 @@ JNIEXPORT void JNICALL Java_JNIMethods_passCalcSubCenterValues(JNIEnv *env, jobj
     return;
 }
 
+JNIEXPORT void JNICALL Java_JNIMethods_passMagMomValues(JNIEnv *env, jobject thisObj,
+                                                        jdouble jm_r1, jdouble jm_r2, jdouble jm_r3,
+                                                        jdouble jm_csx, jdouble jm_csy, jdouble jm_csz,
+                                                        jdouble jm_R0, jdouble jm_bkg,
+                                                        jdouble jm_RChi, jdouble jm_B0, jdouble jm_TEFirst, jdouble jm_snr)
+{
+    m_R1 = jm_r1;
+    m_R2 = jm_r2;
+    m_R3 = jm_r3;
+
+    m_CenterX = jm_csx;
+    m_CenterY = jm_csy;
+    m_CenterZ = jm_csz;
+
+    m_R0 = jm_R0;
+    BkgPhase = jm_bkg;
+
+    m_RChi = jm_RChi;
+    m_B0 = jm_B0;
+    m_TE_first = jm_TEFirst;
+    m_SNR = jm_snr;
+
+    return;
+}
+
 JNIEXPORT void JNICALL Java_JNIMethods_passSpinDensValues(JNIEnv *env, jobject thisObj, jdouble jm_cx, jdouble jm_cy, jdouble jm_cz,
                                                           jdouble jm_r1, jdouble jm_r2, jdouble jm_r3,
                                                           jdouble jm_bkgphase, jdouble jm_magmom)

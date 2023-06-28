@@ -40,7 +40,7 @@ However for this button, "Generate Subpixel Grid/Data" must be clicked first, wh
 | m_R0 | item.m_R0 |
 | centerL_x,y,z | item.CenterL() |
 | centerM_x,y,z | item.CenterM() |
-| centerS_x,y,z | gui->ltf_rcx,y,z |
+| centerS_x,y,z | gui -> ltf_rcx,y,z |
 | m_CenterX,Y,Z2 | (int) Double.parseDouble(gui.ltf_rcx,y,z.getValue()) |
 
 
@@ -51,12 +51,22 @@ However for this button, "Generate Subpixel Grid/Data" must be clicked first, wh
 | m_CenterX,Y,Z | gui -> ltf_spx,y,z |
 | m_R1,2,3 | gui -> ltf_r1,2,3 |
 | BkgPhase | item.bkgPhase |
-| m_MagMoment | gui -> ltf_eqPhase * (gui -> rc)^3 |
+| m_MagMoment | gui -> ltf_magMom |
 
 ## Calculate Magnetic Moment
 | C++         | Java        |
 | ----------- | ----------- |
 | **OnBnClickedCalcmagmoment()** | **jni.calculateMagneticMoment()** |
+| m_R1,2,3 | gui -> ltf_r1,2,3 |
+| m_CenterX,Y,Z | gui -> ltf_spx,y,z |
+| m_SubPixels | grid |
+| m_R0 | item.m_R0 | 
+| BkgPhase | item.bkgPhase |
+| m_RChi | gui -> ltf_RChi|
+| m_B0 | gui -> ltf_B0|
+| m_TE_first | gui -> ltf_TEFirst |
+| m_SNR | gui -> ltf_snr |
+
 
 
 ## Misc
