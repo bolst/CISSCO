@@ -226,6 +226,17 @@ JNIEXPORT void JNICALL Java_JNIMethods_passSpinDensValues(JNIEnv *env, jobject t
     return;
 }
 
+JNIEXPORT void JNICALL Java_JNIMethods_passSumValues(JNIEnv *env, jobject thisObj, jdouble jm_ri, jdouble jm_cx, jdouble jm_cy, jdouble jm_cz)
+{
+    m_Ri = jm_ri;
+
+    m_CenterX = jm_cx;
+    m_CenterY = jm_cy;
+    m_CenterZ = jm_cz;
+
+    return;
+}
+
 JNIEXPORT void JNICALL Java_JNIMethods_setmVariables(JNIEnv *env, jobject thisObj, jint nm_SubPixels, jdouble nm_R0, jdouble nm_RCenter, jdouble nm_CenterX2, jdouble nm_CenterY2, jdouble nm_CenterZ2, jdouble nmphasevalue)
 {
     m_SubPixels = nm_SubPixels;

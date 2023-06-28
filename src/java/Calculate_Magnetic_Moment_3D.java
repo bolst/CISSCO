@@ -33,7 +33,7 @@ public class Calculate_Magnetic_Moment_3D implements PlugIn {
   public static ImagePlus subpixelMagImage, subpixelMagImageXZ, subpixelPhaseImage, subpixelPhaseImageXZ, V1SE_XYImage,
       V1SE_XZImage;
   private static String subCenterErrorMessage,
-      subMagTitle, subMagXZTitle, subPhaseTitle, subPhaseXZTitle, V1XY_Title, V1XZ_Title, s1MagWindowTitle,
+      V1XY_Title, V1XZ_Title, s1MagWindowTitle,
       s1PhaseWindowTitle, s5MagWindowTitle, s5PhaseWindowTitle, s6MagWindowTitle, s6PhaseWindowTitle, s7WindowTitle;
 
   private static float[][] subpixelMagMatrix, subpixelMagMatrixXZ, subpixelPhaseMatrix, subpixelPhaseMatrixXZ;
@@ -44,6 +44,10 @@ public class Calculate_Magnetic_Moment_3D implements PlugIn {
   private static final double GAMMARBAR = 42.58;
   private static final String ACCEPTED_FILE_TYPE = "nii";
   private static final String PLUS_MINUS = "\u00B1";
+  private static final String subMagTitle = "Subpixel Mag Image";
+  private static final String subMagXZTitle = "Subpixel Mag Image XZ";
+  private static final String subPhaseTitle = "Subpixel Phase Image";
+  private static final String subPhaseXZTitle = "Subpixel Phase Image XZ";
 
   private static final boolean DEBUG = false;
 
@@ -417,21 +421,15 @@ public class Calculate_Magnetic_Moment_3D implements PlugIn {
       ImageProcessor IP_subpixelPhaseImage = new FloatProcessor(size_subpixelimg, size_subpixelimg);
       ImageProcessor IP_subpixelPhaseImageXZ = new FloatProcessor(size_subpixelimg, size_subpixelimg);
 
-      // Adding mag and phase data to image processors
+      // Adding mag and phase data to image processors (with no bkg phase)
       for (int i = 0; i < size_subpixelimg; i++) {
         for (int j = 0; j < size_subpixelimg; j++) {
           IP_subpixelMagImage.putPixelValue(i, j, subpixelMagMatrix[i][j]);
           IP_subpixelMagImageXZ.putPixelValue(i, j, subpixelMagMatrixXZ[i][j]);
-          IP_subpixelPhaseImage.putPixelValue(i, j, subpixelPhaseMatrix[i][j]);
-          IP_subpixelPhaseImageXZ.putPixelValue(i, j, subpixelPhaseMatrixXZ[i][j]);
+          IP_subpixelPhaseImage.putPixelValue(i, j, subpixelPhaseMatrix[i][j] - item.bkgPhase);
+          IP_subpixelPhaseImageXZ.putPixelValue(i, j, subpixelPhaseMatrixXZ[i][j] - item.bkgPhase);
         }
       }
-
-      // Setting mag and phase subpixel image titles
-      subMagTitle = "Subpixel Mag Image";
-      subMagXZTitle = "Subpixel Mag Image XZ";
-      subPhaseTitle = "Subpixel Phase Image";
-      subPhaseXZTitle = "Subpixel Phase Image XZ";
 
       // Creating new ImagePlus objects with respective ImageProcessors to be
       // displayed
@@ -901,7 +899,7 @@ public class Calculate_Magnetic_Moment_3D implements PlugIn {
    * center
    */
   public static void plot_x() {
-    updateVariables();
+    // updateVariables();
 
     boolean condition = !(gui.ltf_spx.getValue().isEmpty() || gui.ltf_spy.getValue().isEmpty()
         || gui.ltf_spz.getValue().isEmpty())
@@ -969,7 +967,7 @@ public class Calculate_Magnetic_Moment_3D implements PlugIn {
    * center
    */
   public static void plot_y() {
-    updateVariables();
+    // updateVariables();
 
     boolean condition = !(gui.ltf_spx.getValue().isEmpty() || gui.ltf_spy.getValue().isEmpty()
         || gui.ltf_spz.getValue().isEmpty())
@@ -1024,7 +1022,7 @@ public class Calculate_Magnetic_Moment_3D implements PlugIn {
    * center
    */
   public static void plot_z() {
-    updateVariables();
+    // updateVariables();
 
     boolean condition = !(gui.ltf_spx.getValue().isEmpty() || gui.ltf_spy.getValue().isEmpty()
         || gui.ltf_spz.getValue().isEmpty())
@@ -1349,9 +1347,13 @@ public class Calculate_Magnetic_Moment_3D implements PlugIn {
    * radius on the subpixel images
    */
   public static void sum_ri() {
-    updateVariables();
+    // updateVariables();
+
     double m_Ri = Double.parseDouble(gui.ltf_Ri.getValue());
-    jni.setRi(m_Ri);
+    double csx = Double.parseDouble(gui.ltf_spx.getValue());
+    double csy = Double.parseDouble(gui.ltf_spy.getValue());
+    double csz = Double.parseDouble(gui.ltf_spz.getValue()) - 1.0;
+    jni.passSumValues(m_Ri, csx, csy, csz);
 
     String imag_msg;
     String real_msg;

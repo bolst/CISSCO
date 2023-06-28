@@ -41,6 +41,14 @@ JNIEXPORT void JNICALL Java_JNIMethods_passMagMomValues
 
 /*
  * Class:     JNIMethods
+ * Method:    passSumValues
+ * Signature: (DDDD)V
+ */
+JNIEXPORT void JNICALL Java_JNIMethods_passSumValues
+  (JNIEnv *, jobject, jdouble, jdouble, jdouble, jdouble);
+
+/*
+ * Class:     JNIMethods
  * Method:    setmVariables
  * Signature: (IDDDDDD)V
  */

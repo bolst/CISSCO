@@ -57,6 +57,8 @@ class JNIMethods {
             double jm_R0, double jm_bkg,
             double jm_RChi, double jm_B0, double jm_TEfirst, double jm_snr);
 
+    native void passSumValues(double jm_ri, double jm_cx, double jm_cy, double jm_cz);
+
     native void setmVariables(int jm_SubPixels, double jm_R0, double jm_RCenter,
             double jm_CenterX2, double jm_CenterY2, double jm_CenterZ2, double jphaseValue);
 
