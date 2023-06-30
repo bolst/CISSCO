@@ -1112,7 +1112,13 @@ public class Calculate_Magnetic_Moment_3D implements PlugIn {
     double b0 = Double.parseDouble(gui.ltf_B0.getValue());
     double tefirst = Double.parseDouble(gui.ltf_TEFirst.getValue());
     double snr = Double.parseDouble(gui.ltf_snr.getValue());
-    jni.passMagMomValues(r1, r2, r3, csx, csy, csz, mr0, bkg_phase, rchi, b0, tefirst, snr);
+    double outer_phase = Double.parseDouble(gui.lbl_r1phaseCalc.getText());
+    double middle_phase = Double.parseDouble(gui.lbl_r2phaseCalc.getText());
+    double inner_phase = Double.parseDouble(gui.lbl_r3phaseCalc.getText());
+    double e12 = Double.parseDouble(gui.ltf_eps12.getValue());
+    double e23 = Double.parseDouble(gui.ltf_eps23.getValue());
+    jni.passMagMomValues(r1, r2, r3, csx, csy, csz, mr0, bkg_phase, rchi, b0, tefirst, snr, inner_phase, middle_phase,
+        outer_phase, e12, e23);
 
     // Calculating magnetic moment in C++, if function returns empty string then no
     // error message

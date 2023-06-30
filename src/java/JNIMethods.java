@@ -55,7 +55,9 @@ class JNIMethods {
     native void passMagMomValues(double jm_r1, double jm_r2, double jm_r3,
             double jm_csx, double jm_csy, double jm_csz,
             double jm_R0, double jm_bkg,
-            double jm_RChi, double jm_B0, double jm_TEfirst, double jm_snr);
+            double jm_RChi, double jm_B0, double jm_TEfirst, double jm_snr,
+            double jm_in, double jm_mid, double jm_out,
+            double jm_e12, double jm_e23);
 
     native void passSumValues(double jm_ri, double jm_cx, double jm_cy, double jm_cz);
 

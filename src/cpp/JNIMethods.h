@@ -34,10 +34,10 @@ JNIEXPORT void JNICALL Java_JNIMethods_passSpinDensValues
 /*
  * Class:     JNIMethods
  * Method:    passMagMomValues
- * Signature: (DDDDDDDDDDDD)V
+ * Signature: (DDDDDDDDDDDDDDDDD)V
  */
 JNIEXPORT void JNICALL Java_JNIMethods_passMagMomValues
-  (JNIEnv *, jobject, jdouble, jdouble, jdouble, jdouble, jdouble, jdouble, jdouble, jdouble, jdouble, jdouble, jdouble, jdouble);
+  (JNIEnv *, jobject, jdouble, jdouble, jdouble, jdouble, jdouble, jdouble, jdouble, jdouble, jdouble, jdouble, jdouble, jdouble, jdouble, jdouble, jdouble, jdouble, jdouble);
 
 /*
  * Class:     JNIMethods

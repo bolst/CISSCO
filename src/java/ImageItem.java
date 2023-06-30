@@ -22,7 +22,7 @@ public class ImageItem {
   private Axis MRI_axis;
   private double m_R0;
   private double estMagMoment;
-  private double R1PhaseCalc, R2PhaseCalc, R3PhaseCalc;
+  public double R1PhaseCalc, R2PhaseCalc, R3PhaseCalc;
   private double[][][] phase_nobkg;
 
   private final int grid = 10;

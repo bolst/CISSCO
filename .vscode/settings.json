@@ -6,6 +6,7 @@
         "*.tcc": "cpp",
         "fstream": "cpp",
         "cmath": "cpp",
-        "bit": "cpp"
+        "bit": "cpp",
+        "xlocale": "cpp"
     }
 }

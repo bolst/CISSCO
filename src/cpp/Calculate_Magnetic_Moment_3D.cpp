@@ -187,7 +187,9 @@ JNIEXPORT void JNICALL Java_JNIMethods_passMagMomValues(JNIEnv *env, jobject thi
                                                         jdouble jm_r1, jdouble jm_r2, jdouble jm_r3,
                                                         jdouble jm_csx, jdouble jm_csy, jdouble jm_csz,
                                                         jdouble jm_R0, jdouble jm_bkg,
-                                                        jdouble jm_RChi, jdouble jm_B0, jdouble jm_TEFirst, jdouble jm_snr)
+                                                        jdouble jm_RChi, jdouble jm_B0, jdouble jm_TEFirst, jdouble jm_snr,
+                                                        jdouble jm_in, jdouble jm_mid, jdouble jm_out,
+                                                        jdouble jm_eps12, jdouble jm_eps23)
 {
     m_R1 = jm_r1;
     m_R2 = jm_r2;
@@ -204,6 +206,13 @@ JNIEXPORT void JNICALL Java_JNIMethods_passMagMomValues(JNIEnv *env, jobject thi
     m_B0 = jm_B0;
     m_TE_first = jm_TEFirst;
     m_SNR = jm_snr;
+
+    m_RInnerPhase = jm_in;
+    m_RMiddlePhase = jm_mid;
+    m_ROuterPhase = jm_out;
+
+    m_e12 = jm_eps12;
+    m_e23 = jm_eps23;
 
     return;
 }
