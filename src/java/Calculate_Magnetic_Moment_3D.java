@@ -37,6 +37,7 @@ public class Calculate_Magnetic_Moment_3D implements PlugIn {
       s1PhaseWindowTitle, s5MagWindowTitle, s5PhaseWindowTitle, s6MagWindowTitle, s6PhaseWindowTitle, s7WindowTitle;
 
   private static float[][] subpixelMagMatrix, subpixelMagMatrixXZ, subpixelPhaseMatrix, subpixelPhaseMatrixXZ;
+  private static float[][][] croppedRealNumbers3D, croppedImaginaryNumbers3D;
 
   public static boolean estimateCenterRadii_isClicked = false;
 
@@ -322,8 +323,8 @@ public class Calculate_Magnetic_Moment_3D implements PlugIn {
       // Initializing 3D arrays to give to C++
       float[][][] croppedMagnitudeValues3D = new float[size_subpixelimg][size_subpixelimg][size_subpixelimg];
       float[][][] croppedPhaseValues3D = new float[size_subpixelimg][size_subpixelimg][size_subpixelimg];
-      float[][][] croppedRealNumbers3D = new float[size_subpixelimg][size_subpixelimg][size_subpixelimg];
-      float[][][] croppedImaginaryNumbers3D = new float[size_subpixelimg][size_subpixelimg][size_subpixelimg];
+      croppedRealNumbers3D = new float[size_subpixelimg][size_subpixelimg][size_subpixelimg];
+      croppedImaginaryNumbers3D = new float[size_subpixelimg][size_subpixelimg][size_subpixelimg];
 
       // Initializing arrays that will be displayed in all 4 images
       subpixelMagMatrix = new float[size_subpixelimg][size_subpixelimg];
@@ -478,6 +479,10 @@ public class Calculate_Magnetic_Moment_3D implements PlugIn {
     } else {
       bkg_phase = item.bkgPhase;
     }
+
+    // Updating real and imag numbers (matrices can be affected if remove bkg button
+    // is clicked multiple times)
+    jni.setRealImagNumbers(croppedRealNumbers3D, croppedImaginaryNumbers3D);
 
     // Removing BG phase in C++
     jni.removeBackgroundPhase(bkg_phase);
