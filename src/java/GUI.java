@@ -1,4 +1,5 @@
 import java.awt.event.ActionListener;
+import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
@@ -53,8 +54,10 @@ public class GUI {
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.getContentPane().setLayout(
                 new MigLayout("",
-                        "[][][grow][][45px:45.00px:45px][45px:45px:45px,grow][45px:45px:45px,grow][48.00,grow][]",
+                        "[][][grow][][45px:45.00px:45px][45px:45px:45px,grow][45px:64.00px:45px,grow][35.00,grow][]",
                         "[][][][][][][][][][][][][][][][][][][][][][][][]"));
+        Font font = new Font("Dialog", Font.PLAIN, 12);
+        frame.setFont(font);
 
         lbl_stepone = new JLabel("1.");
         frame.getContentPane().add(lbl_stepone, "cell 0 0");
@@ -168,7 +171,7 @@ public class GUI {
         frame.getContentPane().add(lbl_calculated, "cell 4 5");
 
         lbl_actual = new JLabel("Actual");
-        frame.getContentPane().add(lbl_actual, "cell 6 5");
+        frame.getContentPane().add(lbl_actual, "cell 6 5,alignx right");
 
         /*
          * lbl_r1 = new JLabel("R1=");
@@ -188,16 +191,17 @@ public class GUI {
         frame.getContentPane().add(lbl_r1phase, "cell 2 6,alignx right");
 
         lbl_r1phaseCalc = new JLabel("");
-        frame.getContentPane().add(lbl_r1phaseCalc, "cell 4 6");
+        frame.getContentPane().add(lbl_r1phaseCalc, "cell 4 6,alignx center");
 
-        // lbl_r1phaseUnit = new JLabel("radians");
-        // frame.getContentPane().add(lbl_r1phaseUnit, "cell 5 6");
+        lbl_r1phaseUnit = new JLabel("radians");
+        frame.getContentPane().add(lbl_r1phaseUnit, "cell 5 6,alignx left");
 
         lbl_r1phaseAct = new JLabel("");
-        frame.getContentPane().add(lbl_r1phaseAct, "cell 6 6");
+        frame.getContentPane().add(lbl_r1phaseAct, "cell 6 6,alignx right");
 
         lbl_r1AphaseUnit = new JLabel("radians");
-        frame.getContentPane().add(lbl_r1AphaseUnit, "cell 7 6");
+        lbl_r1AphaseUnit.setHorizontalAlignment(SwingConstants.RIGHT);
+        frame.getContentPane().add(lbl_r1AphaseUnit, "cell 7 6,alignx right");
 
         btn_plotX = new JButton("Plot X Phase Profiles");
         frame.getContentPane().add(btn_plotX, "cell 8 6");
@@ -220,16 +224,16 @@ public class GUI {
         frame.getContentPane().add(lbl_r2phase, "cell 2 7,alignx right");
 
         lbl_r2phaseCalc = new JLabel("");
-        frame.getContentPane().add(lbl_r2phaseCalc, "cell 4 7");
+        frame.getContentPane().add(lbl_r2phaseCalc, "cell 4 7,alignx center");
 
-        // lbl_r2phaseUnit = new JLabel("radians");
-        // frame.getContentPane().add(lbl_r2phaseUnit, "cell 5 7");
+        lbl_r2phaseUnit = new JLabel("radians");
+        frame.getContentPane().add(lbl_r2phaseUnit, "cell 5 7,alignx left");
 
         lbl_r2phaseAct = new JLabel("");
-        frame.getContentPane().add(lbl_r2phaseAct, "cell 6 7");
+        frame.getContentPane().add(lbl_r2phaseAct, "cell 6 7,alignx right");
 
         lbl_r2AphaseUnit = new JLabel("radians");
-        frame.getContentPane().add(lbl_r2AphaseUnit, "cell 7 7");
+        frame.getContentPane().add(lbl_r2AphaseUnit, "cell 7 7,alignx right");
 
         btn_plotY = new JButton("Plot Y Phase Profiles");
         frame.getContentPane().add(btn_plotY, "cell 8 7");
@@ -252,16 +256,16 @@ public class GUI {
         frame.getContentPane().add(lbl_r3phase, "cell 2 8,alignx right");
 
         lbl_r3phaseCalc = new JLabel("");
-        frame.getContentPane().add(lbl_r3phaseCalc, "cell 4 8");
+        frame.getContentPane().add(lbl_r3phaseCalc, "cell 4 8,alignx center");
 
-        // lbl_r3phaseUnit = new JLabel("radians");
-        // frame.getContentPane().add(lbl_r3phaseUnit, "cell 5 8");
+        lbl_r3phaseUnit = new JLabel("radians");
+        frame.getContentPane().add(lbl_r3phaseUnit, "cell 5 8,alignx left");
 
         lbl_r3phaseAct = new JLabel("");
-        frame.getContentPane().add(lbl_r3phaseAct, "cell 6 8");
+        frame.getContentPane().add(lbl_r3phaseAct, "cell 6 8,alignx right");
 
         lbl_r3AphaseUnit = new JLabel("radians");
-        frame.getContentPane().add(lbl_r3AphaseUnit, "cell 7 8");
+        frame.getContentPane().add(lbl_r3AphaseUnit, "cell 7 8,alignx right");
 
         btn_plotZ = new JButton("Plot Z Phase Profiles");
         frame.getContentPane().add(btn_plotZ, "cell 8 8");

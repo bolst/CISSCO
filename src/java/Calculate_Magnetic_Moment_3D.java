@@ -77,6 +77,7 @@ public class Calculate_Magnetic_Moment_3D implements PlugIn {
   // Function to run CMM3D (plug-in)
   public void run(String arg) {
     gui = new GUI();
+    logger.addVariable("GUI FONT", gui.frame.getFont().toString());
   }
 
   // =====================================================================================
