@@ -66,13 +66,14 @@ However for this button, "Generate Subpixel Grid/Data" must be clicked first, wh
 | m_B0 | gui -> ltf_B0|
 | m_TE_first | gui -> ltf_TEFirst |
 | m_SNR | gui -> ltf_snr |
+| m_RInner,Middle,OuterPhase | |
 
 
 ## Sum
 | C++         | Java        |
 | ----------- | ----------- |
 | **OnBnClickedImaginary/Realsum()** | **jni.calculateImag/RealSum()** |
-| m_Ri | gui -> ltf_Ri |
+| m_Ri | gui -> ltf_Ri `|
 | m_CenterX,Y,Z | gui -> ltf_spx,y,z |
 
 

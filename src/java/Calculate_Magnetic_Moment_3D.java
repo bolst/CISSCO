@@ -77,7 +77,6 @@ public class Calculate_Magnetic_Moment_3D implements PlugIn {
   // Function to run CMM3D (plug-in)
   public void run(String arg) {
     gui = new GUI();
-    logger.addVariable("GUI FONT", gui.frame.getFont().toString());
   }
 
   // =====================================================================================
@@ -842,9 +841,9 @@ public class Calculate_Magnetic_Moment_3D implements PlugIn {
     R2_phase_actual /= 4.0;
     R3_phase_actual /= 4.0;
     // Removing background phase off each phase value
-    R1_phase_actual -= item.bkgPhase;
-    R2_phase_actual -= item.bkgPhase;
-    R3_phase_actual -= item.bkgPhase;
+    // R1_phase_actual -= item.bkgPhase;
+    // R2_phase_actual -= item.bkgPhase;
+    // R3_phase_actual -= item.bkgPhase;
 
     gui.lbl_r1phaseAct.setText(String.valueOf(Math.round(R1_phase_actual * 100.0) / 100.0));
     gui.lbl_r2phaseAct.setText(String.valueOf(Math.round(R2_phase_actual * 100.0) / 100.0));
@@ -1711,7 +1710,7 @@ public class Calculate_Magnetic_Moment_3D implements PlugIn {
             + String.valueOf(Math.round(dV0 * 100.0) / 100.0));
         logger.addVariable("dV0", dV0);
 
-        // Error for a - was derived with Norman
+        // Error for a - was derived with Dr. Cheng
         double da = (a * dV0) / (3 * V0);
         // Adding to GUI
         gui.ll_aSE.setValue(String.valueOf(Math.round(a * 100.0) / 100.0) + " " + PLUS_MINUS + " "
