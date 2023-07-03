@@ -11,10 +11,8 @@ import javax.swing.JOptionPane;
 import javax.swing.filechooser.FileSystemView;
 import java.io.File;
 import java.util.Scanner;
-
 import ij.IJ;
 import ij.ImageJ;
-// ImageJ tool imports
 import ij.ImagePlus;
 import ij.gui.*;
 import ij.plugin.PlugIn;
@@ -1164,7 +1162,9 @@ public class Calculate_Magnetic_Moment_3D implements PlugIn {
       WindowManager.getImage(s5PhaseWindowTitle).close();
     }
 
-    updateVariables();
+    // TODO: handle no updateVariables() call
+    // updateVariables();
+
     double snr = Double.parseDouble(gui.ltf_snr.getValue());
     double e12 = Double.parseDouble(gui.ltf_eps12.getValue());
     double e23 = Double.parseDouble(gui.ltf_eps23.getValue());
@@ -1490,7 +1490,8 @@ public class Calculate_Magnetic_Moment_3D implements PlugIn {
    */
   public static void noname() {
     if (!(WindowManager.getImage(s6MagWindowTitle) == null || WindowManager.getImage(s6PhaseWindowTitle) == null)) {
-      updateVariables();
+      // TODO: handle no updateVariables() call
+      // updateVariables();
 
       // Calculating susceptibility in C++
       jni.calcSusceptibility();
@@ -1555,7 +1556,8 @@ public class Calculate_Magnetic_Moment_3D implements PlugIn {
   public static void est_radius_spin_echo() {
 
     if (WindowManager.getImage(s7WindowTitle) != null) {
-      updateVariables();
+      // TODO: handle no updateVariables() call
+      // updateVariables();
 
       // If images are already open, close them
       if (WindowManager.getImage(V1XY_Title) != null) {
@@ -1763,70 +1765,5 @@ public class Calculate_Magnetic_Moment_3D implements PlugIn {
     subpixelCoordinate = subCenter + (coordinate - (double) (item.subpix_image_center.get(axisFlag))) * 10.0;
 
     return subpixelCoordinate;
-  }
-
-  /*
-   * Function to update global variables in Java
-   * Updates the variables to whatever values are in the respective textboxes
-   *
-   * This function was written so that every time a button is clicked the
-   * variables that go with each textbox can be updated - there are also some
-   * functions in here that format the textboxes so that they have to be
-   * doubles/ints.
-   * This is so that there isn't an extra 20-40 lines of code in each action
-   * handler.
-   * Most global variables have the prefix "m_", similar to how it was written in
-   * C++.
-   */
-  public static void updateVariables() {
-
-    try {
-
-      if (estimateCenterRadii_isClicked) {
-        logger.addVariable("mxyz", item.centerS().get(0));
-        logger.addVariable("mxyz", item.centerS().get(1));
-        logger.addVariable("mxyz", item.centerS().get(2));
-
-        jni.setXYZ(item.centerS().get(0), item.centerS().get(1), item.centerS().get(2));
-
-        jni.setmR123(Double.parseDouble(gui.ltf_r1.getValue()), Double.parseDouble(gui.ltf_r2.getValue()),
-            Double.parseDouble(gui.ltf_r3.getValue()));
-
-        double RCenter = Double.parseDouble(gui.ltf_rc.getValue());
-        double phaseValue = Double.parseDouble(gui.ltf_eqPhase.getValue());
-        double estimatedPValue = phaseValue * Math.pow(RCenter, 3);
-        double R1PhaseCalc = estimatedPValue / Math.pow(Double.parseDouble(gui.ltf_r1.getValue()), 3);
-        double R2PhaseCalc = estimatedPValue / Math.pow(Double.parseDouble(gui.ltf_r2.getValue()), 3);
-        double R3PhaseCalc = estimatedPValue / Math.pow(Double.parseDouble(gui.ltf_r3.getValue()), 3);
-
-        jni.setR123PhaseCalc(R1PhaseCalc, R2PhaseCalc, R3PhaseCalc);
-        jni.setSmallBox(item.roi_mag_belowM_xi, item.roi_mag_belowM_yi, item.roi_mag_belowM_zi, item.roi_mag_belowM_dx,
-            item.roi_mag_belowM_dy,
-            item.roi_mag_belowM_dz);
-        jni.setCenterL(item.centerL().get(0), item.centerL().get(1), item.centerL().get(2));
-        jni.setCenterM(item.centerM().get(0), item.centerM().get(1), item.centerM().get(2));
-
-      }
-
-      double snr = Double.parseDouble(gui.ltf_snr.getValue());
-      double e12 = Double.parseDouble(gui.ltf_eps12.getValue());
-      double e23 = Double.parseDouble(gui.ltf_eps23.getValue());
-      double B0 = Double.parseDouble(gui.ltf_B0.getValue());
-      double R_Chi = Double.parseDouble(gui.ltf_RChi.getValue());
-      double TElast = Double.parseDouble(gui.ltf_TELast.getValue());
-      jni.setMagMomentVariables(snr, e12, e23, B0, R_Chi, TElast);
-
-      B0 = Double.parseDouble(gui.ltf_B0.getValue());
-      double RChi = Double.parseDouble(gui.ltf_RChi.getValue());
-      double TEFirst = Double.parseDouble(gui.ltf_TEFirst.getValue()) / 1000.0;
-      double TELast = Double.parseDouble(gui.ltf_TELast.getValue()) / 1000.0;
-      jni.setStep6Variables(TEFirst, TELast, B0, RChi);
-
-      logger.addInfo("Updated variables");
-    } catch (
-
-    Exception exc) {
-      JOptionPane.showMessageDialog(gui.frame, "Error in updateVariables():\n" + exc.toString());
-    }
   }
 }
