@@ -37,8 +37,6 @@ public class Calculate_Magnetic_Moment_3D implements PlugIn {
   private static float[][] subpixelMagMatrix, subpixelMagMatrixXZ, subpixelPhaseMatrix, subpixelPhaseMatrixXZ;
   private static float[][][] croppedRealNumbers3D, croppedImaginaryNumbers3D;
 
-  public static boolean estimateCenterRadii_isClicked = false;
-
   private static final int grid = 10;
   private static final double GAMMARBAR = 42.58;
   private static final String ACCEPTED_FILE_TYPE = "nii";
@@ -48,6 +46,7 @@ public class Calculate_Magnetic_Moment_3D implements PlugIn {
   private static final String subPhaseTitle = "Subpixel Phase Image";
   private static final String subPhaseXZTitle = "Subpixel Phase Image XZ";
 
+  // set this to true if debugging in IntelliJ
   private static final boolean DEBUG = false;
 
   public static void main(String[] args) {
@@ -267,8 +266,6 @@ public class Calculate_Magnetic_Moment_3D implements PlugIn {
           Double.parseDouble(gui.ltf_eqPhase.getValue()));
       jni.setMagMoment(Double.parseDouble(gui.ltf_eqPhase.getValue()) *
           Math.pow(RCenter, 3));
-
-      estimateCenterRadii_isClicked = true;
 
       // setting slice to center
       item.setSlice((int) Double.parseDouble(gui.ltf_rcz.getValue()));

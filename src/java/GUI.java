@@ -24,8 +24,7 @@ public class GUI {
             lbl_r3phase;
     public JButton btn_loadImages, btn_estCR, btn_genSubpix, btn_estSubC, btn_verifyRadii, btn_removeBkg,
             btn_estBkgDens, btn_loadTE, btn_unk, btn_loadspinecho, btn_estRadSpinEcho, btn_redraw,
-            btn_plotX, btn_plotY,
-            btn_plotZ, btn_calcMagMom, btn_loadSimImg, btn_sumRi;
+            btn_plotX, btn_plotY, btn_plotZ, btn_calcMagMom, btn_loadSimImg, btn_sumRi, btn_removeBkgS5;
     public LabeledTextField ltf_eqPhase, ltf_rc, ltf_r1, ltf_r2, ltf_r3, ltf_rcx, ltf_rcy, ltf_rcz, ltf_M, ltf_spx,
             ltf_spy, ltf_spz,
             ltf_TEFirst, ltf_TELast, ltf_B0, ltf_RChi, ltf_sigSE, ltf_eps12, ltf_eps23, ltf_snr, ltf_Ri, ltf_secondImgX,
@@ -50,12 +49,12 @@ public class GUI {
     private void initialize() {
         frame = new JFrame("Calculate Magnetic Moment 3D");
         frame.setAlwaysOnTop(false);
-        frame.setBounds(100, 100, 900, 800);
+        frame.setBounds(100, 100, 900, 850);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.getContentPane().setLayout(
                 new MigLayout("",
                         "[][][grow][][45px:45.00px:45px][45px:45px:45px,grow][45px:64.00px:45px,grow][35.00,grow][]",
-                        "[][][][][][][][][][][][][][][][][][][][][][][][]"));
+                        "[][][][][][][][][][][][][][][][][][][][][][][][][]"));
         Font font = new Font("Dialog", Font.PLAIN, 12);
         frame.setFont(font);
 
@@ -318,8 +317,11 @@ public class GUI {
         ltf_magMom = new LabeledLabel("|p|=", "0.0", "<html>radians*pixel<sup>3</sup></html>");
         frame.getContentPane().add(ltf_magMom, "cell 2 9");
 
+        btn_removeBkgS5 = new JButton("Remove Bkg");
+        frame.getContentPane().add(btn_removeBkgS5, "cell 1 11,growx");
+
         btn_loadSimImg = new JButton("Load Simulated Images");
-        frame.getContentPane().add(btn_loadSimImg, "cell 1 11,growx");
+        frame.getContentPane().add(btn_loadSimImg, "cell 1 12,growx");
 
         /*
          * lbl_snr = new JLabel("SNR=");
@@ -331,7 +333,7 @@ public class GUI {
          */
 
         ltf_snr = new LabeledTextField("SNR=", "0.0", null, 3);
-        frame.getContentPane().add(ltf_snr, "cell 1 12");
+        frame.getContentPane().add(ltf_snr, "cell 1 13");
 
         /*
          * lbl_eps12 = new JLabel("<html>&epsilon;12 =</html>");
@@ -343,7 +345,7 @@ public class GUI {
          */
 
         ltf_eps12 = new LabeledTextField("<html>&eta;12 =</html>", "0.0", null, 3);
-        frame.getContentPane().add(ltf_eps12, "cell 1 13");
+        frame.getContentPane().add(ltf_eps12, "cell 1 14");
 
         /*
          * lbl_eps23 = new JLabel("<html>&epsilon;23 =</html>");
@@ -355,7 +357,7 @@ public class GUI {
          */
 
         ltf_eps23 = new LabeledTextField("<html>&eta;23 =</html>", "0.0", null, 3);
-        frame.getContentPane().add(ltf_eps23, "cell 1 14");
+        frame.getContentPane().add(ltf_eps23, "cell 1 15");
 
         /*
          * lbl_ReRi = new JLabel("Real(S" + ITALICIZED_I + ") =");
@@ -366,10 +368,10 @@ public class GUI {
          */
 
         ll_ReRi = new LabeledLabel("<html>Real(S<sub>i</sub>) =</html>", "", null);
-        frame.getContentPane().add(ll_ReRi, "flowx,cell 2 13");
+        frame.getContentPane().add(ll_ReRi, "flowx,cell 2 14");
 
         ll_ImRi = new LabeledLabel("<html>Imag(S<sub>i</sub>) =</html>", "", null);
-        frame.getContentPane().add(ll_ImRi, "flowx,cell 2 14");
+        frame.getContentPane().add(ll_ImRi, "flowx,cell 2 15");
 
         /*
          * lbl_err = new
@@ -382,7 +384,7 @@ public class GUI {
          */
 
         ll_momenterror = new LabeledLabel("<html>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&delta;p/p =</html>", "0.0", "%");
-        frame.getContentPane().add(ll_momenterror, "cell 1 13");
+        frame.getContentPane().add(ll_momenterror, "cell 1 14");
 
         /*
          * lbl_Ri = new JLabel("R" + ITALICIZED_I + " =");
@@ -394,10 +396,10 @@ public class GUI {
          */
 
         ltf_Ri = new LabeledTextField("<html>R<sub>i</sub> =</html>", "0.0", null, 4);
-        frame.getContentPane().add(ltf_Ri, "cell 2 12");
+        frame.getContentPane().add(ltf_Ri, "cell 2 13");
 
         btn_sumRi = new JButton("Sum");
-        frame.getContentPane().add(btn_sumRi, "cell 2 12");
+        frame.getContentPane().add(btn_sumRi, "cell 2 13");
 
         /*
          * JLabel lbl_B0 = new JLabel("B0  =");
@@ -411,7 +413,7 @@ public class GUI {
          * frame.getContentPane().add(lbl_B0Unit, "cell 1 15");
          */
         ltf_B0 = new LabeledTextField("B0  =", "0.0", "T", 3);
-        frame.getContentPane().add(ltf_B0, "cell 1 15");
+        frame.getContentPane().add(ltf_B0, "cell 1 16");
 
         /*
          * JLabel lbl_TElast = new JLabel("    TE_last =");
@@ -427,13 +429,13 @@ public class GUI {
          * frame.getContentPane().add(lbl_TELastUnit, "cell 1 15,alignx right");
          */
         ltf_TELast = new LabeledTextField("    TE_last =", "0.0", "ms", 3);
-        frame.getContentPane().add(ltf_TELast, "cell 1 15,alignx right");
+        frame.getContentPane().add(ltf_TELast, "cell 1 16,alignx right");
 
         lbl_stepsix = new JLabel("6.");
-        frame.getContentPane().add(lbl_stepsix, "cell 0 16");
+        frame.getContentPane().add(lbl_stepsix, "cell 0 17");
 
         btn_loadTE = new JButton("Load First TE Images");
-        frame.getContentPane().add(btn_loadTE, "cell 1 16,growx");
+        frame.getContentPane().add(btn_loadTE, "cell 1 17,growx");
 
         /*
          * lbl_TEFirst = new JLabel("TE_first =");
@@ -448,7 +450,7 @@ public class GUI {
          */
 
         ltf_TEFirst = new LabeledTextField("TE_first =", "0.0", "ms", 4);
-        frame.getContentPane().add(ltf_TEFirst, "cell 2 16");
+        frame.getContentPane().add(ltf_TEFirst, "cell 2 17");
 
         /*
          * lbl_dchi = new JLabel("<html>&Delta;&Chi =</html>");
@@ -459,10 +461,10 @@ public class GUI {
          */
 
         ll_dChi = new LabeledLabel("<html>&Delta;&Chi; =</html>", "0.0", "ppm");
-        frame.getContentPane().add(ll_dChi, "spanx, cell 5 16,alignx left");
+        frame.getContentPane().add(ll_dChi, "cell 5 17 4 1,alignx left");
 
         btn_unk = new JButton("TODO: Name");
-        frame.getContentPane().add(btn_unk, "cell 1 17,growx");
+        frame.getContentPane().add(btn_unk, "cell 1 18,growx");
 
         /*
          * lbl_RChi = new
@@ -480,7 +482,7 @@ public class GUI {
 
         ltf_RChi = new LabeledTextField("<html>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;R<sub>&Delta&Chi</sub> =</html>",
                 "0.0", "pixels", 4);
-        frame.getContentPane().add(ltf_RChi, "cell 2 17");
+        frame.getContentPane().add(ltf_RChi, "cell 2 18");
 
         /*
          * lbl_a = new JLabel("  a =");
@@ -491,13 +493,13 @@ public class GUI {
          */
 
         ll_a = new LabeledLabel("a =", "0.0", "pixels");
-        frame.getContentPane().add(ll_a, "spanx,cell 5 17,alignx left");
+        frame.getContentPane().add(ll_a, "cell 5 18 4 1,alignx left");
 
         lbl_stepseven = new JLabel("7.");
-        frame.getContentPane().add(lbl_stepseven, "cell 0 18");
+        frame.getContentPane().add(lbl_stepseven, "cell 0 19");
 
         btn_loadspinecho = new JButton("Load Spin Echo Images");
-        frame.getContentPane().add(btn_loadspinecho, "cell 1 18,growx");
+        frame.getContentPane().add(btn_loadspinecho, "cell 1 19,growx");
 
         /*
          * lbl_sigSE = new
@@ -512,7 +514,7 @@ public class GUI {
 
         ltf_sigSE = new LabeledTextField("<html>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&sigma<sub>SE</sub> =</html>",
                 "0.0", null, 4);
-        frame.getContentPane().add(ltf_sigSE, "cell 2 18");
+        frame.getContentPane().add(ltf_sigSE, "cell 2 19");
 
         /*
          * lbl_spinCenter = new JLabel("Second Image Center:  (");
@@ -640,7 +642,7 @@ public class GUI {
          */
 
         // "Second Image Center"
-        frame.getContentPane().add(new JLabel("Second Image Center:"), "cell 1 19, align right");
+        frame.getContentPane().add(new JLabel("Second Image Center:"), "cell 1 20,alignx right");
         // "Second Image Center" coordinates
         ltf_secondImgX = new LabeledTextField("(", "0.0", null, 4);
         ltf_secondImgY = new LabeledTextField(",", "0.0", null, 4);
@@ -649,11 +651,11 @@ public class GUI {
         SECPanel.add(ltf_secondImgX);
         SECPanel.add(ltf_secondImgY);
         SECPanel.add(ltf_secondImgZ);
-        frame.getContentPane().add(SECPanel, "cell 2 19 7 1,alignx left");
+        frame.getContentPane().add(SECPanel, "cell 2 20 7 1,alignx left");
 
         // "V1,SE Region"
         frame.getContentPane().add(new JLabel("<html>V<sub>1,SE</sub> Box Coordinates:</html>"),
-                "cell 1 20, align right");
+                "cell 1 21,alignx right");
         // "V1,SE Region" coordinates
         ltf_v1seX1 = new LabeledTextField("(", "0.0", null, 4);
         ltf_v1seY1 = new LabeledTextField(",", "0.0", null, 4);
@@ -668,11 +670,11 @@ public class GUI {
         V1Panel.add(ltf_v1seX2);
         V1Panel.add(ltf_v1seY2);
         V1Panel.add(ltf_v1seZ2);
-        frame.getContentPane().add(V1Panel, "cell 2 20 7 1,alignx left");
+        frame.getContentPane().add(V1Panel, "cell 2 21 7 1,alignx left");
 
         // "V2,SE Region" labels
         frame.getContentPane().add(new JLabel("<html>V<sub>2,SE</sub> Box Coordinates:</html>"),
-                "cell 1 21, align right");
+                "cell 1 22,alignx right");
         // "V2,SE Region" coordinates
         ltf_v2seX1 = new LabeledTextField("(", "0.0", null, 4);
         ltf_v2seY1 = new LabeledTextField(",", "0.0", null, 4);
@@ -687,10 +689,10 @@ public class GUI {
         V2Panel.add(ltf_v2seX2);
         V2Panel.add(ltf_v2seY2);
         V2Panel.add(ltf_v2seZ2);
-        frame.getContentPane().add(V2Panel, "cell 2 21 7 1,alignx left");
+        frame.getContentPane().add(V2Panel, "cell 2 22 7 1,alignx left");
 
         btn_estRadSpinEcho = new JButton("Estimate Object Radius From Spin Echo");
-        frame.getContentPane().add(btn_estRadSpinEcho, "cell 1 22");
+        frame.getContentPane().add(btn_estRadSpinEcho, "cell 1 23");
 
         /*
          * lbl_V0 = new JLabel("<html>V<sub>0</sub> =</html>");
@@ -704,7 +706,7 @@ public class GUI {
          */
 
         ll_V0 = new LabeledLabel("<html>V<sub>0</sub> =</html>", "0.0", "<html>pixels<sup>3</sup></html>");
-        frame.getContentPane().add(ll_V0, "flowx, cell 2 22");
+        frame.getContentPane().add(ll_V0, "flowx,cell 2 23");
 
         /*
          * lbl_rho0SE = new JLabel("<html>&rho<sub>0,SE</sub> =</html>");
@@ -715,7 +717,7 @@ public class GUI {
          */
 
         ll_rho0SE = new LabeledLabel("<html>&rho<sub>0,SE</sub> =</html>", "", null);
-        frame.getContentPane().add(ll_rho0SE, "flowx,cell 4 22");
+        frame.getContentPane().add(ll_rho0SE, "flowx,cell 4 23");
 
         /*
          * lbl_echoDChi = new JLabel("<html>&Delta&Chi =</html>");
@@ -726,7 +728,7 @@ public class GUI {
          */
 
         ll_dChiSE = new LabeledLabel("<html>&Delta&Chi =</html>", "0.0", "ppm");
-        frame.getContentPane().add(ll_dChiSE, "flowx, cell 2 23");
+        frame.getContentPane().add(ll_dChiSE, "flowx,cell 2 24");
 
         /*
          * lbl_aSE = new JLabel("a =");
@@ -737,7 +739,7 @@ public class GUI {
          */
 
         ll_aSE = new LabeledLabel("a =", "0.0", "pixels");
-        frame.getContentPane().add(ll_aSE, "flowx,cell 4 23");
+        frame.getContentPane().add(ll_aSE, "flowx,cell 4 24");
 
         /*
          * lbl_rcx = new JLabel("x=");
@@ -784,7 +786,7 @@ public class GUI {
          * txt_M.setColumns(2);
          */
         ltf_M = new LabeledTextField("|M%|=", "50", null, 2);
-        frame.getContentPane().add(ltf_M, "cell 3 1, spanx");
+        frame.getContentPane().add(ltf_M, "cell 3 1 6 1");
 
         // ActionListeners
         btn_loadImages.addActionListener(new ActionListener() {
@@ -803,6 +805,11 @@ public class GUI {
             }
         });
         btn_removeBkg.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                Calculate_Magnetic_Moment_3D.remove_bkg();
+            }
+        });
+        btn_removeBkgS5.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 Calculate_Magnetic_Moment_3D.remove_bkg();
             }

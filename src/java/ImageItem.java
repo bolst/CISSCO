@@ -849,8 +849,6 @@ public class ImageItem {
     Calculate_Magnetic_Moment_3D.gui.lbl_r3phaseCalc.setText(String.valueOf(Math.round(R3PhaseCalc * 100.0) / 100.0));
 
     // setMagMoment(phaseValue * Math.pow(RCenter, 3));
-
-    Calculate_Magnetic_Moment_3D.estimateCenterRadii_isClicked = true;
   }
 
   // =====================================================================================
