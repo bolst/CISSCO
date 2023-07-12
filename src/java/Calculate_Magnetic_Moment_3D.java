@@ -74,6 +74,7 @@ public class Calculate_Magnetic_Moment_3D implements PlugIn {
   // Function to run CMM3D (plug-in)
   public void run(String arg) {
     gui = new GUI();
+    gui.ll_rho0SE.setValue("10.0");
   }
 
   // =====================================================================================
@@ -637,8 +638,8 @@ public class Calculate_Magnetic_Moment_3D implements PlugIn {
     item.setCenterSY(Double.parseDouble(gui.ltf_spy.getValue()));
     item.setCenterSZ(Double.parseDouble(gui.ltf_spz.getValue()) - 1.0);
     logger.addVariable("Center redrawn as", String.valueOf(Double.parseDouble(gui.ltf_spx.getValue()))
-        + ',' + String.valueOf(Double.parseDouble(gui.ltf_spy.getValue()) - 1.0) + ','
-        + String.valueOf(Double.parseDouble(gui.ltf_spz.getValue())));
+        + ',' + String.valueOf(Double.parseDouble(gui.ltf_spy.getValue())) + ','
+        + String.valueOf(Double.parseDouble(gui.ltf_spz.getValue()) - 1.0));
     logger.addVariable("Center returned values", String.valueOf(item.centerS().get(0)) + ','
         + String.valueOf(item.centerS().get(1)) + ',' + String.valueOf(item.centerS().get(2)));
 
@@ -708,6 +709,7 @@ public class Calculate_Magnetic_Moment_3D implements PlugIn {
     int sub_x = (int) pixelToSubpixel(item.centerS().get(0), 0);
     int sub_y = (int) pixelToSubpixel(item.centerS().get(1), 1);
     int sub_z = (int) pixelToSubpixel(item.centerS().get(2), 2);
+    logger.addVariable("subxyz", String.valueOf(sub_x) + ',' + String.valueOf(sub_y) + ',' + String.valueOf(sub_z));
 
     // Clearing ROI list
     roiImgMag.clear();
@@ -752,44 +754,28 @@ public class Calculate_Magnetic_Moment_3D implements PlugIn {
     // Summing up all phase values where the radii and equitorial axis intercept
     switch (item.MRIAxis()) {
       case X:
+
         R1_phase_actual += subpixelPhaseImage.getProcessor().getPixelValue(sub_x, sub_y + (int) m_R1 * 10);
-        logger.addInfo(
-            "Got coordinate (" + String.valueOf(sub_x) + "," + String.valueOf(sub_y + (int) m_R1 * 10) + ")");
+        logger.addVariable("got coordinate", String.valueOf(sub_x) + ',' + String.valueOf(sub_y + (int) m_R1 * 10));
+
         R1_phase_actual += subpixelPhaseImage.getProcessor().getPixelValue(sub_x, sub_y - (int) m_R1 * 10);
-        logger.addInfo(
-            "Got coordinate (" + String.valueOf(sub_x) + "," + String.valueOf(sub_y - (int) m_R1 * 10) + ")");
+        logger.addVariable("got coordinate", String.valueOf(sub_x) + ',' + String.valueOf(sub_y - (int) m_R1 * 10));
+
         R1_phase_actual += subpixelPhaseImageXZ.getProcessor().getPixelValue(sub_x, sub_z + (int) m_R1 * 10);
-        logger.addInfo(
-            "Got coordinate (" + String.valueOf(sub_x) + "," + String.valueOf(sub_z + (int) m_R1 * 10) + ")");
+        logger.addVariable("got coordinate", String.valueOf(sub_x) + ',' + String.valueOf(sub_z + (int) m_R1 * 10));
+
         R1_phase_actual += subpixelPhaseImageXZ.getProcessor().getPixelValue(sub_x, sub_z - (int) m_R1 * 10);
-        logger.addInfo(
-            "Got coordinate (" + String.valueOf(sub_x) + "," + String.valueOf(sub_z - (int) m_R1 * 10) + ")");
+        logger.addVariable("got coordinate", String.valueOf(sub_x) + ',' + String.valueOf(sub_z - (int) m_R1 * 10));
 
         R2_phase_actual += subpixelPhaseImage.getProcessor().getPixelValue(sub_x, sub_y + (int) m_R2 * 10);
-        logger.addInfo(
-            "Got coordinate (" + String.valueOf(sub_x) + "," + String.valueOf(sub_y + (int) m_R2 * 10) + ")");
         R2_phase_actual += subpixelPhaseImage.getProcessor().getPixelValue(sub_x, sub_y - (int) m_R2 * 10);
-        logger.addInfo(
-            "Got coordinate (" + String.valueOf(sub_x) + "," + String.valueOf(sub_y - (int) m_R2 * 10) + ")");
         R2_phase_actual += subpixelPhaseImageXZ.getProcessor().getPixelValue(sub_x, sub_z + (int) m_R2 * 10);
-        logger.addInfo(
-            "Got coordinate (" + String.valueOf(sub_x) + "," + String.valueOf(sub_z + (int) m_R2 * 10) + ")");
         R2_phase_actual += subpixelPhaseImageXZ.getProcessor().getPixelValue(sub_x, sub_z - (int) m_R2 * 10);
-        logger.addInfo(
-            "Got coordinate (" + String.valueOf(sub_x) + "," + String.valueOf(sub_z - (int) m_R2 * 10) + ")");
 
         R3_phase_actual += subpixelPhaseImage.getProcessor().getPixelValue(sub_x, sub_y + (int) m_R3 * 10);
-        logger.addInfo(
-            "Got coordinate (" + String.valueOf(sub_x) + "," + String.valueOf(sub_y + (int) m_R3 * 10) + ")");
         R3_phase_actual += subpixelPhaseImage.getProcessor().getPixelValue(sub_x, sub_y - (int) m_R3 * 10);
-        logger.addInfo("Got coordinate (" + String.valueOf(sub_x) + ","
-            + String.valueOf(sub_y - (int) m_R3 * 10) + ")");
         R3_phase_actual += subpixelPhaseImageXZ.getProcessor().getPixelValue(sub_x, sub_z + (int) m_R3 * 10);
-        logger.addInfo("Got coordinate (" + String.valueOf(sub_x) + ","
-            + String.valueOf(sub_z + (int) m_R3 * 10) + ")");
         R3_phase_actual += subpixelPhaseImageXZ.getProcessor().getPixelValue(sub_x, sub_z - (int) m_R3 * 10);
-        logger.addInfo("Got coordinate (" + String.valueOf(sub_x) + ","
-            + String.valueOf(sub_z - (int) m_R3 * 10) + ")");
         break;
 
       case Y:
@@ -1755,9 +1741,6 @@ public class Calculate_Magnetic_Moment_3D implements PlugIn {
     double m_R0 = item.m_R0();
     double subCenter = (2 * m_R0 + 1) * (10.0 / 2.0);
     double subpixelCoordinate = 0.0;
-
-    logger.addVariable("ptsb subcenter", subCenter);
-    logger.addVariable("ptsb coordinate", coordinate);
 
     subpixelCoordinate = subCenter + (coordinate - (double) (item.subpix_image_center.get(axisFlag))) * 10.0;
 

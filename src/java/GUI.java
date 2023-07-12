@@ -41,7 +41,7 @@ public class GUI {
     /*
      * Built using Eclipse and MigLayout. Much easier to manage then before.
      * If this is to be edited I advise against changing code directly.
-     * Copy and paste this function into Eclipse (or any other IDE) and
+     * Copy and paste this file into Eclipse (or any other IDE) and
      * make sure you have some GUI plug-in configured so that you can view it
      * without compiling + running every time. Also make sure to have MigLayout
      * configured.
@@ -716,8 +716,8 @@ public class GUI {
          * frame.getContentPane().add(lbl_rho0SEVal, "cell 4 22");
          */
 
-        ll_rho0SE = new LabeledLabel("<html>&rho<sub>0,SE</sub> =</html>", "", null);
-        frame.getContentPane().add(ll_rho0SE, "flowx,cell 4 23");
+        ll_rho0SE = new LabeledLabel("<html>&rho<sub>0,SE</sub> =</html>", "0.0", null);
+        frame.getContentPane().add(ll_rho0SE, "flowx,cell 4 23 2 1");
 
         /*
          * lbl_echoDChi = new JLabel("<html>&Delta&Chi =</html>");

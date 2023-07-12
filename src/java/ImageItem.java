@@ -837,7 +837,7 @@ public class ImageItem {
 
     m_R0 = Math.ceil(m_R0);
 
-    // logger.addVariable("m_R0", m_R0);
+    Calculate_Magnetic_Moment_3D.logger.addVariable("m_R0", m_R0);
 
     estMagMoment = phaseValue * Math.pow(RCenter, 3);
 
