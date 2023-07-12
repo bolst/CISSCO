@@ -85,15 +85,11 @@ public class Calculate_Magnetic_Moment_3D implements PlugIn {
 
     try {
       s1MagWindowTitle = loadImages(s1MagWindowTitle, "mag");
-    } catch (IOException exc) {
-      return;
-    }
-
-    try {
       s1PhaseWindowTitle = loadImages(s1PhaseWindowTitle, "phase");
     } catch (IOException exc) {
       return;
     }
+
   }
 
   // =====================================================================================
@@ -1072,11 +1068,6 @@ public class Calculate_Magnetic_Moment_3D implements PlugIn {
 
     try {
       s5MagWindowTitle = loadImages(s5MagWindowTitle, "mag");
-    } catch (IOException exc) {
-      return;
-    }
-
-    try {
       s5PhaseWindowTitle = loadImages(s5PhaseWindowTitle, "phase");
     } catch (IOException exc) {
       return;
@@ -1268,10 +1259,6 @@ public class Calculate_Magnetic_Moment_3D implements PlugIn {
 
       try {
         s6MagWindowTitle = loadImages(s6MagWindowTitle, "mag");
-      } catch (IOException exc) {
-        return;
-      }
-      try {
         s6PhaseWindowTitle = loadImages(s6PhaseWindowTitle, "phase");
       } catch (IOException exc) {
         return;
