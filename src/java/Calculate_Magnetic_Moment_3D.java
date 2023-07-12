@@ -10,6 +10,7 @@ import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 import javax.swing.filechooser.FileSystemView;
 import java.io.File;
+import java.io.IOException;
 import java.util.Scanner;
 import ij.IJ;
 import ij.ImageJ;
@@ -81,96 +82,17 @@ public class Calculate_Magnetic_Moment_3D implements PlugIn {
   // "Load Magnitude and Phase Images"
   // =====================================================================================
   public static void load_mag_phase_images() {
-    // clearVariables();
+
     try {
+      s1MagWindowTitle = loadImages(s1MagWindowTitle, "mag");
+    } catch (IOException exc) {
+      return;
+    }
 
-      // close all windows
-      WindowManager.closeAllWindows();
-
-      // Initializing file choosing window
-      JFileChooser initialFileChooserWindow;
-
-      // if a file "pth.txt" is present the file opener will default to the path in
-      // the text file
-      File setPathFile = new File("pth.txt");
-      if (setPathFile.exists()) {
-        logger.addInfo("worked");
-        try (Scanner scnr = new Scanner(setPathFile)) {
-          String set_path = scnr.nextLine();
-          initialFileChooserWindow = new JFileChooser(set_path);
-        } catch (Exception exc) {
-          logger.addWarning(exc.toString());
-          initialFileChooserWindow = new JFileChooser(FileSystemView.getFileSystemView().getHomeDirectory());
-        }
-      } else {
-        logger.addVariable("home", FileSystemView.getFileSystemView().getHomeDirectory());
-        initialFileChooserWindow = new JFileChooser(FileSystemView.getFileSystemView().getHomeDirectory());
-      }
-
-      // Setting title of choosing the magnitude file window
-      initialFileChooserWindow.setDialogTitle("CHOOSE MAG FILE");
-
-      // MAG FILE SELECTION
-      // Shows the save dialog
-      int statusOfFileChooser = initialFileChooserWindow.showSaveDialog(null);
-
-      // opens phase and mag file
-      Opener fileOpener = new Opener();
-
-      // if the user selects the file
-      if (statusOfFileChooser != JFileChooser.APPROVE_OPTION) {
-        JOptionPane.showMessageDialog(gui.frame, "Error: No magnitude file selected.");
-        logger.addError("No mag file");
-      } else {
-
-        // putting chosen file into magText
-        String mag = initialFileChooserWindow.getSelectedFile().getAbsolutePath();
-        logger.addVariable("mag", mag);
-        // String magFile = mag.substring(mag.lastIndexOf("\\") + 1);
-        String magFile = initialFileChooserWindow.getSelectedFile().getName();
-        s1MagWindowTitle = WindowManager.makeUniqueName(magFile);
-        String magFileFormat = mag.substring(mag.lastIndexOf(".") + 1);
-
-        if (magFileFormat.compareTo(ACCEPTED_FILE_TYPE) == 0) {
-          fileOpener.open(mag);
-          WindowManager.getCurrentImage().setTitle(s1MagWindowTitle);
-          // magFileIsLoaded = true;
-          // magText.setValue(mag);
-        } else {
-          JOptionPane.showMessageDialog(gui.frame, "Error: image type not .nii");
-        }
-      }
-
-      // PHASE FILE SELECTION
-      // Shows the save dialog
-      initialFileChooserWindow.setDialogTitle("CHOOSE PHASE FILE");
-      // if the user selects the file
-      statusOfFileChooser = initialFileChooserWindow.showSaveDialog(null);
-
-      if (statusOfFileChooser != JFileChooser.APPROVE_OPTION) {
-        JOptionPane.showMessageDialog(gui.frame, "Error: No phase file selected.");
-      } else {
-
-        // putting chosen file into phaseText
-        String phase = initialFileChooserWindow.getSelectedFile().getAbsolutePath();
-        logger.addVariable("phase", phase);
-        // String phaseFile = phase.substring(phase.lastIndexOf("\\") + 1);
-        String phaseFile = initialFileChooserWindow.getSelectedFile().getName();
-        s1PhaseWindowTitle = WindowManager.makeUniqueName(phaseFile);
-        String phaseFileFormat = phase.substring(phase.lastIndexOf(".") + 1);
-
-        if (phaseFileFormat.compareTo(ACCEPTED_FILE_TYPE) == 0) {
-          fileOpener.open(phase);
-          WindowManager.getCurrentImage().setTitle(s1PhaseWindowTitle);
-          // phaseFileIsLoaded = true;
-          // phaseText.setValue(phase);
-        } else {
-          JOptionPane.showMessageDialog(gui.frame, "Error: image type not .nii");
-        }
-      }
-    } catch (Exception exc) {
-      logger.addWarning(exc.toString());
-      JOptionPane.showMessageDialog(gui.frame, exc.toString());
+    try {
+      s1PhaseWindowTitle = loadImages(s1PhaseWindowTitle, "phase");
+    } catch (IOException exc) {
+      return;
     }
   }
 
@@ -1135,18 +1057,6 @@ public class Calculate_Magnetic_Moment_3D implements PlugIn {
    * eij
    */
   public static void load_sim_images() {
-    // Begin loading simulated images
-
-    if (WindowManager.getImage(s5MagWindowTitle) != null) {
-      WindowManager.getImage(s5MagWindowTitle).close();
-    }
-
-    if (WindowManager.getImage(s5PhaseWindowTitle) != null) {
-      WindowManager.getImage(s5PhaseWindowTitle).close();
-    }
-
-    // TODO: handle no updateVariables() call
-    // updateVariables();
 
     double snr = Double.parseDouble(gui.ltf_snr.getValue());
     double e12 = Double.parseDouble(gui.ltf_eps12.getValue());
@@ -1160,56 +1070,17 @@ public class Calculate_Magnetic_Moment_3D implements PlugIn {
     double m_R2 = Double.parseDouble(gui.ltf_r2.getValue());
     double m_R3 = Double.parseDouble(gui.ltf_r3.getValue());
 
-    // ---------- Begin to open simulated images, similar to step 1
-
-    final JFileChooser simulatedImageChooserWindow = new JFileChooser(
-        FileSystemView.getFileSystemView()
-            .getHomeDirectory());
-    simulatedImageChooserWindow.setDialogTitle("CHOOSE SIMULATED MAG FILE");
-    int statusOfFileChooser = simulatedImageChooserWindow.showSaveDialog(null);
-
-    Opener fileOpener = new Opener();
-
-    if (statusOfFileChooser != JFileChooser.APPROVE_OPTION) {
-      JOptionPane.showMessageDialog(gui.frame, "Error: no file selected");
-    } else {
-      String simMagImageName = simulatedImageChooserWindow.getSelectedFile().getAbsolutePath();
-      // String simMagImageFile =
-      // simMagImageName.substring(simMagImageName.lastIndexOf("\\") + 1);
-      String simMagImageFile = simulatedImageChooserWindow.getSelectedFile().getName();
-      s5MagWindowTitle = WindowManager.makeUniqueName(simMagImageFile);
-      String simMagImageFileFormat = simMagImageName.substring(simMagImageName.lastIndexOf(".") + 1);
-
-      if (simMagImageFileFormat.compareTo(ACCEPTED_FILE_TYPE) == 0) {
-        fileOpener.open(simMagImageName);
-        WindowManager.getCurrentImage().setTitle(s5MagWindowTitle);
-      } else {
-        JOptionPane.showMessageDialog(gui.frame, "Error: image type not .nii");
-      }
+    try {
+      s5MagWindowTitle = loadImages(s5MagWindowTitle, "mag");
+    } catch (IOException exc) {
+      return;
     }
 
-    simulatedImageChooserWindow.setDialogTitle("CHOOSE SIMULATED PHASE FILE");
-    statusOfFileChooser = simulatedImageChooserWindow.showSaveDialog(null);
-
-    if (statusOfFileChooser != JFileChooser.APPROVE_OPTION) {
-      JOptionPane.showMessageDialog(gui.frame, "Error: no file selected");
-    } else {
-      String simPhaseImageName = simulatedImageChooserWindow.getSelectedFile().getAbsolutePath();
-      // String simPhaseImageFile =
-      // simPhaseImageName.substring(simPhaseImageName.lastIndexOf("\\") + 1);
-      String simPhaseImageFile = simulatedImageChooserWindow.getSelectedFile().getName();
-      s5PhaseWindowTitle = WindowManager.makeUniqueName(simPhaseImageFile);
-      String simPhaseImageFileFormat = simPhaseImageName.substring(simPhaseImageName.lastIndexOf(".") + 1);
-
-      if (simPhaseImageFileFormat.compareTo(ACCEPTED_FILE_TYPE) == 0) {
-        fileOpener.open(simPhaseImageName);
-        WindowManager.getCurrentImage().setTitle(s5PhaseWindowTitle);
-      } else {
-        JOptionPane.showMessageDialog(gui.frame, "Error: image type not .nii");
-      }
+    try {
+      s5PhaseWindowTitle = loadImages(s5PhaseWindowTitle, "phase");
+    } catch (IOException exc) {
+      return;
     }
-
-    // ---------- End to open simulated images
 
     // End loading simulated images
 
@@ -1382,14 +1253,6 @@ public class Calculate_Magnetic_Moment_3D implements PlugIn {
    * and when they need to be uploaded separately.
    */
   public static void load_first_TEImgs() {
-    // If images are already open, close them
-    if (WindowManager.getImage(s6MagWindowTitle) != null) {
-      WindowManager.getImage(s6MagWindowTitle).close();
-    }
-
-    if (WindowManager.getImage(s6PhaseWindowTitle) != null) {
-      WindowManager.getImage(s6PhaseWindowTitle).close();
-    }
 
     ImagePlus magnitudeImage = WindowManager.getImage(s1MagWindowTitle);
     ImagePlus phaseImage = WindowManager.getImage(s1PhaseWindowTitle);
@@ -1404,56 +1267,14 @@ public class Calculate_Magnetic_Moment_3D implements PlugIn {
           "Error: Image does not contain hyperstacks.\nSelect another image for second echo time.");
 
       try {
-
-        final JFileChooser secondEchoChooserWindow = new JFileChooser(
-            FileSystemView.getFileSystemView().getHomeDirectory());
-        secondEchoChooserWindow.setDialogTitle("CHOOSE MAG FILE");
-        int statusOfFileChooser = secondEchoChooserWindow.showSaveDialog(null);
-
-        Opener fileOpener = new Opener();
-
-        if (statusOfFileChooser != JFileChooser.APPROVE_OPTION) {
-          JOptionPane.showMessageDialog(gui.frame, "Error: No magnitude file selected");
-        } else {
-          String mag_secondEcho = secondEchoChooserWindow.getSelectedFile().getAbsolutePath();
-          // String mag_secondEchoFile =
-          // mag_secondEcho.substring(mag_secondEcho.lastIndexOf("\\") + 1);
-          String mag_secondEchoFile = secondEchoChooserWindow.getSelectedFile().getName();
-          s6MagWindowTitle = WindowManager.makeUniqueName(mag_secondEchoFile);
-          String mag_secondEchoFileFormat = mag_secondEcho.substring(mag_secondEcho.lastIndexOf(".") + 1);
-
-          if (mag_secondEchoFileFormat.compareTo(ACCEPTED_FILE_TYPE) == 0) {
-            fileOpener.open(mag_secondEcho);
-            WindowManager.getCurrentImage().setTitle(s6MagWindowTitle);
-            // mag_secondEchoIsLoaded = true;
-          } else {
-            JOptionPane.showMessageDialog(gui.frame, "Error: image type not .nii");
-          }
-        }
-
-        secondEchoChooserWindow.setDialogTitle("CHOOSE PHASE FILE");
-        statusOfFileChooser = secondEchoChooserWindow.showSaveDialog(null);
-
-        if (statusOfFileChooser != JFileChooser.APPROVE_OPTION) {
-          JOptionPane.showMessageDialog(gui.frame, "Error: No phase file selected");
-        } else {
-          String phase_secondEcho = secondEchoChooserWindow.getSelectedFile().getAbsolutePath();
-          // String phase_secondEchoFile =
-          // phase_secondEcho.substring(phase_secondEcho.lastIndexOf("\\") + 1);
-          String phase_secondEchoFile = secondEchoChooserWindow.getSelectedFile().getName();
-          s6PhaseWindowTitle = WindowManager.makeUniqueName(phase_secondEchoFile);
-          String phase_secondEchoFileFormat = phase_secondEcho.substring(phase_secondEcho.lastIndexOf(".") + 1);
-
-          if (phase_secondEchoFileFormat.compareTo(ACCEPTED_FILE_TYPE) == 0) {
-            fileOpener.open(phase_secondEcho);
-            WindowManager.getCurrentImage().setTitle(s6PhaseWindowTitle);
-            // mag_secondEchoIsLoaded = true;
-          } else {
-            JOptionPane.showMessageDialog(gui.frame, "Error: image type not .nii");
-          }
-        }
-      } catch (Exception exc) {
-        JOptionPane.showMessageDialog(gui.frame, exc.toString());
+        s6MagWindowTitle = loadImages(s6MagWindowTitle, "mag");
+      } catch (IOException exc) {
+        return;
+      }
+      try {
+        s6PhaseWindowTitle = loadImages(s6PhaseWindowTitle, "phase");
+      } catch (IOException exc) {
+        return;
       }
     }
 
@@ -1492,36 +1313,12 @@ public class Calculate_Magnetic_Moment_3D implements PlugIn {
    */
   public static void load_spin_echoImgs() {
 
-    if (WindowManager.getImage(s7WindowTitle) != null) {
-      WindowManager.getImage(s7WindowTitle).close();
+    try {
+      s7WindowTitle = loadImages(s7WindowTitle, "mag");
+    } catch (IOException exc) {
+      return;
     }
 
-    // Begin opening spin echo image
-    final JFileChooser spinEchoChooserWindow = new JFileChooser(
-        FileSystemView.getFileSystemView().getHomeDirectory());
-    spinEchoChooserWindow.setDialogTitle("CHOOSE MAG FILE");
-    int statusOfFileChooser = spinEchoChooserWindow.showSaveDialog(null);
-
-    Opener fileOpener = new Opener();
-
-    if (statusOfFileChooser != JFileChooser.APPROVE_OPTION) {
-      JOptionPane.showMessageDialog(gui.frame, "Error: No file selected");
-    } else {
-      String spinEchoImage = spinEchoChooserWindow.getSelectedFile().getAbsolutePath();
-      // String spinEchoImageFile =
-      // spinEchoImage.substring(spinEchoImage.lastIndexOf("\\") + 1);
-      String spinEchoImageFile = spinEchoChooserWindow.getSelectedFile().getName();
-      s7WindowTitle = WindowManager.makeUniqueName(spinEchoImageFile);
-      String spinEchoImageFileFormat = spinEchoImage.substring(spinEchoImage.lastIndexOf(".") + 1);
-
-      if (spinEchoImageFileFormat.compareTo(ACCEPTED_FILE_TYPE) == 0) {
-        fileOpener.open(spinEchoImage);
-        WindowManager.getCurrentImage().setTitle(s7WindowTitle);
-      } else {
-        JOptionPane.showMessageDialog(gui.frame, "Error: image type not .nii");
-      }
-    }
-    // End opening spin echo image
   }
 
   /*
@@ -1559,8 +1356,8 @@ public class Calculate_Magnetic_Moment_3D implements PlugIn {
       int V1SE_x2 = Integer.parseInt(gui.ltf_v1seX2.getValue());
       int V1SE_y1 = Integer.parseInt(gui.ltf_v1seY1.getValue());
       int V1SE_y2 = Integer.parseInt(gui.ltf_v1seY2.getValue());
-      int V1SE_z1 = Integer.parseInt(gui.ltf_v1seZ1.getValue());
-      int V1SE_z2 = Integer.parseInt(gui.ltf_v1seZ2.getValue());
+      int V1SE_z1 = Integer.parseInt(gui.ltf_v1seZ1.getValue()) - 1;
+      int V1SE_z2 = Integer.parseInt(gui.ltf_v1seZ2.getValue()) - 1;
       int V2SE_x1 = Integer.parseInt(gui.ltf_v2seX1.getValue());
       int V2SE_x2 = Integer.parseInt(gui.ltf_v2seX2.getValue());
       int V2SE_y1 = Integer.parseInt(gui.ltf_v2seY1.getValue());
@@ -1732,7 +1529,7 @@ public class Calculate_Magnetic_Moment_3D implements PlugIn {
    *
    * @return the subpixel coordinate
    */
-  public static double pixelToSubpixel(double coordinate, int axisFlag) {
+  private static double pixelToSubpixel(double coordinate, int axisFlag) {
     // Calculated by taking total size of cropped image and dividing it by 2 - this
     // will give the center which is also the estimated center of the image in step
     // 2
@@ -1745,5 +1542,58 @@ public class Calculate_Magnetic_Moment_3D implements PlugIn {
     subpixelCoordinate = subCenter + (coordinate - (double) (item.subpix_image_center.get(axisFlag))) * 10.0;
 
     return subpixelCoordinate;
+  }
+
+  /**
+   * Function to load an image
+   * 
+   * @param title title to be displayed on ImageJ image window
+   * @param type  type of file to be opened - will be displayed on the chooser
+   *              window
+   * @return the unique title of the image
+   * @throws IOException if file is not a valid type
+   */
+  private static String loadImages(String title, String type) throws IOException {
+
+    String retval;
+
+    if (WindowManager.getImage(title) != null)
+      WindowManager.getImage(title).close();
+
+    JFileChooser chooser;
+    File setPathFile = new File("pth.txt");
+    if (setPathFile.exists()) {
+      try (Scanner scnr = new Scanner(setPathFile)) {
+        String set_path = scnr.nextLine();
+        chooser = new JFileChooser(set_path);
+      } catch (Exception exc) {
+        logger.addWarning(exc.toString());
+        chooser = new JFileChooser(FileSystemView.getFileSystemView().getHomeDirectory());
+      }
+    } else {
+      logger.addVariable("home", FileSystemView.getFileSystemView().getHomeDirectory());
+      chooser = new JFileChooser(FileSystemView.getFileSystemView().getHomeDirectory());
+    }
+    chooser.setDialogTitle("Open " + type);
+    int status = chooser.showSaveDialog(null);
+
+    Opener fOpener = new Opener();
+
+    // if user does not choose a file
+    if (status != JFileChooser.APPROVE_OPTION)
+      return "";
+
+    String img_path = chooser.getSelectedFile().getAbsolutePath();
+    String filename = chooser.getSelectedFile().getName();
+    retval = WindowManager.makeUniqueName(filename);
+    String format = img_path.substring(img_path.lastIndexOf(".") + 1);
+
+    if (format.compareTo(ACCEPTED_FILE_TYPE) != 0)
+      throw new IOException("File type not accepted");
+
+    fOpener.open(img_path);
+    WindowManager.getCurrentImage().setTitle(retval);
+
+    return retval;
   }
 }
