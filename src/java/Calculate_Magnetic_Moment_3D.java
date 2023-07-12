@@ -1565,8 +1565,8 @@ public class Calculate_Magnetic_Moment_3D implements PlugIn {
       int V2SE_x2 = Integer.parseInt(gui.ltf_v2seX2.getValue());
       int V2SE_y1 = Integer.parseInt(gui.ltf_v2seY1.getValue());
       int V2SE_y2 = Integer.parseInt(gui.ltf_v2seY2.getValue());
-      int V2SE_z1 = Integer.parseInt(gui.ltf_v2seZ1.getValue());
-      int V2SE_z2 = Integer.parseInt(gui.ltf_v2seZ2.getValue());
+      int V2SE_z1 = Integer.parseInt(gui.ltf_v2seZ1.getValue()) - 1;
+      int V2SE_z2 = Integer.parseInt(gui.ltf_v2seZ2.getValue()) - 1;
 
       int V1SE_size = (V1SE_x2 - V1SE_x1) * (V1SE_y2 - V1SE_y1) * (V1SE_z2 - V1SE_z1);
       int V2SE_size = (V2SE_x2 - V2SE_x1) * (V2SE_y2 - V2SE_y1) * (V2SE_z2 - V2SE_z1);
