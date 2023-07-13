@@ -328,15 +328,6 @@ JNIEXPORT void JNICALL Java_JNIMethods_setRealImagNumbers(JNIEnv *env, jobject t
     return;
 }
 
-JNIEXPORT void JNICALL Java_JNIMethods_setXYZ(JNIEnv *env, jobject thisObj, jdouble nx, jdouble ny, jdouble nz)
-{
-    m_CenterX = nx;
-    m_CenterY = ny;
-    m_CenterZ = nz;
-
-    return;
-}
-
 JNIEXPORT void JNICALL Java_JNIMethods_setPhaseXYMatrix(JNIEnv *env, jobject thisObj, jobjectArray jarr)
 {
     subPhaseMatrix = new float *[subpixeldisplay];
@@ -433,40 +424,11 @@ JNIEXPORT void JNICALL Java_JNIMethods_setMagXZMatrix(JNIEnv *env, jobject thisO
     return;
 }
 
-JNIEXPORT void JNICALL Java_JNIMethods_setmR123(JNIEnv *env, jobject thisObj, jdouble nm_R1, jdouble nm_R2, jdouble nm_R3)
-{
-    m_R1 = nm_R1;
-    m_R2 = nm_R2;
-    m_R3 = nm_R3;
-    return;
-}
-
-JNIEXPORT void JNICALL Java_JNIMethods_setR123PhaseCalc(JNIEnv *env, jobject thisObj, jdouble pr1, jdouble pr2, jdouble pr3)
-{
-    m_ROuterPhase = pr1;
-    m_RMiddlePhase = pr2;
-    m_RInnerPhase = pr3;
-    return;
-}
-
 JNIEXPORT void JNICALL Java_JNIMethods_setR123PhaseActual(JNIEnv *env, jobject thisObj, jdouble pr1, jdouble pr2, jdouble pr3)
 {
     m_R1 = pr1;
     m_R2 = pr2;
     m_R3 = pr3;
-}
-
-JNIEXPORT void JNICALL Java_JNIMethods_setSmallBox(JNIEnv *env, jobject thisObj, jint xi, jint yi, jint zi, jint xsize, jint ysize, jint zsize)
-{
-
-    smallBox_X = xi;
-    smallBox_Y = yi;
-    smallBox_Z = zi;
-    smallBox_XSize = xsize;
-    smallBox_YSize = ysize;
-    smallBox_ZSize = zsize;
-
-    return;
 }
 
 JNIEXPORT void JNICALL Java_JNIMethods_setCenterL(JNIEnv *env, jobject thisObj, jdouble x, jdouble y, jdouble z)
@@ -504,12 +466,6 @@ JNIEXPORT void JNICALL Java_JNIMethods_setMagMomentVariables(JNIEnv *env, jobjec
     m_B0 = b0;
     m_TE_first = te;
     m_RChi = rchi;
-    return;
-}
-
-JNIEXPORT void JNICALL Java_JNIMethods_setRi(JNIEnv *env, jobject thisObj, jdouble mri)
-{
-    m_Ri = mri;
     return;
 }
 
@@ -3952,21 +3908,6 @@ JNIEXPORT jdouble JNICALL Java_JNIMethods_getSubZ(JNIEnv *env, jobject thisObj)
     return m_CenterZ;
 }
 
-JNIEXPORT jdouble JNICALL Java_JNIMethods_getSubXOther(JNIEnv *env, jobject thisObj)
-{
-    return m_CenterX3;
-}
-
-JNIEXPORT jdouble JNICALL Java_JNIMethods_getSubYOther(JNIEnv *env, jobject thisObj)
-{
-    return m_CenterY3;
-}
-
-JNIEXPORT jdouble JNICALL Java_JNIMethods_getSubZOther(JNIEnv *env, jobject thisObj)
-{
-    return m_CenterZ3;
-}
-
 JNIEXPORT jdouble JNICALL Java_JNIMethods_getMR1Calc(JNIEnv *env, jobject thisObj)
 {
     return m_ROuterPhase;
@@ -3980,41 +3921,6 @@ JNIEXPORT jdouble JNICALL Java_JNIMethods_getMR2Calc(JNIEnv *env, jobject thisOb
 JNIEXPORT jdouble JNICALL Java_JNIMethods_getMR3Calc(JNIEnv *env, jobject thisObj)
 {
     return m_RInnerPhase;
-}
-
-JNIEXPORT jdouble JNICALL Java_JNIMethods_getSNR(JNIEnv *env, jobject thisObj)
-{
-    return m_SNR;
-}
-
-JNIEXPORT jdouble JNICALL Java_JNIMethods_getE12(JNIEnv *env, jobject thisObj)
-{
-    return m_e12;
-}
-
-JNIEXPORT jdouble JNICALL Java_JNIMethods_getE23(JNIEnv *env, jobject thisObj)
-{
-    return m_e23;
-}
-
-JNIEXPORT jdouble JNICALL Java_JNIMethods_getB0(JNIEnv *env, jobject thisObj)
-{
-    return m_B0;
-}
-
-JNIEXPORT jdouble JNICALL Java_JNIMethods_getTE(JNIEnv *env, jobject thisObj)
-{
-    return m_TE_first;
-}
-
-JNIEXPORT jdouble JNICALL Java_JNIMethods_getRChi(JNIEnv *env, jobject thisObj)
-{
-    return m_RChi;
-}
-
-JNIEXPORT jdouble JNICALL Java_JNIMethods_getRho(JNIEnv *env, jobject thisObj)
-{
-    return m_rho;
 }
 
 JNIEXPORT jdouble JNICALL Java_JNIMethods_getChi(JNIEnv *env, jobject thisObj)
@@ -4032,34 +3938,9 @@ JNIEXPORT jdouble JNICALL Java_JNIMethods_getUncertainty(JNIEnv *env, jobject th
     return m_Uncertainty;
 }
 
-JNIEXPORT jdouble JNICALL Java_JNIMethods_getP(JNIEnv *env, jobject thisObj)
-{
-    return m_p_first;
-}
-
-JNIEXPORT jdouble JNICALL Java_JNIMethods_getP0(JNIEnv *env, jobject thisObj)
-{
-    return m_p0;
-}
-
 JNIEXPORT jdouble JNICALL Java_JNIMethods_getMagMoment(JNIEnv *env, jobject thisObj)
 {
     return m_MagMoment;
-}
-
-JNIEXPORT jdouble JNICALL Java_JNIMethods_getResX(JNIEnv *env, jobject thisObj)
-{
-    return m_resx;
-}
-
-JNIEXPORT jdouble JNICALL Java_JNIMethods_getResY(JNIEnv *env, jobject thisObj)
-{
-    return m_resy;
-}
-
-JNIEXPORT jdouble JNICALL Java_JNIMethods_getResZ(JNIEnv *env, jobject thisObj)
-{
-    return m_resz;
 }
 
 JNIEXPORT jdouble JNICALL Java_JNIMethods_getRealSum(JNIEnv *env, jobject thisObj)

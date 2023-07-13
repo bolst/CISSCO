@@ -64,13 +64,13 @@ class JNIMethods {
     native void setmVariables(int jm_SubPixels, double jm_R0, double jm_RCenter,
             double jm_CenterX2, double jm_CenterY2, double jm_CenterZ2, double jphaseValue);
 
+    native void setMagMomentVariables(double jSNR, double je12, double je23, double jB0, double jRChi, double jTE);
+
     native void setMagMoment(double nm);
 
     native void setBackPhase(double jBackPhase);
 
     native void setRealImagNumbers(float[][][] jreal, float[][][] jimag);
-
-    native void setXYZ(double jx, double jy, double jz);
 
     native void setPhaseXYMatrix(float[][] jphase);
 
@@ -80,21 +80,11 @@ class JNIMethods {
 
     native void setMagXZMatrix(float[][] jmag);
 
-    native void setSmallBox(int jxi, int jyi, int jzi, int jxsize, int jysize, int jzsize);
-
     native void setCenterL(double jx, double jy, double jz);
 
     native void setCenterM(double jx, double jy, double jz);
 
     native void setCenterS(double jx, double jy, double jz);
-
-    native void setmR123(double jmr1, double jmr2, double jmr3);
-
-    native void setR123PhaseCalc(double j1, double j2, double j3);
-
-    native void setMagMomentVariables(double jSNR, double je12, double je23, double jB0, double jRChi, double jTE);
-
-    native void setRi(double jri);
 
     native void setStep6Variables(double jtef, double jtel, double jb0, double jrx);
 
@@ -132,12 +122,6 @@ class JNIMethods {
 
     native double getSubZ();
 
-    native double getSubXOther();
-
-    native double getSubYOther();
-
-    native double getSubZOther();
-
     native String calculateMagneticMoment();
 
     native double getMR1Calc();
@@ -146,37 +130,13 @@ class JNIMethods {
 
     native double getMR3Calc();
 
-    native double getSNR();
-
-    native double getE12();
-
-    native double getE23();
-
-    native double getB0();
-
-    native double getTE();
-
-    native double getRChi();
-
-    native double getRho();
-
     native double getChi();
 
     native double getA();
 
     native double getUncertainty();
 
-    native double getP();
-
-    native double getP0();
-
     native double getMagMoment();
-
-    native double getResX();
-
-    native double getResY();
-
-    native double getResZ();
 
     native double getRealSum();
 
