@@ -75,7 +75,6 @@ public class Calculate_Magnetic_Moment_3D implements PlugIn {
   // Function to run CMM3D (plug-in)
   public void run(String arg) {
     gui = new GUI();
-    gui.ll_rho0SE.setValue("10.0");
   }
 
   // =====================================================================================
