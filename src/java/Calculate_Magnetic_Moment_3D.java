@@ -83,13 +83,17 @@ public class Calculate_Magnetic_Moment_3D implements PlugIn {
   // =====================================================================================
   public static void load_mag_phase_images() {
 
-    try {
-      s1MagWindowTitle = loadImages(s1MagWindowTitle, "mag");
-      s1PhaseWindowTitle = loadImages(s1PhaseWindowTitle, "phase");
-    } catch (IOException exc) {
-      return;
-    }
+    s1MagWindowTitle = loadImagesIJ(s1MagWindowTitle);
+    s1PhaseWindowTitle = loadImagesIJ(s1PhaseWindowTitle);
 
+    /*
+     * try {
+     * s1MagWindowTitle = loadImages(s1MagWindowTitle, "mag");
+     * s1PhaseWindowTitle = loadImages(s1PhaseWindowTitle, "phase");
+     * } catch (IOException exc) {
+     * return;
+     * }
+     */
   }
 
   // =====================================================================================
@@ -1066,12 +1070,16 @@ public class Calculate_Magnetic_Moment_3D implements PlugIn {
     double m_R2 = Double.parseDouble(gui.ltf_r2.getValue());
     double m_R3 = Double.parseDouble(gui.ltf_r3.getValue());
 
-    try {
-      s5MagWindowTitle = loadImages(s5MagWindowTitle, "mag");
-      s5PhaseWindowTitle = loadImages(s5PhaseWindowTitle, "phase");
-    } catch (IOException exc) {
-      return;
-    }
+    s5MagWindowTitle = loadImagesIJ(s5MagWindowTitle);
+    s5PhaseWindowTitle = loadImagesIJ(s5PhaseWindowTitle);
+    /*
+     * try {
+     * s5MagWindowTitle = loadImages(s5MagWindowTitle, "mag");
+     * s5PhaseWindowTitle = loadImages(s5PhaseWindowTitle, "phase");
+     * } catch (IOException exc) {
+     * return;
+     * }
+     */
 
     // End loading simulated images
 
@@ -1257,12 +1265,16 @@ public class Calculate_Magnetic_Moment_3D implements PlugIn {
       JOptionPane.showMessageDialog(gui.frame,
           "Error: Image does not contain hyperstacks.\nSelect another image for second echo time.");
 
-      try {
-        s6MagWindowTitle = loadImages(s6MagWindowTitle, "mag");
-        s6PhaseWindowTitle = loadImages(s6PhaseWindowTitle, "phase");
-      } catch (IOException exc) {
-        return;
-      }
+      s6MagWindowTitle = loadImagesIJ(s6MagWindowTitle);
+      s6PhaseWindowTitle = loadImagesIJ(s6PhaseWindowTitle);
+      /*
+       * try {
+       * s6MagWindowTitle = loadImages(s6MagWindowTitle, "mag");
+       * s6PhaseWindowTitle = loadImages(s6PhaseWindowTitle, "phase");
+       * } catch (IOException exc) {
+       * return;
+       * }
+       */
     }
 
     // ---------- end to get first TE images
@@ -1300,11 +1312,14 @@ public class Calculate_Magnetic_Moment_3D implements PlugIn {
    */
   public static void load_spin_echoImgs() {
 
-    try {
-      s7WindowTitle = loadImages(s7WindowTitle, "mag");
-    } catch (IOException exc) {
-      return;
-    }
+    s7WindowTitle = loadImagesIJ(s7WindowTitle);
+    /*
+     * try {
+     * s7WindowTitle = loadImages(s7WindowTitle, "mag");
+     * } catch (IOException exc) {
+     * return;
+     * }
+     */
 
   }
 
@@ -1582,5 +1597,17 @@ public class Calculate_Magnetic_Moment_3D implements PlugIn {
     WindowManager.getCurrentImage().setTitle(retval);
 
     return retval;
+  }
+
+  private static String loadImagesIJ(String title) {
+    if (WindowManager.getImage(title) != null)
+      WindowManager.getImage(title).close();
+
+    IJ.open();
+    title = WindowManager.getCurrentImage().getTitle();
+    title = WindowManager.makeUniqueName(title);
+    WindowManager.getCurrentImage().setTitle(title);
+
+    return title;
   }
 }
