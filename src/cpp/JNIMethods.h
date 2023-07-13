@@ -57,6 +57,14 @@ JNIEXPORT void JNICALL Java_JNIMethods_setmVariables
 
 /*
  * Class:     JNIMethods
+ * Method:    setMagMomentVariables
+ * Signature: (DDDDDD)V
+ */
+JNIEXPORT void JNICALL Java_JNIMethods_setMagMomentVariables
+  (JNIEnv *, jobject, jdouble, jdouble, jdouble, jdouble, jdouble, jdouble);
+
+/*
+ * Class:     JNIMethods
  * Method:    setMagMoment
  * Signature: (D)V
  */
@@ -78,14 +86,6 @@ JNIEXPORT void JNICALL Java_JNIMethods_setBackPhase
  */
 JNIEXPORT void JNICALL Java_JNIMethods_setRealImagNumbers
   (JNIEnv *, jobject, jobjectArray, jobjectArray);
-
-/*
- * Class:     JNIMethods
- * Method:    setXYZ
- * Signature: (DDD)V
- */
-JNIEXPORT void JNICALL Java_JNIMethods_setXYZ
-  (JNIEnv *, jobject, jdouble, jdouble, jdouble);
 
 /*
  * Class:     JNIMethods
@@ -121,14 +121,6 @@ JNIEXPORT void JNICALL Java_JNIMethods_setMagXZMatrix
 
 /*
  * Class:     JNIMethods
- * Method:    setSmallBox
- * Signature: (IIIIII)V
- */
-JNIEXPORT void JNICALL Java_JNIMethods_setSmallBox
-  (JNIEnv *, jobject, jint, jint, jint, jint, jint, jint);
-
-/*
- * Class:     JNIMethods
  * Method:    setCenterL
  * Signature: (DDD)V
  */
@@ -150,38 +142,6 @@ JNIEXPORT void JNICALL Java_JNIMethods_setCenterM
  */
 JNIEXPORT void JNICALL Java_JNIMethods_setCenterS
   (JNIEnv *, jobject, jdouble, jdouble, jdouble);
-
-/*
- * Class:     JNIMethods
- * Method:    setmR123
- * Signature: (DDD)V
- */
-JNIEXPORT void JNICALL Java_JNIMethods_setmR123
-  (JNIEnv *, jobject, jdouble, jdouble, jdouble);
-
-/*
- * Class:     JNIMethods
- * Method:    setR123PhaseCalc
- * Signature: (DDD)V
- */
-JNIEXPORT void JNICALL Java_JNIMethods_setR123PhaseCalc
-  (JNIEnv *, jobject, jdouble, jdouble, jdouble);
-
-/*
- * Class:     JNIMethods
- * Method:    setMagMomentVariables
- * Signature: (DDDDDD)V
- */
-JNIEXPORT void JNICALL Java_JNIMethods_setMagMomentVariables
-  (JNIEnv *, jobject, jdouble, jdouble, jdouble, jdouble, jdouble, jdouble);
-
-/*
- * Class:     JNIMethods
- * Method:    setRi
- * Signature: (D)V
- */
-JNIEXPORT void JNICALL Java_JNIMethods_setRi
-  (JNIEnv *, jobject, jdouble);
 
 /*
  * Class:     JNIMethods
@@ -329,30 +289,6 @@ JNIEXPORT jdouble JNICALL Java_JNIMethods_getSubZ
 
 /*
  * Class:     JNIMethods
- * Method:    getSubXOther
- * Signature: ()D
- */
-JNIEXPORT jdouble JNICALL Java_JNIMethods_getSubXOther
-  (JNIEnv *, jobject);
-
-/*
- * Class:     JNIMethods
- * Method:    getSubYOther
- * Signature: ()D
- */
-JNIEXPORT jdouble JNICALL Java_JNIMethods_getSubYOther
-  (JNIEnv *, jobject);
-
-/*
- * Class:     JNIMethods
- * Method:    getSubZOther
- * Signature: ()D
- */
-JNIEXPORT jdouble JNICALL Java_JNIMethods_getSubZOther
-  (JNIEnv *, jobject);
-
-/*
- * Class:     JNIMethods
  * Method:    calculateMagneticMoment
  * Signature: ()Ljava/lang/String;
  */
@@ -385,62 +321,6 @@ JNIEXPORT jdouble JNICALL Java_JNIMethods_getMR3Calc
 
 /*
  * Class:     JNIMethods
- * Method:    getSNR
- * Signature: ()D
- */
-JNIEXPORT jdouble JNICALL Java_JNIMethods_getSNR
-  (JNIEnv *, jobject);
-
-/*
- * Class:     JNIMethods
- * Method:    getE12
- * Signature: ()D
- */
-JNIEXPORT jdouble JNICALL Java_JNIMethods_getE12
-  (JNIEnv *, jobject);
-
-/*
- * Class:     JNIMethods
- * Method:    getE23
- * Signature: ()D
- */
-JNIEXPORT jdouble JNICALL Java_JNIMethods_getE23
-  (JNIEnv *, jobject);
-
-/*
- * Class:     JNIMethods
- * Method:    getB0
- * Signature: ()D
- */
-JNIEXPORT jdouble JNICALL Java_JNIMethods_getB0
-  (JNIEnv *, jobject);
-
-/*
- * Class:     JNIMethods
- * Method:    getTE
- * Signature: ()D
- */
-JNIEXPORT jdouble JNICALL Java_JNIMethods_getTE
-  (JNIEnv *, jobject);
-
-/*
- * Class:     JNIMethods
- * Method:    getRChi
- * Signature: ()D
- */
-JNIEXPORT jdouble JNICALL Java_JNIMethods_getRChi
-  (JNIEnv *, jobject);
-
-/*
- * Class:     JNIMethods
- * Method:    getRho
- * Signature: ()D
- */
-JNIEXPORT jdouble JNICALL Java_JNIMethods_getRho
-  (JNIEnv *, jobject);
-
-/*
- * Class:     JNIMethods
  * Method:    getChi
  * Signature: ()D
  */
@@ -465,50 +345,10 @@ JNIEXPORT jdouble JNICALL Java_JNIMethods_getUncertainty
 
 /*
  * Class:     JNIMethods
- * Method:    getP
- * Signature: ()D
- */
-JNIEXPORT jdouble JNICALL Java_JNIMethods_getP
-  (JNIEnv *, jobject);
-
-/*
- * Class:     JNIMethods
- * Method:    getP0
- * Signature: ()D
- */
-JNIEXPORT jdouble JNICALL Java_JNIMethods_getP0
-  (JNIEnv *, jobject);
-
-/*
- * Class:     JNIMethods
  * Method:    getMagMoment
  * Signature: ()D
  */
 JNIEXPORT jdouble JNICALL Java_JNIMethods_getMagMoment
-  (JNIEnv *, jobject);
-
-/*
- * Class:     JNIMethods
- * Method:    getResX
- * Signature: ()D
- */
-JNIEXPORT jdouble JNICALL Java_JNIMethods_getResX
-  (JNIEnv *, jobject);
-
-/*
- * Class:     JNIMethods
- * Method:    getResY
- * Signature: ()D
- */
-JNIEXPORT jdouble JNICALL Java_JNIMethods_getResY
-  (JNIEnv *, jobject);
-
-/*
- * Class:     JNIMethods
- * Method:    getResZ
- * Signature: ()D
- */
-JNIEXPORT jdouble JNICALL Java_JNIMethods_getResZ
   (JNIEnv *, jobject);
 
 /*

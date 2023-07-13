@@ -644,9 +644,9 @@ public class GUI {
         // "Second Image Center"
         frame.getContentPane().add(new JLabel("Second Image Center:"), "cell 1 20,alignx right");
         // "Second Image Center" coordinates
-        ltf_secondImgX = new LabeledTextField("(", "0.0", null, 4);
-        ltf_secondImgY = new LabeledTextField(",", "0.0", null, 4);
-        ltf_secondImgZ = new LabeledTextField(",", "0.0", "-1)", 4);
+        ltf_secondImgX = new LabeledTextField("(", "0", null, 4);
+        ltf_secondImgY = new LabeledTextField(",", "0", null, 4);
+        ltf_secondImgZ = new LabeledTextField(",", "0", "-1)", 4);
         JPanel SECPanel = new JPanel(new MigLayout("", "[][][]", "[]"));
         SECPanel.add(ltf_secondImgX);
         SECPanel.add(ltf_secondImgY);
@@ -657,12 +657,12 @@ public class GUI {
         frame.getContentPane().add(new JLabel("<html>V<sub>1,SE</sub> Box Coordinates:</html>"),
                 "cell 1 21,alignx right");
         // "V1,SE Region" coordinates
-        ltf_v1seX1 = new LabeledTextField("(", "0.0", null, 4);
-        ltf_v1seY1 = new LabeledTextField(",", "0.0", null, 4);
-        ltf_v1seZ1 = new LabeledTextField(",", "0.0", "-1)", 4);
-        ltf_v1seX2 = new LabeledTextField("(", "0.0", null, 4);
-        ltf_v1seY2 = new LabeledTextField(",", "0.0", null, 4);
-        ltf_v1seZ2 = new LabeledTextField(",", "0.0", "-1)", 4);
+        ltf_v1seX1 = new LabeledTextField("(", "0", null, 4);
+        ltf_v1seY1 = new LabeledTextField(",", "0", null, 4);
+        ltf_v1seZ1 = new LabeledTextField(",", "0", "-1)", 4);
+        ltf_v1seX2 = new LabeledTextField("(", "0", null, 4);
+        ltf_v1seY2 = new LabeledTextField(",", "0", null, 4);
+        ltf_v1seZ2 = new LabeledTextField(",", "0", "-1)", 4);
         JPanel V1Panel = new JPanel(new MigLayout("", "[][][][][][]", "[]"));
         V1Panel.add(ltf_v1seX1);
         V1Panel.add(ltf_v1seY1);
@@ -676,12 +676,12 @@ public class GUI {
         frame.getContentPane().add(new JLabel("<html>V<sub>2,SE</sub> Box Coordinates:</html>"),
                 "cell 1 22,alignx right");
         // "V2,SE Region" coordinates
-        ltf_v2seX1 = new LabeledTextField("(", "0.0", null, 4);
-        ltf_v2seY1 = new LabeledTextField(",", "0.0", null, 4);
-        ltf_v2seZ1 = new LabeledTextField(",", "0.0", "-1)", 4);
-        ltf_v2seX2 = new LabeledTextField("(", "0.0", null, 4);
-        ltf_v2seY2 = new LabeledTextField(",", "0.0", null, 4);
-        ltf_v2seZ2 = new LabeledTextField(",", "0.0", "-1)", 4);
+        ltf_v2seX1 = new LabeledTextField("(", "0", null, 4);
+        ltf_v2seY1 = new LabeledTextField(",", "0", null, 4);
+        ltf_v2seZ1 = new LabeledTextField(",", "0", "-1)", 4);
+        ltf_v2seX2 = new LabeledTextField("(", "0", null, 4);
+        ltf_v2seY2 = new LabeledTextField(",", "0", null, 4);
+        ltf_v2seZ2 = new LabeledTextField(",", "0", "-1)", 4);
         JPanel V2Panel = new JPanel(new MigLayout("", "[][][][][][]", "[]"));
         V2Panel.add(ltf_v2seX1);
         V2Panel.add(ltf_v2seY1);
