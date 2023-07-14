@@ -3,7 +3,11 @@
  * @version 3.12, May 5, 2023
  */
 
+import ij.gui.OvalRoi;
+import ij.gui.PointRoi;
+import ij.gui.Roi;
 import java.awt.Color;
+import java.awt.Rectangle;
 import java.util.ArrayList;
 import java.lang.Math;
 import javax.swing.JFileChooser;
@@ -17,6 +21,7 @@ import ij.ImageJ;
 import ij.ImagePlus;
 import ij.gui.*;
 import ij.plugin.PlugIn;
+import ij.plugin.frame.RoiManager;
 import ij.process.*;
 import ij.WindowManager;
 import ij.io.Opener;
@@ -499,36 +504,36 @@ public class Calculate_Magnetic_Moment_3D implements PlugIn {
         String.valueOf(sub_x) + ' ' + String.valueOf(sub_y) + ' ' + String.valueOf(sub_z));
 
     // Creating a new ROIS for the XY mag image
-    roiImgMag = new ROIS("MXY");
+    roiImgMag = new ROIS(subMagTitle);
     // Adding the center as a point to the list
-    roiImgMag.addPointROI("Center", sub_x, sub_y);
+    roiImgMag.addPointROI(sub_x, sub_y);
     if (gui.chkbx_showrc.isSelected()) {
       // If the box is selected, adds RCenter circle ROI to the list
-      roiImgMag.addCircleROI("RCenter", sub_x, sub_y, RCenter * 10.0);
+      roiImgMag.addCircleROI(sub_x, sub_y, RCenter * 10.0);
     }
     // Displays the ROIS on the image
     roiImgMag.displayROIS();
 
     // The next 3 blocks of code follow the same logic as described above
 
-    roiImgMagXZ = new ROIS("MXZ");
-    roiImgMagXZ.addPointROI("Center", sub_x, sub_z);
+    roiImgMagXZ = new ROIS(subMagXZTitle);
+    roiImgMagXZ.addPointROI(sub_x, sub_z);
     if (gui.chkbx_showrc.isSelected()) {
-      roiImgMagXZ.addCircleROI("RCenter", sub_x, sub_z, RCenter * 10.0);
+      roiImgMagXZ.addCircleROI(sub_x, sub_z, RCenter * 10.0);
     }
     roiImgMagXZ.displayROIS();
 
-    roiImgPhase = new ROIS("PXY");
-    roiImgPhase.addPointROI("Center", sub_x, sub_y);
+    roiImgPhase = new ROIS(subPhaseTitle);
+    roiImgPhase.addPointROI(sub_x, sub_y);
     if (gui.chkbx_showrc.isSelected()) {
-      roiImgPhase.addCircleROI("RCenter", sub_x, sub_y, RCenter * 10.0);
+      roiImgPhase.addCircleROI(sub_x, sub_y, RCenter * 10.0);
     }
     roiImgPhase.displayROIS();
 
-    roiImgPhaseXZ = new ROIS("PXZ");
-    roiImgPhaseXZ.addPointROI("Center", sub_x, sub_z);
+    roiImgPhaseXZ = new ROIS(subPhaseXZTitle);
+    roiImgPhaseXZ.addPointROI(sub_x, sub_z);
     if (gui.chkbx_showrc.isSelected()) {
-      roiImgPhaseXZ.addCircleROI("RCenter", sub_x, sub_z, RCenter * 10.0);
+      roiImgPhaseXZ.addCircleROI(sub_x, sub_z, RCenter * 10.0);
     }
     roiImgPhaseXZ.displayROIS();
 
@@ -575,33 +580,48 @@ public class Calculate_Magnetic_Moment_3D implements PlugIn {
     logger.addVariable("subxyz (in redraw)",
         String.valueOf(sub_x) + ',' + String.valueOf(sub_y) + ',' + String.valueOf(sub_z));
 
+    // Creating a new ROIS for the XY mag image
+    // roiImgMag = new ROIS(subMagTitle);
+    // Adding the center as a point to the list
+    // roiImgMag.addPointROI("Center", sub_x, sub_y);
+    // if (gui.chkbx_showrc.isSelected()) {
+    // If the box is selected, adds RCenter circle ROI to the list
+    // roiImgMag.addCircleROI("RCenter", sub_x, sub_y, RCenter * 10.0);
+    // }
+    // Displays the ROIS on the image
+    // roiImgMag.displayROIS();
+
     roiImgMag.clear();
-    roiImgMag.addPointROI("Center", sub_x, sub_y);
+    roiImgMag.addPointROI(sub_x, sub_y);
     if (gui.chkbx_showrc.isSelected()) {
-      roiImgMag.addCircleROI("RCenter", sub_x, sub_y, RCenter * 10.0);
+      roiImgMag.addCircleROI(sub_x, sub_y, RCenter * 10.0);
     }
     roiImgMag.displayROIS();
 
+    // The next 3 blocks of code follow the same logic as described above
+
     roiImgMagXZ.clear();
-    roiImgMagXZ.addPointROI("Center", sub_x, sub_z);
+    roiImgMagXZ.addPointROI(sub_x, sub_z);
     if (gui.chkbx_showrc.isSelected()) {
-      roiImgMagXZ.addCircleROI("RCenter", sub_x, sub_z, RCenter * 10.0);
+      roiImgMagXZ.addCircleROI(sub_x, sub_z, RCenter * 10.0);
     }
     roiImgMagXZ.displayROIS();
 
     roiImgPhase.clear();
-    roiImgPhase.addPointROI("Center", sub_x, sub_y);
+    roiImgPhase.addPointROI(sub_x, sub_y);
     if (gui.chkbx_showrc.isSelected()) {
-      roiImgPhase.addCircleROI("RCenter", sub_x, sub_y, RCenter * 10.0);
+      roiImgPhase.addCircleROI(sub_x, sub_y, RCenter * 10.0);
     }
     roiImgPhase.displayROIS();
 
     roiImgPhaseXZ.clear();
-    roiImgPhaseXZ.addPointROI("Center", sub_x, sub_z);
+    roiImgPhaseXZ.addPointROI(sub_x, sub_z);
     if (gui.chkbx_showrc.isSelected()) {
-      roiImgPhaseXZ.addCircleROI("RCenter", sub_x, sub_z, RCenter * 10.0);
+      roiImgPhaseXZ.addCircleROI(sub_x, sub_z, RCenter * 10.0);
     }
     roiImgPhaseXZ.displayROIS();
+
+    // ---------- end to put ROIS on images
   }
 
   // =====================================================================================
@@ -634,40 +654,32 @@ public class Calculate_Magnetic_Moment_3D implements PlugIn {
     int sub_z = (int) pixelToSubpixel(item.centerS().get(2), 2);
     logger.addVariable("subxyz", String.valueOf(sub_x) + ',' + String.valueOf(sub_y) + ',' + String.valueOf(sub_z));
 
-    // Clearing ROI list
     roiImgMag.clear();
-    // Adding center ROI to list
-    roiImgMag.addPointROI("Center", sub_x, sub_y);
-    // Adding R1 to list
-    roiImgMag.addCircleROI("MR1", sub_x, sub_y, m_R1 * 10.0);
-    // Adding R2 to list
-    roiImgMag.addCircleROI("MR2", sub_x, sub_y, m_R2 * 10.0);
-    // Adding R3 to list
-    roiImgMag.addCircleROI("MR3", sub_x, sub_y, m_R3 * 10.0);
-    // Displaying list
+    roiImgMag.addPointROI(sub_x, sub_y);
+    roiImgMag.addCircleROI(sub_x, sub_y, m_R1 * 10.0);
+    roiImgMag.addCircleROI(sub_x, sub_y, m_R2 * 10.0);
+    roiImgMag.addCircleROI(sub_x, sub_y, m_R3 * 10.0);
     roiImgMag.displayROIS();
 
-    // The same logic as above is followed for the next three blocks
-
     roiImgMagXZ.clear();
-    roiImgMagXZ.addPointROI("Center", sub_x, sub_z);
-    roiImgMagXZ.addCircleROI("MR1", sub_x, sub_z, m_R1 * 10.0);
-    roiImgMagXZ.addCircleROI("MR2", sub_x, sub_z, m_R2 * 10.0);
-    roiImgMagXZ.addCircleROI("MR3", sub_x, sub_z, m_R3 * 10.0);
+    roiImgMagXZ.addPointROI(sub_x, sub_z);
+    roiImgMagXZ.addCircleROI(sub_x, sub_z, m_R1 * 10.0);
+    roiImgMagXZ.addCircleROI(sub_x, sub_z, m_R2 * 10.0);
+    roiImgMagXZ.addCircleROI(sub_x, sub_z, m_R3 * 10.0);
     roiImgMagXZ.displayROIS();
 
     roiImgPhase.clear();
-    roiImgPhase.addPointROI("Center", sub_x, sub_y);
-    roiImgPhase.addCircleROI("MR1", sub_x, sub_y, m_R1 * 10.0);
-    roiImgPhase.addCircleROI("MR2", sub_x, sub_y, m_R2 * 10.0);
-    roiImgPhase.addCircleROI("MR3", sub_x, sub_y, m_R3 * 10.0);
+    roiImgPhase.addPointROI(sub_x, sub_y);
+    roiImgPhase.addCircleROI(sub_x, sub_y, m_R1 * 10.0);
+    roiImgPhase.addCircleROI(sub_x, sub_y, m_R2 * 10.0);
+    roiImgPhase.addCircleROI(sub_x, sub_y, m_R3 * 10.0);
     roiImgPhase.displayROIS();
 
     roiImgPhaseXZ.clear();
-    roiImgPhaseXZ.addPointROI("Center", sub_x, sub_z);
-    roiImgPhaseXZ.addCircleROI("MR1", sub_x, sub_z, m_R1 * 10.0);
-    roiImgPhaseXZ.addCircleROI("MR2", sub_x, sub_z, m_R2 * 10.0);
-    roiImgPhaseXZ.addCircleROI("MR3", sub_x, sub_z, m_R3 * 10.0);
+    roiImgPhaseXZ.addPointROI(sub_x, sub_z);
+    roiImgPhaseXZ.addCircleROI(sub_x, sub_z, m_R1 * 10.0);
+    roiImgPhaseXZ.addCircleROI(sub_x, sub_z, m_R2 * 10.0);
+    roiImgPhaseXZ.addCircleROI(sub_x, sub_z, m_R3 * 10.0);
     roiImgPhaseXZ.displayROIS();
 
     float R1_phase_actual = 0;
@@ -1425,16 +1437,16 @@ public class Calculate_Magnetic_Moment_3D implements PlugIn {
       V1SE_XZImage.show();
 
       // Adding V2 box to V1 XY images
-      roiImgV1SE = new ROIS("MAG2XY");
-      roiImgV1SE.addPointROI("Center", Math.abs(VSE_centerX - V1SE_x1), Math.abs(VSE_centerY - V1SE_y1));
-      roiImgV1SE.addRectangle("V1SE", Math.abs(V1SE_x1 - V2SE_x1), Math.abs(V1SE_y1 - V2SE_y1), V2SE_x2 - V2SE_x1,
+      roiImgV1SE = new ROIS(V1XY_Title);
+      roiImgV1SE.addPointROI(Math.abs(VSE_centerX - V1SE_x1), Math.abs(VSE_centerY - V1SE_y1));
+      roiImgV1SE.addRectangle(Math.abs(V1SE_x1 - V2SE_x1), Math.abs(V1SE_y1 - V2SE_y1), V2SE_x2 - V2SE_x1,
           V2SE_y2 - V2SE_y1);
       roiImgV1SE.displayROIS();
 
       // Same thing but for XZ
-      roiImgV1SEXZ = new ROIS("MAG2XZ");
-      roiImgV1SEXZ.addPointROI("Center", Math.abs(VSE_centerX - V1SE_x1), Math.abs(VSE_centerZ - V1SE_z1));
-      roiImgV1SEXZ.addRectangle("V2SE", Math.abs(V1SE_x1 - V2SE_x1), Math.abs(V1SE_z1 - V2SE_z1), V2SE_x2 - V2SE_x1,
+      roiImgV1SEXZ = new ROIS(V1XZ_Title);
+      roiImgV1SEXZ.addPointROI(Math.abs(VSE_centerX - V1SE_x1), Math.abs(VSE_centerZ - V1SE_z1));
+      roiImgV1SEXZ.addRectangle(Math.abs(V1SE_x1 - V2SE_x1), Math.abs(V1SE_z1 - V2SE_z1), V2SE_x2 - V2SE_x1,
           V2SE_z2 - V2SE_z1);
       roiImgV1SEXZ.displayROIS();
 
