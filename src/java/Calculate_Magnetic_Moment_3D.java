@@ -107,7 +107,7 @@ public class Calculate_Magnetic_Moment_3D implements PlugIn {
       if (item != null) {
         ImageItem new_item = new ImageItem(s1MagWindowTitle,
             s1PhaseWindowTitle,
-            Integer.parseInt(gui.ltf_M.getValue()),
+            (int) Double.parseDouble(gui.ltf_M.getValue()),
             Double.parseDouble(gui.ltf_eqPhase.getValue()));
 
         // if the ROI was changed
@@ -129,7 +129,7 @@ public class Calculate_Magnetic_Moment_3D implements PlugIn {
       // with M% and equitorial phase value
       item = new ImageItem(s1MagWindowTitle,
           s1PhaseWindowTitle,
-          Integer.parseInt(gui.ltf_M.getValue()),
+          (int) Double.parseDouble(gui.ltf_M.getValue()),
           Double.parseDouble(gui.ltf_eqPhase.getValue()));
 
       // calculating each center
@@ -495,6 +495,8 @@ public class Calculate_Magnetic_Moment_3D implements PlugIn {
     int sub_x = (int) pixelToSubpixel(centerX_pixelCoordinates, 0);
     int sub_y = (int) pixelToSubpixel(centerY_pixelCoordinates, 1);
     int sub_z = (int) pixelToSubpixel(centerZ_pixelCoordinates, 2);
+    logger.addVariable("subxyz (est_subpix)",
+        String.valueOf(sub_x) + ' ' + String.valueOf(sub_y) + ' ' + String.valueOf(sub_z));
 
     // Creating a new ROIS for the XY mag image
     roiImgMag = new ROIS("MXY");
@@ -1336,187 +1338,188 @@ public class Calculate_Magnetic_Moment_3D implements PlugIn {
    */
   public static void est_radius_spin_echo() {
 
-    if (WindowManager.getImage(s7WindowTitle) != null) {
-      // TODO: handle no updateVariables() call
-      // updateVariables();
-
-      // If images are already open, close them
-      if (WindowManager.getImage(V1XY_Title) != null) {
-        V1SE_XYImage.close();
-      }
-
-      if (WindowManager.getImage(V1XZ_Title) != null) {
-        V1SE_XZImage.close();
-      }
-
-      // Getting spin echo image
-      ImagePlus spinEchoImg = WindowManager.getImage(s7WindowTitle);
-
-      // Getting volume of boxes
-      int V1SE_x1 = Integer.parseInt(gui.ltf_v1seX1.getValue());
-      int V1SE_x2 = Integer.parseInt(gui.ltf_v1seX2.getValue());
-      int V1SE_y1 = Integer.parseInt(gui.ltf_v1seY1.getValue());
-      int V1SE_y2 = Integer.parseInt(gui.ltf_v1seY2.getValue());
-      int V1SE_z1 = Integer.parseInt(gui.ltf_v1seZ1.getValue()) - 1;
-      int V1SE_z2 = Integer.parseInt(gui.ltf_v1seZ2.getValue()) - 1;
-      int V2SE_x1 = Integer.parseInt(gui.ltf_v2seX1.getValue());
-      int V2SE_x2 = Integer.parseInt(gui.ltf_v2seX2.getValue());
-      int V2SE_y1 = Integer.parseInt(gui.ltf_v2seY1.getValue());
-      int V2SE_y2 = Integer.parseInt(gui.ltf_v2seY2.getValue());
-      int V2SE_z1 = Integer.parseInt(gui.ltf_v2seZ1.getValue()) - 1;
-      int V2SE_z2 = Integer.parseInt(gui.ltf_v2seZ2.getValue()) - 1;
-
-      int V1SE_size = (V1SE_x2 - V1SE_x1) * (V1SE_y2 - V1SE_y1) * (V1SE_z2 - V1SE_z1);
-      int V2SE_size = (V2SE_x2 - V2SE_x1) * (V2SE_y2 - V2SE_y1) * (V2SE_z2 - V2SE_z1);
-
-      // Getting center from GUI
-      int VSE_centerX = Integer.parseInt(gui.ltf_secondImgX.getValue());
-      int VSE_centerY = Integer.parseInt(gui.ltf_secondImgY.getValue());
-      int VSE_centerZ = Integer.parseInt(gui.ltf_secondImgZ.getValue()) - 1;
-
-      // V1 must be bigger than V2 and center must be inside both
-      if (V2SE_size > V1SE_size) {
-        JOptionPane.showMessageDialog(gui.frame, "Error: V2 cannot be bigger than V1");
-      } else if (VSE_centerX < V1SE_x1 || VSE_centerX > V1SE_x2) {
-        JOptionPane.showMessageDialog(gui.frame, "Error: center x coordinate must be on image");
-      } else if (VSE_centerY < V1SE_y1 || VSE_centerY > V1SE_y2) {
-        JOptionPane.showMessageDialog(gui.frame, "Error: center y coordinate must be on image");
-      } else if (VSE_centerZ < V1SE_z1 || VSE_centerZ > V1SE_z2) {
-        JOptionPane.showMessageDialog(gui.frame, "Error: center z coordinate must be on image");
-      } else {
-
-        // Initializing ImageProcessor objects to add data values to
-        ImageProcessor IP_V1SE_XY = new FloatProcessor(V1SE_x2 - V1SE_x1, V1SE_y2 - V1SE_y1);
-        ImageProcessor IP_V1SE_XZ = new FloatProcessor(V1SE_x2 - V1SE_x1, V1SE_z2 - V1SE_z1);
-
-        // Adding data to new V1 image XY. Essentially just 'cropping' the V1 image
-        spinEchoImg.setSlice(VSE_centerZ + 1);
-        for (int i = V1SE_x1; i < V1SE_x2; i++) {
-          for (int j = V1SE_y1; j < V1SE_y2; j++) {
-            IP_V1SE_XY.putPixelValue(i - V1SE_x1, j - V1SE_y1, spinEchoImg.getProcessor().getPixelValue(i, j));
-          }
-        }
-
-        // Same thing but for XZ
-        for (int i = V1SE_x1; i < V1SE_x2; i++) {
-          for (int j = V1SE_z1; j < V1SE_z2; j++) {
-            spinEchoImg.setSlice(j + 1);
-            IP_V1SE_XZ.putPixelValue(i - V1SE_x1, j - V1SE_z1,
-                spinEchoImg.getProcessor().getPixelValue(i, VSE_centerY));
-          }
-        }
-
-        // Setting image titles
-        V1XY_Title = "V1SE XY (V2SE displayed as yellow box)";
-        V1XZ_Title = "V1SE XZ (V2SE displayed as yellow box)";
-
-        // Creating new ImagePlus objects to display
-        V1SE_XYImage = new ImagePlus(V1XY_Title, IP_V1SE_XY);
-        V1SE_XZImage = new ImagePlus(V1XZ_Title, IP_V1SE_XZ);
-
-        // Displaying
-        V1SE_XYImage.show();
-        V1SE_XZImage.show();
-
-        // Adding V2 box to V1 XY images
-        roiImgV1SE = new ROIS("MAG2XY");
-        roiImgV1SE.addPointROI("Center", Math.abs(VSE_centerX - V1SE_x1), Math.abs(VSE_centerY - V1SE_y1));
-        roiImgV1SE.addRectangle("V1SE", Math.abs(V1SE_x1 - V2SE_x1), Math.abs(V1SE_y1 - V2SE_y1), V2SE_x2 - V2SE_x1,
-            V2SE_y2 - V2SE_y1);
-        roiImgV1SE.displayROIS();
-
-        // Same thing but for XZ
-        roiImgV1SEXZ = new ROIS("MAG2XZ");
-        roiImgV1SEXZ.addPointROI("Center", Math.abs(VSE_centerX - V1SE_x1), Math.abs(VSE_centerZ - V1SE_z1));
-        roiImgV1SEXZ.addRectangle("V2SE", Math.abs(V1SE_x1 - V2SE_x1), Math.abs(V1SE_z1 - V2SE_z1), V2SE_x2 - V2SE_x1,
-            V2SE_z2 - V2SE_z1);
-        roiImgV1SEXZ.displayROIS();
-
-        // Variables for the sum and volume of the boxes
-        double S1_SE = 0.0;
-        double S2_SE = 0.0;
-        double V1_SE = 0.0;
-        double V2_SE = 0.0;
-
-        // Getting S1 sum and volume
-        for (int k = V1SE_z1; k < V1SE_z2; k++) {
-          spinEchoImg.setSlice(k + 1);
-          for (int j = V1SE_y1; j < V1SE_y2; j++) {
-            for (int i = V1SE_x1; i < V1SE_x2; i++, V1_SE++) {
-              S1_SE += spinEchoImg.getProcessor().getPixelValue(i, j);
-            }
-          }
-        }
-
-        // Getting S2 sum and volume
-        for (int k = V2SE_z1; k < V2SE_z2; k++) {
-          spinEchoImg.setSlice(k + 1);
-          for (int j = V2SE_y1; j < V2SE_y2; j++) {
-            for (int i = V2SE_x1; i < V2SE_x2; i++, V2_SE++) {
-              S2_SE += spinEchoImg.getProcessor().getPixelValue(i, j);
-            }
-          }
-        }
-
-        logger.addVariable("S1_se", S1_SE);
-        logger.addVariable("S2_se", S2_SE);
-        logger.addVariable("V1_SE", V1_SE);
-        logger.addVariable("V2_SE", V2_SE);
-
-        // Equation 18
-        double V0 = (S1_SE * V2_SE - S2_SE * V1_SE) / (S1_SE - S2_SE);
-
-        // Adding to GUI
-        gui.ll_V0.setValue(String.valueOf(Math.round(V0 * 100.0) / 100.0));
-        logger.addVariable("V0", V0);
-
-        // Equation 16
-        double a = Math.pow((V0 * 3.0) / (4.0 * Math.PI), 1.0 / 3.0);
-
-        // Equation 17
-        double rho_SE0 = S2_SE / (V2_SE - V0);
-        // Setting to GUI
-        gui.ll_rho0SE.setValue(String.valueOf(Math.round(rho_SE0 * 100.0) / 100.0));
-        logger.addVariable("rho_SE0", rho_SE0);
-
-        double deltaV = 1;
-
-        // Defining signal to noise ratio
-        double snrStandardDeviation = Double.parseDouble(gui.ltf_sigSE.getValue());
-        double SNR_SE = rho_SE0 / snrStandardDeviation;
-
-        // Equation 19
-        double dV0 = (Math.sqrt(deltaV) / SNR_SE) * Math.sqrt(V2_SE + Math.pow(V2_SE - V0, 2) / (V1_SE - V2_SE));
-
-        // Adding v0 and dv0 to GUI
-        gui.ll_V0.setValue(String.valueOf(Math.round(V0 * 100.0) / 100.0) + " " + PLUS_MINUS + " "
-            + String.valueOf(Math.round(dV0 * 100.0) / 100.0));
-        logger.addVariable("dV0", dV0);
-
-        // Error for a - was derived with Dr. Cheng
-        double da = (a * dV0) / (3 * V0);
-        // Adding to GUI
-        gui.ll_aSE.setValue(String.valueOf(Math.round(a * 100.0) / 100.0) + " " + PLUS_MINUS + " "
-            + String.valueOf(Math.round(da * 100.0) / 100.0));
-        logger.addVariable("a", a);
-        logger.addVariable("da", da);
-
-        double B0 = Double.parseDouble(gui.ltf_B0.getValue());
-        double TELast = Double.parseDouble(gui.ltf_TELast.getValue()) / 1000.0;
-        double mag_moment = Double.parseDouble(gui.ltf_magMom.getValue());
-        double d_mag_moment = Double.parseDouble(gui.ll_momenterror.getValue());
-
-        // p = ga^3 can be rewritten to get dChi
-        double dChi = (2.0 * mag_moment) / (GAMMARBAR * B0 * TELast * V0);
-        // And its error
-        double d_dChi = dChi * Math.sqrt(Math.pow(d_mag_moment / mag_moment, 2) + Math.pow(dV0 / V0, 2));
-
-        // Setting to GUI
-        gui.ll_dChiSE.setValue(String.valueOf(Math.round(dChi * 100.0) / 100.0) + " " + PLUS_MINUS + " "
-            + String.valueOf(Math.round(d_dChi * 100.0) / 100.0));
-      }
-    } else {
+    if (WindowManager.getImage(s7WindowTitle) == null) {
       JOptionPane.showMessageDialog(gui.frame, "Error: no spin echo image found");
+      return;
+    }
+
+    // TODO: handle no updateVariables() call
+    // updateVariables();
+
+    // If images are already open, close them
+    if (WindowManager.getImage(V1XY_Title) != null) {
+      V1SE_XYImage.close();
+    }
+
+    if (WindowManager.getImage(V1XZ_Title) != null) {
+      V1SE_XZImage.close();
+    }
+
+    // Getting spin echo image
+    ImagePlus spinEchoImg = WindowManager.getImage(s7WindowTitle);
+
+    // Getting volume of boxes
+    int V1SE_x1 = (int) Double.parseDouble(gui.ltf_v1seX1.getValue());
+    int V1SE_x2 = (int) Double.parseDouble(gui.ltf_v1seX2.getValue());
+    int V1SE_y1 = (int) Double.parseDouble(gui.ltf_v1seY1.getValue());
+    int V1SE_y2 = (int) Double.parseDouble(gui.ltf_v1seY2.getValue());
+    int V1SE_z1 = (int) Double.parseDouble(gui.ltf_v1seZ1.getValue()) - 1;
+    int V1SE_z2 = (int) Double.parseDouble(gui.ltf_v1seZ2.getValue()) - 1;
+    int V2SE_x1 = (int) Double.parseDouble(gui.ltf_v2seX1.getValue());
+    int V2SE_x2 = (int) Double.parseDouble(gui.ltf_v2seX2.getValue());
+    int V2SE_y1 = (int) Double.parseDouble(gui.ltf_v2seY1.getValue());
+    int V2SE_y2 = (int) Double.parseDouble(gui.ltf_v2seY2.getValue());
+    int V2SE_z1 = (int) Double.parseDouble(gui.ltf_v2seZ1.getValue()) - 1;
+    int V2SE_z2 = (int) Double.parseDouble(gui.ltf_v2seZ2.getValue()) - 1;
+
+    int V1SE_size = (V1SE_x2 - V1SE_x1) * (V1SE_y2 - V1SE_y1) * (V1SE_z2 - V1SE_z1);
+    int V2SE_size = (V2SE_x2 - V2SE_x1) * (V2SE_y2 - V2SE_y1) * (V2SE_z2 - V2SE_z1);
+
+    // Getting center from GUI
+    int VSE_centerX = (int) Double.parseDouble(gui.ltf_secondImgX.getValue());
+    int VSE_centerY = (int) Double.parseDouble(gui.ltf_secondImgY.getValue());
+    int VSE_centerZ = (int) Double.parseDouble(gui.ltf_secondImgZ.getValue()) - 1;
+
+    // V1 must be bigger than V2 and center must be inside both
+    if (V2SE_size > V1SE_size) {
+      JOptionPane.showMessageDialog(gui.frame, "Error: V2 cannot be bigger than V1");
+    } else if (VSE_centerX < V1SE_x1 || VSE_centerX > V1SE_x2) {
+      JOptionPane.showMessageDialog(gui.frame, "Error: center x coordinate must be on image");
+    } else if (VSE_centerY < V1SE_y1 || VSE_centerY > V1SE_y2) {
+      JOptionPane.showMessageDialog(gui.frame, "Error: center y coordinate must be on image");
+    } else if (VSE_centerZ < V1SE_z1 || VSE_centerZ > V1SE_z2) {
+      JOptionPane.showMessageDialog(gui.frame, "Error: center z coordinate must be on image");
+    } else {
+
+      // Initializing ImageProcessor objects to add data values to
+      ImageProcessor IP_V1SE_XY = new FloatProcessor(V1SE_x2 - V1SE_x1, V1SE_y2 - V1SE_y1);
+      ImageProcessor IP_V1SE_XZ = new FloatProcessor(V1SE_x2 - V1SE_x1, V1SE_z2 - V1SE_z1);
+
+      // Adding data to new V1 image XY. Essentially just 'cropping' the V1 image
+      spinEchoImg.setSlice(VSE_centerZ + 1);
+      for (int i = V1SE_x1; i < V1SE_x2; i++) {
+        for (int j = V1SE_y1; j < V1SE_y2; j++) {
+          IP_V1SE_XY.putPixelValue(i - V1SE_x1, j - V1SE_y1, spinEchoImg.getProcessor().getPixelValue(i, j));
+        }
+      }
+
+      // Same thing but for XZ
+      for (int i = V1SE_x1; i < V1SE_x2; i++) {
+        for (int j = V1SE_z1; j < V1SE_z2; j++) {
+          spinEchoImg.setSlice(j + 1);
+          IP_V1SE_XZ.putPixelValue(i - V1SE_x1, j - V1SE_z1,
+              spinEchoImg.getProcessor().getPixelValue(i, VSE_centerY));
+        }
+      }
+
+      // Setting image titles
+      V1XY_Title = "V1SE XY (V2SE displayed as yellow box)";
+      V1XZ_Title = "V1SE XZ (V2SE displayed as yellow box)";
+
+      // Creating new ImagePlus objects to display
+      V1SE_XYImage = new ImagePlus(V1XY_Title, IP_V1SE_XY);
+      V1SE_XZImage = new ImagePlus(V1XZ_Title, IP_V1SE_XZ);
+
+      // Displaying
+      V1SE_XYImage.show();
+      V1SE_XZImage.show();
+
+      // Adding V2 box to V1 XY images
+      roiImgV1SE = new ROIS("MAG2XY");
+      roiImgV1SE.addPointROI("Center", Math.abs(VSE_centerX - V1SE_x1), Math.abs(VSE_centerY - V1SE_y1));
+      roiImgV1SE.addRectangle("V1SE", Math.abs(V1SE_x1 - V2SE_x1), Math.abs(V1SE_y1 - V2SE_y1), V2SE_x2 - V2SE_x1,
+          V2SE_y2 - V2SE_y1);
+      roiImgV1SE.displayROIS();
+
+      // Same thing but for XZ
+      roiImgV1SEXZ = new ROIS("MAG2XZ");
+      roiImgV1SEXZ.addPointROI("Center", Math.abs(VSE_centerX - V1SE_x1), Math.abs(VSE_centerZ - V1SE_z1));
+      roiImgV1SEXZ.addRectangle("V2SE", Math.abs(V1SE_x1 - V2SE_x1), Math.abs(V1SE_z1 - V2SE_z1), V2SE_x2 - V2SE_x1,
+          V2SE_z2 - V2SE_z1);
+      roiImgV1SEXZ.displayROIS();
+
+      // Variables for the sum and volume of the boxes
+      double S1_SE = 0.0;
+      double S2_SE = 0.0;
+      double V1_SE = 0.0;
+      double V2_SE = 0.0;
+
+      // Getting S1 sum and volume
+      for (int k = V1SE_z1; k < V1SE_z2; k++) {
+        spinEchoImg.setSlice(k + 1);
+        for (int j = V1SE_y1; j < V1SE_y2; j++) {
+          for (int i = V1SE_x1; i < V1SE_x2; i++, V1_SE++) {
+            S1_SE += spinEchoImg.getProcessor().getPixelValue(i, j);
+          }
+        }
+      }
+
+      // Getting S2 sum and volume
+      for (int k = V2SE_z1; k < V2SE_z2; k++) {
+        spinEchoImg.setSlice(k + 1);
+        for (int j = V2SE_y1; j < V2SE_y2; j++) {
+          for (int i = V2SE_x1; i < V2SE_x2; i++, V2_SE++) {
+            S2_SE += spinEchoImg.getProcessor().getPixelValue(i, j);
+          }
+        }
+      }
+
+      logger.addVariable("S1_se", S1_SE);
+      logger.addVariable("S2_se", S2_SE);
+      logger.addVariable("V1_SE", V1_SE);
+      logger.addVariable("V2_SE", V2_SE);
+
+      // Equation 18
+      double V0 = (S1_SE * V2_SE - S2_SE * V1_SE) / (S1_SE - S2_SE);
+
+      // Adding to GUI
+      gui.ll_V0.setValue(String.valueOf(Math.round(V0 * 100.0) / 100.0));
+      logger.addVariable("V0", V0);
+
+      // Equation 16
+      double a = Math.pow((V0 * 3.0) / (4.0 * Math.PI), 1.0 / 3.0);
+
+      // Equation 17
+      double rho_SE0 = S2_SE / (V2_SE - V0);
+      // Setting to GUI
+      gui.ll_rho0SE.setValue(String.valueOf(Math.round(rho_SE0 * 100.0) / 100.0));
+      logger.addVariable("rho_SE0", rho_SE0);
+
+      double deltaV = 1.0;
+
+      // Defining signal to noise ratio
+      double snrStandardDeviation = Double.parseDouble(gui.ltf_sigSE.getValue());
+      double SNR_SE = rho_SE0 / snrStandardDeviation;
+
+      // Equation 19
+      double dV0 = (Math.sqrt(deltaV) / SNR_SE) * Math.sqrt(V2_SE + Math.pow(V2_SE - V0, 2) / (V1_SE - V2_SE));
+
+      // Adding v0 and dv0 to GUI
+      gui.ll_V0.setValue(String.valueOf(Math.round(V0 * 100.0) / 100.0) + " " + PLUS_MINUS + " "
+          + String.valueOf(Math.round(dV0 * 100.0) / 100.0));
+      logger.addVariable("dV0", dV0);
+
+      // Error for a - was derived with Dr. Cheng
+      double da = (a * dV0) / (3 * V0);
+      // Adding to GUI
+      gui.ll_aSE.setValue(String.valueOf(Math.round(a * 100.0) / 100.0) + " " + PLUS_MINUS + " "
+          + String.valueOf(Math.round(da * 100.0) / 100.0));
+      logger.addVariable("a", a);
+      logger.addVariable("da", da);
+
+      double B0 = Double.parseDouble(gui.ltf_B0.getValue());
+      double TELast = Double.parseDouble(gui.ltf_TELast.getValue()) / 1000.0;
+      double mag_moment = Double.parseDouble(gui.ltf_magMom.getValue());
+      double d_mag_moment = Double.parseDouble(gui.ll_momenterror.getValue());
+
+      // p = ga^3 can be rewritten to get dChi
+      double dChi = (2.0 * mag_moment) / (GAMMARBAR * B0 * TELast * V0);
+      // And its error
+      double d_dChi = dChi * Math.sqrt(Math.pow(d_mag_moment / mag_moment, 2) + Math.pow(dV0 / V0, 2));
+
+      // Setting to GUI
+      gui.ll_dChiSE.setValue(String.valueOf(Math.round(dChi * 100.0) / 100.0) + " " + PLUS_MINUS + " "
+          + String.valueOf(Math.round(d_dChi * 100.0) / 100.0));
     }
   }
 
