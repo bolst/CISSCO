@@ -1456,21 +1456,29 @@ public class Calculate_Magnetic_Moment_3D implements PlugIn {
       double V1_SE = 0.0;
       double V2_SE = 0.0;
 
+      logger.addVariable("v1se ranges", String.valueOf(V1SE_x1) + " " + String.valueOf(V1SE_x2));
+      logger.addVariable("v1se ranges", String.valueOf(V1SE_y1) + " " + String.valueOf(V1SE_y2));
+      logger.addVariable("v1se ranges", String.valueOf(V1SE_z1) + " " + String.valueOf(V1SE_z2));
+
       // Getting S1 sum and volume
-      for (int k = V1SE_z1; k < V1SE_z2; k++) {
+      for (int k = V1SE_z1; k <= V1SE_z2; k++) {
         spinEchoImg.setSlice(k + 1);
-        for (int j = V1SE_y1; j < V1SE_y2; j++) {
-          for (int i = V1SE_x1; i < V1SE_x2; i++, V1_SE++) {
+        for (int j = V1SE_y1; j <= V1SE_y2; j++) {
+          for (int i = V1SE_x1; i <= V1SE_x2; i++, V1_SE++) {
             S1_SE += spinEchoImg.getProcessor().getPixelValue(i, j);
           }
         }
       }
 
+      logger.addVariable("v2se ranges", String.valueOf(V2SE_x1) + " " + String.valueOf(V2SE_x2));
+      logger.addVariable("v2se ranges", String.valueOf(V2SE_y1) + " " + String.valueOf(V2SE_y2));
+      logger.addVariable("v2se ranges", String.valueOf(V2SE_z1) + " " + String.valueOf(V2SE_z2));
+
       // Getting S2 sum and volume
-      for (int k = V2SE_z1; k < V2SE_z2; k++) {
+      for (int k = V2SE_z1; k <= V2SE_z2; k++) {
         spinEchoImg.setSlice(k + 1);
-        for (int j = V2SE_y1; j < V2SE_y2; j++) {
-          for (int i = V2SE_x1; i < V2SE_x2; i++, V2_SE++) {
+        for (int j = V2SE_y1; j <= V2SE_y2; j++) {
+          for (int i = V2SE_x1; i <= V2SE_x2; i++, V2_SE++) {
             S2_SE += spinEchoImg.getProcessor().getPixelValue(i, j);
           }
         }
