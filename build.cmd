@@ -28,7 +28,7 @@ if %ERRORLEVEL% neq 0 (
 )
 
 echo compiling cpp files[2/2]...
-g++ -shared -m64 -o Calculate_Magnetic_Moment_3D_Native.dll Calculate_Magnetic_Moment_3D.o -static
+g++ -shared -m64 -o Calculate_Magnetic_Moment_3D_Native.dll Calculate_Magnetic_Moment_3D.o -Wl,-add-stdcall-alias -static
 if %ERRORLEVEL% neq 0 (
     echo Failed to compile cpp files
     exit /b 1

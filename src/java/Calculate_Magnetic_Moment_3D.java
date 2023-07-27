@@ -1054,7 +1054,7 @@ public class Calculate_Magnetic_Moment_3D implements PlugIn {
     if (jni.getUncertainty() == -1.0) {
       gui.ll_momenterror.setValue("");
       JOptionPane.showMessageDialog(gui.frame,
-          "<html>Error: Cannot calculate error, make sure SNR, &epsilon;12 and &epsilon;23 are set.</html>");
+          "<html>Error: Cannot calculate error, make sure SNR, &eta;12 and &eta;23 are set.</html>");
     } else {
       gui.ll_momenterror.setValue(String.valueOf(Math.round(jni.getUncertainty() * 100.0) / 100.0));
     }
@@ -1232,11 +1232,8 @@ public class Calculate_Magnetic_Moment_3D implements PlugIn {
     double csz = Double.parseDouble(gui.ltf_spz.getValue()) - 1.0;
     jni.passSumValues(m_Ri, csx, csy, csz);
 
-    String imag_msg;
-    String real_msg;
-
-    imag_msg = jni.calculateImagSum();
-    real_msg = jni.calculateRealSum();
+    String imag_msg = jni.calculateImagSum();
+    String real_msg = jni.calculateRealSum();
 
     if (imag_msg.compareTo("") == 0) {
       gui.ll_ImRi.setValue(String.valueOf(Math.round(jni.getImagSum() * 100.0) / 100.0));
