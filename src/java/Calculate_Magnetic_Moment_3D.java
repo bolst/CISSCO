@@ -40,7 +40,7 @@ public class Calculate_Magnetic_Moment_3D implements PlugIn {
       V1XY_Title, V1XZ_Title, s1MagWindowTitle,
       s1PhaseWindowTitle, s5MagWindowTitle, s5PhaseWindowTitle, s6MagWindowTitle, s6PhaseWindowTitle, s7WindowTitle;
 
-  private static float[][] subpixelMagMatrix, subpixelMagMatrixXZ, subpixelPhaseMatrix, subpixelPhaseMatrixXZ;
+  private static float[][] subpixelPhaseMatrix, subpixelPhaseMatrixXZ;
   private static float[][][] croppedRealNumbers3D, croppedImaginaryNumbers3D;
 
   private static final int grid = 10;
@@ -208,6 +208,7 @@ public class Calculate_Magnetic_Moment_3D implements PlugIn {
   // =====================================================================================
   public static void gen_subpix() {
     // updateVariables();
+    float[][] subpixelMagMatrix, subpixelMagMatrixXZ;
 
     // pass step 2 estimated center to item. This is needed for subpixel/pixel
     // coordinate conversions
