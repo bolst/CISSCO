@@ -1407,15 +1407,15 @@ public class Calculate_Magnetic_Moment_3D implements PlugIn {
 
       // Adding data to new V1 image XY. Essentially just 'cropping' the V1 image
       spinEchoImg.setSlice(VSE_centerZ + 1);
-      for (int i = V1SE_x1; i < V1SE_x2; i++) {
-        for (int j = V1SE_y1; j < V1SE_y2; j++) {
+      for (int i = V1SE_x1; i <= V1SE_x2; i++) {
+        for (int j = V1SE_y1; j <= V1SE_y2; j++) {
           IP_V1SE_XY.putPixelValue(i - V1SE_x1, j - V1SE_y1, spinEchoImg.getProcessor().getPixelValue(i, j));
         }
       }
 
       // Same thing but for XZ
-      for (int i = V1SE_x1; i < V1SE_x2; i++) {
-        for (int j = V1SE_z1; j < V1SE_z2; j++) {
+      for (int i = V1SE_x1; i <= V1SE_x2; i++) {
+        for (int j = V1SE_z1; j <= V1SE_z2; j++) {
           spinEchoImg.setSlice(j + 1);
           IP_V1SE_XZ.putPixelValue(i - V1SE_x1, j - V1SE_z1,
               spinEchoImg.getProcessor().getPixelValue(i, VSE_centerY));
