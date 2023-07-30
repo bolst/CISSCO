@@ -55,8 +55,8 @@ vector<vector<float>> SubpixelPhaseMatrix;
 vector<vector<float>> SubpixelMagMatrix;
 vector<vector<float>> SubpixelPhaseMatrixXZ;
 vector<vector<float>> SubpixelMagMatrixXZ;
-vector<vector<vector<float>>> SmallReal(realdim, vector<vector<float>>(realdim, vector<float>(Zrealdim, 0)));
-vector<vector<vector<float>>> SmallImag(realdim, vector<vector<float>>(realdim, vector<float>(Zrealdim, 0)));
+// vector<vector<vector<float>>> SmallReal(realdim, vector<vector<float>>(realdim, vector<float>(Zrealdim, 0)));
+// vector<vector<vector<float>>> SmallImag(realdim, vector<vector<float>>(realdim, vector<float>(Zrealdim, 0)));
 float ***tempReal_BG, ***tempImag_BG;
 int smallBox_X, smallBox_Y, smallBox_Z, smallBox_XSize, smallBox_YSize, smallBox_ZSize;
 double centerL_x, centerL_y, centerL_z, centerM_x, centerM_y, centerM_z, centerS_x, centerS_y, centerS_z;
@@ -758,10 +758,10 @@ void OnBnClickedGenerateSubpixel()
 
     // vector<vector<vector<float>>> SmallImag(realdim, vector<vector<float>>(realdim, vector<float>(Zrealdim, 0)));
     // vector<vector<vector<float>>> SmallReal(realdim, vector<vector<float>>(realdim, vector<float>(Zrealdim, 0)));
-    SmallReal.clear();
-    SmallReal.resize(realdim, vector<vector<float>>(realdim, vector<float>(Zrealdim, 0)));
-    SmallImag.clear();
-    SmallImag.resize(realdim, vector<vector<float>>(realdim, vector<float>(Zrealdim, 0)));
+    // SmallReal.clear();
+    // SmallReal.resize(realdim, vector<vector<float>>(realdim, vector<float>(Zrealdim, 0)));
+    // SmallImag.clear();
+    // SmallImag.resize(realdim, vector<vector<float>>(realdim, vector<float>(Zrealdim, 0)));
     SubpixelRealMatrix3D.clear();
     SubpixelRealMatrix3D.resize(subpixelreal, vector<vector<float>>(subpixelreal, vector<float>(Zsubpixelreal, 0)));
     SubpixelImagMatrix3D.clear();
@@ -771,6 +771,8 @@ void OnBnClickedGenerateSubpixel()
     SubpixelImagMatrix3D_S5.clear();
     SubpixelImagMatrix3D_S5.resize(subpixelreal, vector<vector<float>>(subpixelreal, vector<float>(Zsubpixelreal, 0)));
 
+    // SmallReal and SmallImag are never used
+    /*
     for (int k = 0; k < Zrealdim; k++)
     {
         for (int i = 0; i < realdim; i++)
@@ -786,6 +788,7 @@ void OnBnClickedGenerateSubpixel()
             }
         }
     }
+    */
 
     removeBGPhaseAndInterpolateVoxels(BackPhase);
 
