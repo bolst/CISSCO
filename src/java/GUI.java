@@ -106,8 +106,8 @@ public class GUI {
         btn_genSubpix = new JButton("Generate Subpixel Grid/Data");
         frame.getContentPane().add(btn_genSubpix, "cell 1 3,growx");
 
-        btn_removeBkg = new JButton("Remove Bkg");
-        frame.getContentPane().add(btn_removeBkg, "cell 2 3");
+        // btn_removeBkg = new JButton("Remove Bkg");
+        // frame.getContentPane().add(btn_removeBkg, "cell 2 3");
 
         chkbx_showrc = new JCheckBox("Show RCenter");
         chkbx_showrc.setVerticalAlignment(SwingConstants.TOP);
@@ -804,11 +804,11 @@ public class GUI {
                 Calculate_Magnetic_Moment_3D.gen_subpix();
             }
         });
-        btn_removeBkg.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                Calculate_Magnetic_Moment_3D.remove_bkg();
-            }
-        });
+        // btn_removeBkg.addActionListener(new ActionListener() {
+        // public void actionPerformed(ActionEvent e) {
+        // Calculate_Magnetic_Moment_3D.remove_bkg();
+        // }
+        // });
         btn_removeBkgS5.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 Calculate_Magnetic_Moment_3D.remove_bkg();
