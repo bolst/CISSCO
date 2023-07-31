@@ -308,23 +308,24 @@ JNIEXPORT void JNICALL Java_JNIMethods_setRealImagNumbers(JNIEnv *env, jobject t
 
     // --------------- Setting up matrices for when the background phase is estimated for the second time
 
-    RealNumbers_S5 = new float **[subpixeldisplay + 1];
-    ImagNumbers_S5 = new float **[subpixeldisplay + 1];
+    /*
+        RealNumbers_S5 = new float **[subpixeldisplay + 1];
+        ImagNumbers_S5 = new float **[subpixeldisplay + 1];
 
-    for (int i = 0; i <= subpixeldisplay; i++)
-    {
-        RealNumbers_S5[i] = new float *[subpixeldisplay + 1];
-        ImagNumbers_S5[i] = new float *[subpixeldisplay + 1];
-        for (int j = 0; j <= subpixeldisplay; j++)
+        for (int i = 0; i <= subpixeldisplay; i++)
         {
-            RealNumbers_S5[i][j] = new float[subpixeldisplay + 1];
-            ImagNumbers_S5[i][j] = new float[subpixeldisplay + 1];
+            RealNumbers_S5[i] = new float *[subpixeldisplay + 1];
+            ImagNumbers_S5[i] = new float *[subpixeldisplay + 1];
+            for (int j = 0; j <= subpixeldisplay; j++)
+            {
+                RealNumbers_S5[i][j] = new float[subpixeldisplay + 1];
+                ImagNumbers_S5[i][j] = new float[subpixeldisplay + 1];
+            }
         }
-    }
 
-    RealNumbers_S5 = firstLevel(env, _real);
-    ImagNumbers_S5 = firstLevel(env, _imag);
-
+        RealNumbers_S5 = firstLevel(env, _real);
+        ImagNumbers_S5 = firstLevel(env, _imag);
+    */
     return;
 }
 
@@ -800,7 +801,7 @@ void OnBnClickedGenerateSubpixel()
     removeBGPhaseAndInterpolateVoxels(BackPhase);
 
     // interpolating same matrices but not removing background phase - for calculating bkg phase in step 5
-    interpolateVoxels_S5();
+    // interpolateVoxels_S5();
 
     return;
 
