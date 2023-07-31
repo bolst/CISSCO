@@ -2435,7 +2435,8 @@ double SumCircleElementsReal3D_S5(int radius, int Scan1, int Scan2, int Scan3)
                 distance = sqrt((double)Xdiff * Xdiff + Ydiff * Ydiff + Zdiff * Zdiff);
                 if (distance <= radius)
                 {
-                    sumi = SubpixelRealMatrix3D_S5[(int)newx][(int)newy][(int)newz];
+                    // sumi = SubpixelRealMatrix3D_S5[(int)newx][(int)newy][(int)newz];
+                    sumi = SubpixelRealMatrix3D[(int)newx][(int)newy][(int)newz];
                     sum += sumi;
                 }
             }
@@ -2471,7 +2472,8 @@ double SumCircleElementsImag3D_S5(int radius, int Scan1, int Scan2, int Scan3)
                 distance = sqrt((double)Xdiff * Xdiff + Ydiff * Ydiff + Zdiff * Zdiff);
                 if (distance <= radius)
                 {
-                    sumi = SubpixelImagMatrix3D_S5[(int)newx][(int)newy][(int)newz];
+                    // sumi = SubpixelImagMatrix3D_S5[(int)newx][(int)newy][(int)newz];
+                    sumi = SubpixelImagMatrix3D[(int)newx][(int)newy][(int)newz];
                     sum += sumi;
                 }
             }
