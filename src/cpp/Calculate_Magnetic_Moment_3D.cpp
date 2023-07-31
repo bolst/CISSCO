@@ -3846,11 +3846,11 @@ JNIEXPORT void JNICALL Java_JNIMethods_estBkgAndSpinDensity(JNIEnv *env, jobject
         double IMS3 = SumCircleElementsImag3D(subpixRadius3, (int)ZoomedX, (int)ZoomedY, (int)lastValueSlice);
     */
 
-    double RES2 = SumCircleElementsReal3D_S5(subpixRadius2, (int)ZoomedX, (int)ZoomedY, (int)lastValueSlice);
-    double RES3 = SumCircleElementsReal3D_S5(subpixRadius3, (int)ZoomedX, (int)ZoomedY, (int)lastValueSlice);
+    double RES2 = SumCircleElementsReal3D(subpixRadius2, (int)ZoomedX, (int)ZoomedY, (int)lastValueSlice);
+    double RES3 = SumCircleElementsReal3D(subpixRadius3, (int)ZoomedX, (int)ZoomedY, (int)lastValueSlice);
 
-    double IMS2 = SumCircleElementsImag3D_S5(subpixRadius2, (int)ZoomedX, (int)ZoomedY, (int)lastValueSlice);
-    double IMS3 = SumCircleElementsImag3D_S5(subpixRadius3, (int)ZoomedX, (int)ZoomedY, (int)lastValueSlice);
+    double IMS2 = SumCircleElementsImag3D(subpixRadius2, (int)ZoomedX, (int)ZoomedY, (int)lastValueSlice);
+    double IMS3 = SumCircleElementsImag3D(subpixRadius3, (int)ZoomedX, (int)ZoomedY, (int)lastValueSlice);
 
     CalculateSpinDensity(RES2, RES3, IMS2, IMS3, m_R2, m_R3, &rho, &BkgPhase);
 
