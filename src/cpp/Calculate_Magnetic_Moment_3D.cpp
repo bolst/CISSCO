@@ -33,7 +33,6 @@ using namespace std;
 int m_SubPixels;
 double m_R0, m_R1, m_R2, m_R3, m_radians, m_RCenter, m_CenterX, m_CenterY, m_CenterZ, m_CenterX2, m_CenterY2, m_CenterZ2, m_CenterX3, m_CenterY3, m_CenterZ3;
 float ***RealNumbers, ***ImagNumbers;
-float ***RealNumbers_S5, ***ImagNumbers_S5;
 float **subPhaseMatrix, **subPhaseMatrixXZ, **subMagMatrix, **subMagMatrixXZ;
 float ***SimRealNumbers;
 int m_RCenterPhase;
@@ -48,8 +47,6 @@ string magFileName, phaseFileName, errorMessage, errorMessage_magMom, errorMessa
 bool m_Rcentercheck;
 vector<vector<vector<float>>> SubpixelRealMatrix3D;
 vector<vector<vector<float>>> SubpixelImagMatrix3D;
-vector<vector<vector<float>>> SubpixelRealMatrix3D_S5;
-vector<vector<vector<float>>> SubpixelImagMatrix3D_S5;
 vector<vector<vector<float>>> SubpixelSimulatedRealMatrix3D;
 vector<vector<float>> SubpixelPhaseMatrix;
 vector<vector<float>> SubpixelMagMatrix;
@@ -306,26 +303,6 @@ JNIEXPORT void JNICALL Java_JNIMethods_setRealImagNumbers(JNIEnv *env, jobject t
     RealNumbers = firstLevel(env, _real);
     ImagNumbers = firstLevel(env, _imag);
 
-    // --------------- Setting up matrices for when the background phase is estimated for the second time
-
-    /*
-        RealNumbers_S5 = new float **[subpixeldisplay + 1];
-        ImagNumbers_S5 = new float **[subpixeldisplay + 1];
-
-        for (int i = 0; i <= subpixeldisplay; i++)
-        {
-            RealNumbers_S5[i] = new float *[subpixeldisplay + 1];
-            ImagNumbers_S5[i] = new float *[subpixeldisplay + 1];
-            for (int j = 0; j <= subpixeldisplay; j++)
-            {
-                RealNumbers_S5[i][j] = new float[subpixeldisplay + 1];
-                ImagNumbers_S5[i][j] = new float[subpixeldisplay + 1];
-            }
-        }
-
-        RealNumbers_S5 = firstLevel(env, _real);
-        ImagNumbers_S5 = firstLevel(env, _imag);
-    */
     return;
 }
 
@@ -774,10 +751,6 @@ void OnBnClickedGenerateSubpixel()
     SubpixelRealMatrix3D.resize(subpixelreal, vector<vector<float>>(subpixelreal, vector<float>(Zsubpixelreal, 0)));
     SubpixelImagMatrix3D.clear();
     SubpixelImagMatrix3D.resize(subpixelreal, vector<vector<float>>(subpixelreal, vector<float>(Zsubpixelreal, 0)));
-    SubpixelRealMatrix3D_S5.clear();
-    SubpixelRealMatrix3D_S5.resize(subpixelreal, vector<vector<float>>(subpixelreal, vector<float>(Zsubpixelreal, 0)));
-    SubpixelImagMatrix3D_S5.clear();
-    SubpixelImagMatrix3D_S5.resize(subpixelreal, vector<vector<float>>(subpixelreal, vector<float>(Zsubpixelreal, 0)));
 
     // SmallReal and SmallImag are never used
     /*
@@ -2402,77 +2375,6 @@ double SumCircleElementsImag3D(int radius, int Scan1, int Scan2, int Scan3)
                 if (distance <= radius)
                 {
                     sumi = SubpixelImagMatrix3D[(int)newx][(int)newy][(int)newz];
-                    sum += sumi;
-                }
-            }
-        }
-    }
-    return sum;
-}
-// ---------- end to add up imaginary values inside a sphere
-
-// ---------- begin to add up real values inside a sphere for estimating bkg and spin density ---------- Do NOT change without discussion
-double SumCircleElementsReal3D_S5(int radius, int Scan1, int Scan2, int Scan3)
-{
-
-    int diameter = 2 * radius;
-    int newx, newy, newz, Xdiff, Ydiff, Zdiff;
-    double sum = 0, sumi = 0;
-    double distance;
-
-    for (int k = 0; k <= diameter; k++)
-    {
-        newz = Scan3 - radius + k;
-        Zdiff = newz - Scan3;
-        for (int i = 0; i <= diameter; i++)
-        {
-            newy = Scan2 - radius + i;
-            Ydiff = newy - Scan2;
-            for (int j = 0; j <= diameter; j++)
-            {
-                newx = Scan1 - radius + j;
-                Xdiff = newx - Scan1;
-
-                distance = sqrt((double)Xdiff * Xdiff + Ydiff * Ydiff + Zdiff * Zdiff);
-                if (distance <= radius)
-                {
-                    sumi = SubpixelRealMatrix3D_S5[(int)newx][(int)newy][(int)newz];
-                    sum += sumi;
-                }
-            }
-        }
-    }
-    return sum;
-}
-// ---------- end to add up real values inside a sphere
-
-// ---------- begin to add up imaginary values inside a sphere for estimating bkg and spin density ---------- Do NOT change without discussion
-
-double SumCircleElementsImag3D_S5(int radius, int Scan1, int Scan2, int Scan3)
-{
-
-    int diameter = 2 * radius;
-    int newx, newy, newz, Xdiff, Ydiff, Zdiff;
-    double sum = 0, sumi = 0;
-    double distance;
-
-    for (int k = 0; k <= diameter; k++)
-    {
-        newz = Scan3 - radius + k;
-        Zdiff = newz - Scan3;
-        for (int i = 0; i <= diameter; i++)
-        {
-            newy = Scan2 - radius + i;
-            Ydiff = newy - Scan2;
-            for (int j = 0; j <= diameter; j++)
-            {
-                newx = Scan1 - radius + j;
-                Xdiff = newx - Scan1;
-
-                distance = sqrt((double)Xdiff * Xdiff + Ydiff * Ydiff + Zdiff * Zdiff);
-                if (distance <= radius)
-                {
-                    sumi = SubpixelImagMatrix3D_S5[(int)newx][(int)newy][(int)newz];
                     sum += sumi;
                 }
             }
