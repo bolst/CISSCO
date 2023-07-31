@@ -569,6 +569,7 @@ void removeBGPhaseAndInterpolateVoxels(double bPhase)
     int Nfinal = m_SubPixels;
     int ratio = Nfinal * Nfinal * Nfinal;
     int m, k, t, p, i, j, pfrom, pto, ifrom, ito, jfrom, jto;
+    float correctedTmpReal, correctedTmpImag;
 
     for (m = 0; m < Zrealdim; m++)
     {
@@ -594,10 +595,16 @@ void removeBGPhaseAndInterpolateVoxels(double bPhase)
                 */
                 tmpreal = RealNumbers[t][k][m];
                 tmpimag = ImagNumbers[t][k][m];
+                /*
                 RealNumbers[t][k][m] = tmpreal * cos(tmpPhase) + tmpimag * sin(tmpPhase);
                 ImagNumbers[t][k][m] = tmpimag * cos(tmpPhase) - tmpreal * sin(tmpPhase);
                 tmpreal = (RealNumbers[t][k][m]) / ratio;
                 tmpimag = (ImagNumbers[t][k][m]) / ratio;
+                */
+                correctedTmpReal = tmpreal * cos(tmpPhase) + tmpimag * sin(tmpPhase);
+                correctedTmpImag = tmpimag * cos(tmpPhase) - tmpreal * sin(tmpPhase);
+                tmpreal = correctedTmpReal / ratio;
+                tmpimag = correctedTmpImag / ratio;
 
                 for (p = pfrom; p < pto; p++)
                 {
