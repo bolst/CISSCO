@@ -291,6 +291,7 @@ public class Calculate_Magnetic_Moment_3D implements PlugIn {
 
       // Generate subpixel in C++
       jni.generateSubpixelArray();
+      logger.addVariable("bkgphase", item.bkgPhase);
 
       int croppedImageSize = 2 * (int) m_R0 + 1;
       int Nfinal = grid;
@@ -361,6 +362,10 @@ public class Calculate_Magnetic_Moment_3D implements PlugIn {
       subpixelMagImageXZ = new ImagePlus(subMagXZTitle, IP_subpixelMagImageXZ);
       subpixelPhaseImage = new ImagePlus(subPhaseTitle, IP_subpixelPhaseImage);
       subpixelPhaseImageXZ = new ImagePlus(subPhaseXZTitle, IP_subpixelPhaseImageXZ);
+
+      JOptionPane.showMessageDialog(gui.frame, "Background Phase "
+          + String.valueOf(Math.round(item.bkgPhase * 100.0) / 100.0)
+          + " Has Been Removed");
 
       // Displaying images
       subpixelMagImage.show();

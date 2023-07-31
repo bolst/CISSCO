@@ -790,7 +790,7 @@ void OnBnClickedGenerateSubpixel()
     }
     */
 
-    // removeBGPhaseAndInterpolateVoxels(BackPhase);
+    removeBGPhaseAndInterpolateVoxels(BackPhase);
 
     // interpolating same matrices but not removing background phase - for calculating bkg phase in step 5
     interpolateVoxels_S5();
