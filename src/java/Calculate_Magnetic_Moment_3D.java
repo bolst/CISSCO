@@ -408,9 +408,8 @@ public class Calculate_Magnetic_Moment_3D implements PlugIn {
       bkg_phase = item.bkgPhase;
     }
 
-    // Updating real and imag numbers (matrices can be affected if remove bkg button
-    // is clicked multiple times)
-    jni.setRealImagNumbers(croppedRealNumbers3D, croppedImaginaryNumbers3D);
+    // No longer need
+    // jni.setRealImagNumbers(croppedRealNumbers3D, croppedImaginaryNumbers3D);
 
     // Removing BG phase in C++
     jni.removeBackgroundPhase(bkg_phase);
