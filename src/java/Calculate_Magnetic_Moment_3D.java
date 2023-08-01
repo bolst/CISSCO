@@ -379,6 +379,10 @@ public class Calculate_Magnetic_Moment_3D implements PlugIn {
       jni.setPhaseXZMatrix(subpixelPhaseMatrixXZ);
       jni.setMagXYMatrix(subpixelMagMatrix);
       jni.setMagXZMatrix(subpixelMagMatrixXZ);
+
+      // resetting slice to center
+      magnitudeImage.setSlice(item.centerS().get(2).intValue() + 1);
+      phaseImage.setSlice(item.centerS().get(2).intValue() + 1);
     }
   }
 
