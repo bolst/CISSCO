@@ -212,7 +212,10 @@ public class Calculate_Magnetic_Moment_3D implements PlugIn {
 
     // pass step 2 estimated center to item. This is needed for subpixel/pixel
     // coordinate conversions
-    item.subpix_image_center = new Triplet<Double>(item.centerS().get(0), item.centerS().get(1), item.centerS().get(2));
+    double c2x = Double.parseDouble(gui.ltf_rcx.getValue());
+    double c2y = Double.parseDouble(gui.ltf_rcy.getValue());
+    double c2z = Double.parseDouble(gui.ltf_rcz.getValue()) - 1.0;
+    item.subpix_image_center = new Triplet<Double>(c2x, c2y, c2z);
     logger.addVariable("subpix image center", item.subpix_image_center.toString());
 
     // if no RCenter is inputted
@@ -257,9 +260,9 @@ public class Calculate_Magnetic_Moment_3D implements PlugIn {
       logger.addInfo("made arrays");
 
       // Initial points of subpixel images
-      int xi = (item.centerS().get(0).intValue()) - (int) m_R0;
-      int yi = (item.centerS().get(1).intValue()) - (int) m_R0;
-      int zi = (item.centerS().get(2).intValue()) - (int) m_R0;
+      int xi = (int) (c2x) - (int) m_R0;
+      int yi = (int) (c2y) - (int) m_R0;
+      int zi = (int) (c2z) - (int) m_R0;
       logger.addVariable("xi", xi);
       logger.addVariable("yi", yi);
       logger.addVariable("zi", zi);
@@ -512,8 +515,6 @@ public class Calculate_Magnetic_Moment_3D implements PlugIn {
     }
     // Displays the ROIS on the image
     roiImgMag.displayROIS();
-
-    // The next 3 blocks of code follow the same logic as described above
 
     roiImgMagXZ = new ROIS(subMagXZTitle);
     roiImgMagXZ.addPointROI(sub_x, sub_z);
