@@ -154,10 +154,10 @@ JNIEXPORT void JNICALL Java_JNIMethods_setStep6Variables
 /*
  * Class:     JNIMethods
  * Method:    setSimulatedMatrices
- * Signature: ([[[FI)V
+ * Signature: ([[[F[[[FI)V
  */
 JNIEXPORT void JNICALL Java_JNIMethods_setSimulatedMatrices
-  (JNIEnv *, jobject, jobjectArray, jint);
+  (JNIEnv *, jobject, jobjectArray, jobjectArray, jint);
 
 /*
  * Class:     JNIMethods

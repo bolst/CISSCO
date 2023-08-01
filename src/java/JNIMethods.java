@@ -88,7 +88,7 @@ class JNIMethods {
 
     native void setStep6Variables(double jtef, double jtel, double jb0, double jrx);
 
-    native void setSimulatedMatrices(float[][][] jreal, int jsize);
+    native void setSimulatedMatrices(float[][][] jreal, float[][][] jimag, int jsize);
 
     native void removeBackgroundPhase(double jbPhase);
 

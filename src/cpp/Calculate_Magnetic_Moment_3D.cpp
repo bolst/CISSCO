@@ -34,7 +34,7 @@ int m_SubPixels;
 double m_R0, m_R1, m_R2, m_R3, m_radians, m_RCenter, m_CenterX, m_CenterY, m_CenterZ, m_CenterX2, m_CenterY2, m_CenterZ2, m_CenterX3, m_CenterY3, m_CenterZ3;
 float ***RealNumbers, ***ImagNumbers;
 float **subPhaseMatrix, **subPhaseMatrixXZ, **subMagMatrix, **subMagMatrixXZ;
-float ***SimRealNumbers;
+float ***SimRealNumbers, ***SimImagNumbers;
 int m_RCenterPhase;
 int OBcount;
 // int Xfirst, Yfirst, Zfirst;
@@ -48,6 +48,7 @@ bool m_Rcentercheck;
 vector<vector<vector<float>>> SubpixelRealMatrix3D;
 vector<vector<vector<float>>> SubpixelImagMatrix3D;
 vector<vector<vector<float>>> SubpixelSimulatedRealMatrix3D;
+vector<vector<vector<float>>> SubpixelSimulatedImagMatrix3D;
 vector<vector<float>> SubpixelPhaseMatrix;
 vector<vector<float>> SubpixelMagMatrix;
 vector<vector<float>> SubpixelPhaseMatrixXZ;
@@ -457,21 +458,25 @@ JNIEXPORT void JNICALL Java_JNIMethods_setStep6Variables(JNIEnv *env, jobject th
     m_p_first = m_p_last * m_TE_first / m_TE_last;
 }
 
-JNIEXPORT void JNICALL Java_JNIMethods_setSimulatedMatrices(JNIEnv *env, jobject thisObj, jobjectArray jreal, jint jsize)
+JNIEXPORT void JNICALL Java_JNIMethods_setSimulatedMatrices(JNIEnv *env, jobject thisObj, jobjectArray jreal, jobjectArray jimag, jint jsize)
 {
     SimRealNumbers = new float **[jsize];
+    SimImagNumbers = new float **[jsize];
 
     for (int i = 0; i < jsize; i++)
     {
         SimRealNumbers[i] = new float *[jsize];
+        SimImagNumbers[i] = new float *[jsize];
 
         for (int j = 0; j < jsize; j++)
         {
             SimRealNumbers[i][j] = new float[jsize];
+            SimImagNumbers[i][j] = new float[jsize];
         }
     }
 
     SimRealNumbers = firstLevel(env, jreal);
+    SimImagNumbers = firstLevel(env, jimag);
 
     return;
 }
@@ -614,6 +619,7 @@ void interpolateVoxels_SIM(int msize)
     int Nfinal = m_SubPixels;
     int ratio = Nfinal * Nfinal * Nfinal;
     int m, k, t, p, i, j, pfrom, pto, ifrom, ito, jfrom, jto;
+    float correctedTmpReal, correctedTmpImag;
 
     for (m = 0; m < msize; m++)
     {
@@ -631,8 +637,11 @@ void interpolateVoxels_SIM(int msize)
                 jto = jfrom + Nfinal;
 
                 tmpreal = SimRealNumbers[t][k][m];
-                SimRealNumbers[t][k][m] = tmpreal;
-                tmpreal = (SimRealNumbers[t][k][m]) / ratio;
+                tmpimag = SimImagNumbers[t][k][m];
+                correctedTmpReal = tmpreal;
+                correctedTmpImag = tmpimag;
+                tmpreal = correctedTmpReal / ratio;
+                tmpimag = correctedTmpImag / ratio;
 
                 for (p = pfrom; p < pto; p++)
                 {
@@ -641,6 +650,7 @@ void interpolateVoxels_SIM(int msize)
                         for (j = jfrom; j < jto; j++)
                         {
                             SubpixelSimulatedRealMatrix3D[j][i][p] = tmpreal;
+                            SubpixelSimulatedImagMatrix3D[j][i][p] = tmpimag;
                         }
                     }
                 }
@@ -652,62 +662,6 @@ void interpolateVoxels_SIM(int msize)
     return;
 }
 
-/* This deals with the same values as removeBGPhaseAndInterpolateVoxels(double bPhase) but the background phase is not removed.
-Only interpolation happens here, this is so that when the background phase is calculated again in step 5 it does not perform calculations
-on data with an already removed background phase.
-*/
-void interpolateVoxels_S5()
-{
-
-    // ---------- begin to interpolate voxels for estimation of background phase  ---------- Do NOT change without discussion
-
-    // double tmpreal, tmpimag, tmpPhase = BkgPhase;
-    float tmpreal, tmpimag;
-    int Nfinal = m_SubPixels;
-    int ratio = Nfinal * Nfinal * Nfinal;
-    int m, k, t, p, i, j, pfrom, pto, ifrom, ito, jfrom, jto;
-
-    for (m = 0; m < Zrealdim; m++)
-    {
-        pfrom = m * Nfinal;
-        pto = pfrom + Nfinal;
-
-        for (k = 0; k < realdim; k++)
-        {
-            ifrom = k * Nfinal;
-            ito = ifrom + Nfinal;
-
-            for (t = 0; t < realdim; t++)
-            {
-                jfrom = t * Nfinal;
-                jto = jfrom + Nfinal;
-
-                tmpreal = RealNumbers_S5[t][k][m];
-                tmpimag = ImagNumbers_S5[t][k][m];
-                RealNumbers_S5[t][k][m] = tmpreal;
-                ImagNumbers_S5[t][k][m] = tmpimag;
-                tmpreal = (RealNumbers_S5[t][k][m]) / ratio;
-                tmpimag = (ImagNumbers_S5[t][k][m]) / ratio;
-
-                for (p = pfrom; p < pto; p++)
-                {
-                    for (i = ifrom; i < ito; i++)
-                    {
-                        for (j = jfrom; j < jto; j++)
-                        {
-                            SubpixelRealMatrix3D_S5[j][i][p] = tmpreal;
-                            SubpixelImagMatrix3D_S5[j][i][p] = tmpimag;
-                        }
-                    }
-                }
-            }
-        }
-    }
-    // ---------- end to interpolate voxels for estimation of background phase
-
-    return;
-}
-
 /*
 This is the heavily modified code to generate the subpixel images. We generate the images on the Java side but handle
 the interpolation and background removal of the real and imaginary numbers here. These real and imaginary matrices
@@ -715,13 +669,6 @@ are used in further calculations.
 */
 void OnBnClickedGenerateSubpixel()
 {
-    // Define pDoc. Get title to check if its subpixel or not.
-    // CMDIFrameWnd *pFrame = (CMDIFrameWnd *)AfxGetApp()->m_pMainWnd;
-    // CMDIChildWnd *pChild = (CMDIChildWnd *)pFrame->GetActiveFrame();
-    // CHipoView *pView = (CHipoView *)pChild->GetActiveView();
-    // CHipoDoc *pDoc = (CHipoDoc *)pView->GetDocument();
-    // CString TITLE = pDoc->GetTitle();
-    // m_R0=12;
 
     errorMessage = "";
     halfdisplay = m_R0;
@@ -737,367 +684,14 @@ void OnBnClickedGenerateSubpixel()
     double RCenter = m_RCenter;
     int Nfinal = m_SubPixels;
 
-    // Xfirst = m_CenterX2;
-    // Yfirst = m_CenterY2;
-    // Zfirst = m_CenterZ2;
-
-    // vector<vector<vector<float>>> SmallImag(realdim, vector<vector<float>>(realdim, vector<float>(Zrealdim, 0)));
-    // vector<vector<vector<float>>> SmallReal(realdim, vector<vector<float>>(realdim, vector<float>(Zrealdim, 0)));
-    // SmallReal.clear();
-    // SmallReal.resize(realdim, vector<vector<float>>(realdim, vector<float>(Zrealdim, 0)));
-    // SmallImag.clear();
-    // SmallImag.resize(realdim, vector<vector<float>>(realdim, vector<float>(Zrealdim, 0)));
     SubpixelRealMatrix3D.clear();
     SubpixelRealMatrix3D.resize(subpixelreal, vector<vector<float>>(subpixelreal, vector<float>(Zsubpixelreal, 0)));
     SubpixelImagMatrix3D.clear();
     SubpixelImagMatrix3D.resize(subpixelreal, vector<vector<float>>(subpixelreal, vector<float>(Zsubpixelreal, 0)));
 
-    // SmallReal and SmallImag are never used
-    /*
-    for (int k = 0; k < Zrealdim; k++)
-    {
-        for (int i = 0; i < realdim; i++)
-        {
-            for (int j = 0; j < realdim; j++)
-            {
-                // SmallReal[j][i][k] = (double)RealNumbers[(Zfirst - Zhalfreal + k) * dimx * dimy + (Yfirst - halfreal + i) * dimx + (Xfirst - halfreal + j)];
-                // SmallImag[j][i][k] = (double)ImagNumbers[(Zfirst - Zhalfreal + k) * dimx * dimy + (Yfirst - halfreal + i) * dimx + (Xfirst - halfreal + j)];
-                // SmallReal[j][i][k] = RealNumbers[(int)m_CenterX2 - halfreal + j][(int)m_CenterY2 - halfreal + i][(int)m_CenterZ2 - Zhalfreal + k];
-                // SmallImag[j][i][k] = ImagNumbers[(int)m_CenterX2 - halfreal + j][(int)m_CenterY2 - halfreal + i][(int)m_CenterZ2 - Zhalfreal + k];
-                SmallReal[j][i][k] = RealNumbers[j][i][k];
-                SmallImag[j][i][k] = ImagNumbers[j][i][k];
-            }
-        }
-    }
-    */
-
     removeBGPhaseAndInterpolateVoxels(BackPhase);
 
-    // interpolating same matrices but not removing background phase - for calculating bkg phase in step 5
-    // interpolateVoxels_S5();
-
     return;
-
-    // The remaining lines under this function have been commented out
-
-    /*
-        // make sure we have a center radius
-        if (RCenter == 0)
-        {
-            //::MessageBox(NULL, "Must estimate center first", "Message", MB_OK);
-            errorMessage = "Must estimate center first";
-            return;
-        }
-    if ((phaseFileName != "PhaseSubpixel.dcm") && (magFileName != "MagSubpixel.dcm")
-        fileNameFlag == 1)
-    {
-        // Get Real Numbers of entire dataset and Phase values. Store in 1D array. dim globally defined.
-        //  GetRealNumbers3D is only called when you generate subpixel data from scratch.
-        // GetRealNumbers3D(RealNumbers, PhaseValues, ImagNumbers, MagValues, dimx, dimy, dimz, 0);
-                if ((RealNumbers == NULL))
-                {
-                    //::MessageBox(NULL, "Size of data matrix is 0. Check to make sure image is part of an entire 3D dataset.", "Message", MB_OK);
-                    errorMessage = "Size of data matrix is 0. Check to make sure image is part of an entire 3D dataset.";
-                    return;
-                }
-
-                if ((Xfirst + halfdisplay > dimx) || (Yfirst + halfdisplay > dimy))
-                {
-                    //::MessageBox(NULL, "Object is too close to edge of image", "Message", MB_OK);
-                    errorMessage = "Object is too close to edge of image (+)";
-                    return;
-                }
-                if ((Xfirst - halfdisplay / 2 < 0) || (Yfirst - halfdisplay / 2 < 0))
-                {
-                    //::MessageBox(NULL, "Object is too close to edge of image", "Message", MB_OK);
-                    errorMessage = "Object is too close to edge of image";
-                    return;
-                }
-
-                // Create Subpixel for first zoom********************************************************************
-
-                // Phase arrays for display. Real Number arrays for center and magnetic moment calculations
-                // The reason Paul clears and resizes was in case we had to regenerate the subpixel data by clicking the button again.
-                vector<vector<float>> SmallPhase(displaydim, vector<float>(displaydim, 0));
-                vector<vector<float>> SmallMag(displaydim, vector<float>(displaydim, 0));
-                SmallPhase.clear();
-                SmallPhase.resize(displaydim, vector<float>(displaydim, 0));
-                SmallMag.clear();
-                SmallMag.resize(displaydim, vector<float>(displaydim, 0));
-                SubpixelPhaseMatrix.clear();
-                SubpixelPhaseMatrix.resize(subpixeldisplay, vector<float>(subpixeldisplay, 0));
-                SubpixelMagMatrix.clear();
-                SubpixelMagMatrix.resize(subpixeldisplay, vector<float>(subpixeldisplay, 0));
-
-                int i, j, k, m, t, p;
-                double ratio;
-
-                vector<vector<float>> SmallPhaseXZ(displaydim, vector<float>(displaydim, 0));
-                vector<vector<float>> SmallMagXZ(displaydim, vector<float>(displaydim, 0));
-                SmallPhaseXZ.clear();
-                SmallPhaseXZ.resize(displaydim, vector<float>(displaydim, 0));
-                SmallMagXZ.clear();
-                SmallMagXZ.resize(displaydim, vector<float>(displaydim, 0));
-                SubpixelPhaseMatrixXZ.clear();
-                SubpixelPhaseMatrixXZ.resize(subpixeldisplay, vector<float>(subpixeldisplay, 0));
-                SubpixelMagMatrixXZ.clear();
-                SubpixelMagMatrixXZ.resize(subpixeldisplay, vector<float>(subpixeldisplay, 0));
-
-                // vector<vector<vector<float>>> SmallReal(realdim,vector<vector<float>>(realdim,vector<float>(Zrealdim,0)));
-                // vector<vector<vector<float>>> SmallImag(realdim,vector<vector<float>>(realdim,vector<float>(Zrealdim,0)));
-                SmallReal.clear();
-                SmallReal.resize(realdim, vector<vector<float>>(realdim, vector<float>(Zrealdim, 0)));
-                SmallImag.clear();
-                SmallImag.resize(realdim, vector<vector<float>>(realdim, vector<float>(Zrealdim, 0)));
-                SubpixelRealMatrix3D.clear();
-                SubpixelRealMatrix3D.resize(subpixelreal, vector<vector<float>>(subpixelreal, vector<float>(Zsubpixelreal, 0)));
-                SubpixelImagMatrix3D.clear();
-                SubpixelImagMatrix3D.resize(subpixelreal, vector<vector<float>>(subpixelreal, vector<float>(Zsubpixelreal, 0)));
-                ratio = Nfinal * Nfinal * Nfinal;
-
-                // initializing 2d arrays
-                spMagMatrix = new float *[MAX_SUBPIXEL_DIM];
-                for (int i = 0; i < MAX_SUBPIXEL_DIM; i++)
-                {
-                    spMagMatrix[i] = new float[MAX_SUBPIXEL_DIM];
-                }
-
-                spMagMatrixXZ = new float *[MAX_SUBPIXEL_DIM];
-                for (int i = 0; i < MAX_SUBPIXEL_DIM; i++)
-                {
-                    spMagMatrixXZ[i] = new float[MAX_SUBPIXEL_DIM];
-                }
-
-                spPhaseMatrix = new float *[MAX_SUBPIXEL_DIM];
-                for (int i = 0; i < MAX_SUBPIXEL_DIM; i++)
-                {
-                    spPhaseMatrix[i] = new float[MAX_SUBPIXEL_DIM];
-                }
-
-                spPhaseMatrixXZ = new float *[MAX_SUBPIXEL_DIM];
-                for (int i = 0; i < MAX_SUBPIXEL_DIM; i++)
-                {
-                    spPhaseMatrixXZ[i] = new float[MAX_SUBPIXEL_DIM];
-                }
-
-                // initializing 3d arrays
-
-                spRealMatrix3D = new float **[MAX_SUBPIXEL_DIM];
-                for (int i = 0; i < MAX_SUBPIXEL_DIM; i++)
-                {
-                    spRealMatrix3D[i] = new float *[MAX_SUBPIXEL_DIM];
-                    for (int j = 0; j < MAX_SUBPIXEL_DIM; j++)
-                    {
-                        spRealMatrix3D[i][j] = new float[MAX_SUBPIXEL_DIM];
-                    }
-                }
-
-                spImagMatrix3D = new float **[MAX_SUBPIXEL_DIM];
-                for (int i = 0; i < MAX_SUBPIXEL_DIM; i++)
-                {
-                    spImagMatrix3D[i] = new float *[MAX_SUBPIXEL_DIM];
-                    for (int j = 0; j < MAX_SUBPIXEL_DIM; j++)
-                    {
-                        spImagMatrix3D[i][j] = new float[MAX_SUBPIXEL_DIM];
-                    }
-                }
-
-                for (i = 0; i < displaydim; i++)
-                {
-                    for (j = 0; j < displaydim; j++)
-                    {
-                        // SmallPhase[j][i] = PhaseValues[Zfirst * dimx * dimy + (Yfirst - halfdisplay + i) * dimx + (Xfirst - halfdisplay + j)];
-                        SmallPhase[j][i] = PhaseValues[Xfirst - halfdisplay + j][Yfirst - halfdisplay + i][Zfirst];
-                    }
-                }
-
-                for (i = 0; i < displaydim; i++)
-                {
-                    for (j = 0; j < displaydim; j++)
-                    {
-                        // SmallMag[j][i] = MagValues[Zfirst * dimx * dimy + (Yfirst - halfdisplay + i) * dimx + (Xfirst - halfdisplay + j)];
-                        SmallMag[j][i] = MagValues[Xfirst - halfdisplay + j][Yfirst - halfdisplay + i][Zfirst];
-                    }
-                }
-
-                for (i = 0; i < displaydim; i++)
-                {
-                    for (j = 0; j < displaydim; j++)
-                    {
-                        // SmallPhaseXZ[j][i] = PhaseValues[(Zfirst - halfdisplay + i) * dimx * dimy + Yfirst * dimx + (Xfirst - halfdisplay + j)];
-                        SmallPhaseXZ[j][i] = PhaseValues[Xfirst - halfdisplay + j][Yfirst][Zfirst - halfdisplay + i];
-                    }
-                }
-
-                for (i = 0; i < displaydim; i++)
-                {
-                    for (j = 0; j < displaydim; j++)
-                    {
-                        // SmallMagXZ[j][i] = MagValues[(Zfirst - halfdisplay + i) * dimx * dimy + Yfirst * dimx + (Xfirst - halfdisplay + j)];
-                        SmallMagXZ[j][i] = MagValues[Xfirst - halfdisplay + j][Yfirst][Zfirst - halfdisplay + i];
-                    }
-                }
-
-        for (k = 0; k < Zrealdim; k++)
-        {
-            for (i = 0; i < realdim; i++)
-            {
-                for (j = 0; j < realdim; j++)
-                {
-                    SmallReal[j][i][k] = (double)RealNumbers[(Zfirst - Zhalfreal + k) * dimx * dimy + (Yfirst - halfreal + i) * dimx + (Xfirst - halfreal + j)];
-                    SmallImag[j][i][k] = (double)ImagNumbers[(Zfirst - Zhalfreal + k) * dimx * dimy + (Yfirst - halfreal + i) * dimx + (Xfirst - halfreal + j)];
-                }
-            }
-        }
-                for (m = 0; m < displaydim; m++)
-                {
-                    for (k = 0; k < displaydim; k++)
-                    {
-                        for (i = m * Nfinal; i < (m + 1) * Nfinal; i++)
-                        {
-                            for (j = k * Nfinal; j < (k + 1) * Nfinal; j++)
-                            {
-                                SubpixelPhaseMatrix[j][i] = (SmallPhase[k][m]);
-                                spPhaseMatrix[j][i] = SubpixelPhaseMatrix[j][i];
-                            }
-                        }
-                    }
-                }
-
-                for (m = 0; m < displaydim; m++)
-                {
-                    for (k = 0; k < displaydim; k++)
-                    {
-                        for (i = m * Nfinal; i < (m + 1) * Nfinal; i++)
-                        {
-                            for (j = k * Nfinal; j < (k + 1) * Nfinal; j++)
-                            {
-                                SubpixelMagMatrix[j][i] = (SmallMag[k][m]);
-                                spMagMatrix[j][i] = SubpixelMagMatrix[j][i];
-                            }
-                        }
-                    }
-                }
-
-                for (m = 0; m < displaydim; m++)
-                {
-                    for (k = 0; k < displaydim; k++)
-                    {
-                        for (i = m * Nfinal; i < (m + 1) * Nfinal; i++)
-                        {
-                            for (j = k * Nfinal; j < (k + 1) * Nfinal; j++)
-                            {
-                                SubpixelPhaseMatrixXZ[j][i] = (SmallPhaseXZ[k][m]);
-                                spPhaseMatrixXZ[j][i] = SubpixelPhaseMatrixXZ[j][i];
-                            }
-                        }
-                    }
-                }
-
-                for (m = 0; m < displaydim; m++)
-                {
-                    for (k = 0; k < displaydim; k++)
-                    {
-                        for (i = m * Nfinal; i < (m + 1) * Nfinal; i++)
-                        {
-                            for (j = k * Nfinal; j < (k + 1) * Nfinal; j++)
-                            {
-                                SubpixelMagMatrixXZ[j][i] = (SmallMagXZ[k][m]);
-                                spMagMatrixXZ[j][i] = SubpixelMagMatrixXZ[j][i];
-                            }
-                        }
-                    }
-                }
-        */
-    /*
-            double val, ival;
-            int pfrom, pto, ifrom, ito, jfrom, jto;
-
-            for (m = 0; m < Zrealdim; m++)
-            {
-                for (k = 0; k < realdim; k++)
-                {
-                    for (t = 0; t < realdim; t++)
-                    {
-                        val = (SmallReal[t][k][m]) / ratio;
-                        ival = (SmallImag[t][k][m]) / ratio;
-                        pfrom = m * Nfinal;
-                        pto = (m + 1) * Nfinal;
-                        ifrom = k * Nfinal;
-                        ito = (k + 1) * Nfinal;
-                        jfrom = t * Nfinal;
-                        jto = (t + 1) * Nfinal;
-
-                        for (p = pfrom; p < pto; p++)
-                        {
-                            for (i = ifrom; i < ito; i++)
-                            {
-                                for (j = jfrom; j < jto; j++)
-                                {
-                                    SubpixelRealMatrix3D[j][i][p] = val;
-                                    SubpixelImagMatrix3D[j][i][p] = ival;
-                                    spRealMatrix3D[j][i][p] = SubpixelRealMatrix3D[j][i][p];
-                                    spImagMatrix3D[j][i][p] = SubpixelImagMatrix3D[j][i][p];
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-    */
-    // SubPixelImage(halfdisplay);
-    // SubPixelMagImage(halfdisplay);
-
-    // issubpix = TRUE;
-
-    // CMDIFrameWnd *pFrame = (CMDIFrameWnd *)AfxGetApp()->m_pMainWnd;
-    // CMDIChildWnd *pChild = (CMDIChildWnd *)pFrame->GetActiveFrame();
-    // CHipoView *pView = (CHipoView *)pChild->GetActiveView();
-
-    /*
-            if (m_Rcentercheck)
-            {
-
-                CCtrlPoint RCStartPoint, RCEndPoint;
-
-                RCStartPoint.x = (subpixeldisplay / 2 + 5) - (m_RCenter * m_SubPixels) + 5;
-                RCStartPoint.y = (subpixeldisplay / 2 + 5) - (m_RCenter * m_SubPixels) + 5;
-                RCEndPoint.x = (subpixeldisplay / 2 + 5) + (m_RCenter * m_SubPixels) + 5;
-                RCEndPoint.y = (subpixeldisplay / 2 + 5) + (m_RCenter * m_SubPixels) + 5;
-
-                pView->mROIContainer.RemoveAll();
-
-                pView->psr->Remove();
-                pView->psr->m_stPropertyOfROI.m_iROIType = ROI_ELLIPSE;
-                pView->psr->AddTail(RCStartPoint);
-                pView->psr->AddTail(RCEndPoint);
-                pView->mROIContainer.AddTail(pView->psr);
-
-                pView->Invalidate(false);
-
-                pFrame->MDINext();
-                pChild = (CMDIChildWnd *)pFrame->GetActiveFrame();
-                pView = (CHipoView *)pChild->GetActiveView();
-
-                pView->mROIContainer.RemoveAll();
-
-                pView->psr->Remove();
-                pView->psr->m_stPropertyOfROI.m_iROIType = ROI_ELLIPSE;
-                pView->psr->AddTail(RCStartPoint);
-                pView->psr->AddTail(RCEndPoint);
-                pView->mROIContainer.AddTail(pView->psr);
-
-                pView->Invalidate(false);
-            }
-
-}
-else
-{
-    //::MessageBox(NULL, "Subpixel grid already generated.", "Message", MB_OK);
-    errorMessage = "Subpixel grid already generated.";
-    return;
-}
-*/
 }
 
 double SumSphericalMask(int radius, int Scan1, int Scan2, int Scan3, vector<vector<vector<int>>> CubeMask)
@@ -3766,6 +3360,7 @@ JNIEXPORT void JNICALL Java_JNIMethods_calcSusceptibility(JNIEnv *env, jobject t
 JNIEXPORT void JNICALL Java_JNIMethods_interpolateVoxelsSIM(JNIEnv *env, jobject thisObj, jint subpixelsize)
 {
     SubpixelSimulatedRealMatrix3D.resize(subpixelsize, vector<vector<float>>(subpixelsize, vector<float>(subpixelsize, 0)));
+    SubpixelSimulatedImagMatrix3D.resize(subpixelsize, vector<vector<float>>(subpixelsize, vector<float>(subpixelsize, 0)));
 
     interpolateVoxels_SIM(subpixelsize / 10);
     return;

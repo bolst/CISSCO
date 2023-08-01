@@ -1122,6 +1122,8 @@ public class Calculate_Magnetic_Moment_3D implements PlugIn {
         // Initializing matrix for simulated images
         float[][][] simulatedRealNumbers = new float[sizeOfSimmedMatrices + 1][sizeOfSimmedMatrices
             + 1][sizeOfSimmedMatrices + 1];
+        float[][][] simulatedImagNumbers = new float[sizeOfSimmedMatrices + 1][sizeOfSimmedMatrices
+            + 1][sizeOfSimmedMatrices + 1];
 
         // Getting center of image, since in simulated images the center of the image is
         // the center of the object
@@ -1152,6 +1154,7 @@ public class Calculate_Magnetic_Moment_3D implements PlugIn {
               tempmag = simulatedMagnitudeImage.getProcessor().getPixelValue(i, j);
               tempphase = simulatedPhaseImage.getProcessor().getPixelValue(i, j);
               simulatedRealNumbers[ni][nj][nk] = (float) (tempmag * Math.cos(tempphase));
+              simulatedImagNumbers[ni][nj][nk] = (float) (tempmag * Math.sin(tempphase));
             }
           }
         }
@@ -1163,7 +1166,7 @@ public class Calculate_Magnetic_Moment_3D implements PlugIn {
         logger.addVariable("m_R3", m_R3);
 
         // Giving matrix to C++
-        jni.setSimulatedMatrices(simulatedRealNumbers, sizeOfSimmedMatrices + 1);
+        jni.setSimulatedMatrices(simulatedRealNumbers, simulatedImagNumbers, sizeOfSimmedMatrices + 1);
         logger.addInfo("Set matrices to C++");
         // Interpolating matrix in C++
         jni.interpolateVoxelsSIM(sizeOfSimmedMatrices * 10);
