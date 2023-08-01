@@ -374,7 +374,6 @@ public class Calculate_Magnetic_Moment_3D implements PlugIn {
       subpixelPhaseImageXZ.show();
 
       // Passing matrices to C++
-      // jni.setRealImagNumbers(croppedRealNumbers3D, croppedImaginaryNumbers3D);
       jni.setPhaseXYMatrix(subpixelPhaseMatrix);
       jni.setPhaseXZMatrix(subpixelPhaseMatrixXZ);
       jni.setMagXYMatrix(subpixelMagMatrix);
@@ -390,10 +389,6 @@ public class Calculate_Magnetic_Moment_3D implements PlugIn {
   // "Remove Bkg"
   // =====================================================================================
   public static void remove_bkg() {
-
-    // passing values C++ needs
-    // jni.setXYZ(,,);
-    // jni.setmR123(,,);
 
     // if subpixel images are not generated
     if (subpixelMagImage == null || subpixelMagImageXZ == null || subpixelPhaseImage == null
@@ -412,17 +407,12 @@ public class Calculate_Magnetic_Moment_3D implements PlugIn {
       bkg_phase = item.bkgPhase;
     }
 
-    // No longer need
-    // jni.setRealImagNumbers(croppedRealNumbers3D, croppedImaginaryNumbers3D);
-
     // Removing BG phase in C++
     jni.removeBackgroundPhase(bkg_phase);
 
-    // Removing BG phase in Java
-    // removeBGPhase(subpixelPhaseMatrix);
-    // removeBGPhase(subpixelPhaseMatrixXZ);
-
-    JOptionPane.showMessageDialog(gui.frame, "Removed Background Phase (" + String.valueOf(bkg_phase) + ')');
+    JOptionPane.showMessageDialog(gui.frame, "Background Phase "
+        + String.valueOf(Math.round(bkg_phase * 100.0) / 100.0)
+        + " Has Been Removed");
   }
 
   // =====================================================================================
