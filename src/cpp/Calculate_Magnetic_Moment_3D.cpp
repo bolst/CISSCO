@@ -568,22 +568,8 @@ void removeBGPhaseAndInterpolateVoxels(double bPhase)
             {
                 jfrom = t * Nfinal;
                 jto = jfrom + Nfinal;
-                /*
-                tmpreal = SmallReal[t][k][m];
-                tmpimag = SmallImag[t][k][m];
-                SmallReal[t][k][m] = tmpreal * cos(tmpPhase) + tmpimag * sin(tmpPhase);
-                SmallImag[t][k][m] = tmpimag * cos(tmpPhase) - tmpreal * sin(tmpPhase);
-                tmpreal = (SmallReal[t][k][m]) / ratio;
-                tmpimag = (SmallImag[t][k][m]) / ratio;
-                */
                 tmpreal = RealNumbers[t][k][m];
                 tmpimag = ImagNumbers[t][k][m];
-                /*
-                RealNumbers[t][k][m] = tmpreal * cos(tmpPhase) + tmpimag * sin(tmpPhase);
-                ImagNumbers[t][k][m] = tmpimag * cos(tmpPhase) - tmpreal * sin(tmpPhase);
-                tmpreal = (RealNumbers[t][k][m]) / ratio;
-                tmpimag = (ImagNumbers[t][k][m]) / ratio;
-                */
                 correctedTmpReal = tmpreal * cos(tmpPhase) + tmpimag * sin(tmpPhase);
                 correctedTmpImag = tmpimag * cos(tmpPhase) - tmpreal * sin(tmpPhase);
                 tmpreal = correctedTmpReal / ratio;
@@ -636,12 +622,8 @@ void interpolateVoxels_SIM(int msize)
                 jfrom = t * Nfinal;
                 jto = jfrom + Nfinal;
 
-                tmpreal = SimRealNumbers[t][k][m];
-                tmpimag = SimImagNumbers[t][k][m];
-                correctedTmpReal = tmpreal;
-                correctedTmpImag = tmpimag;
-                tmpreal = correctedTmpReal / ratio;
-                tmpimag = correctedTmpImag / ratio;
+                tmpreal = SimRealNumbers[t][k][m] / ratio;
+                tmpimag = SimImagNumbers[t][k][m] / ratio;
 
                 for (p = pfrom; p < pto; p++)
                 {
@@ -3105,32 +3087,33 @@ void OnBnClickedCalcmagmoment()
         m_R1 = m_ROuterPhase;
         m_R2 = m_RMiddlePhase;
         m_R3 = m_RInnerPhase;
+        /*
+                CalculateSpinDensity(RES2, RES3, IMS2, IMS3, R2, R3, &rho, &BkgPhase);
+                m_rho = rho;
+                // m_p0.Format(TEXT("%3.2f"), m_rho);
 
-        CalculateSpinDensity(RES2, RES3, IMS2, IMS3, R2, R3, &rho, &BkgPhase);
-        m_rho = rho;
-        // m_p0.Format(TEXT("%3.2f"), m_rho);
+                BackPhase = BkgPhase;
+                m_BackPhase = BackPhase;
+                // m_BackPhase.Format(TEXT("%3.2f"), BackPhase);
 
-        BackPhase = BkgPhase;
-        m_BackPhase = BackPhase;
-        // m_BackPhase.Format(TEXT("%3.2f"), BackPhase);
+                if ((m_RChi != 0) && (m_B0 != 0) && (m_TE_first != 0))
+                {
+                    ReR = SumCircleElementsReal3D(m_RChi, (int)ZoomedX, (int)ZoomedY, (int)lastValueSlice);
 
-        if ((m_RChi != 0) && (m_B0 != 0) && (m_TE_first != 0))
-        {
-            ReR = SumCircleElementsReal3D(m_RChi, (int)ZoomedX, (int)ZoomedY, (int)lastValueSlice);
-            /*
-            m_g = Calculate_g(p, m_rho, m_RChi, ReR);
-            m_a = pow(m_p / m_g, 1.0 / 3.0);
-            m_Chi = m_g / (0.08167 * m_B0 * m_TE);
-            */
-            m_g = Calculate_g(p, m_rho, m_RChi, ReR); // m_p_first is p at first echo time
-            m_a = pow(p / m_g, 1.0 / 3.0);
-            m_Chi = m_g / (0.08918167 * m_B0 * m_TE_first);
-        }
-        else
-        {
-            m_Chi = 0;
-            m_a = 0;
-        }
+                    //m_g = Calculate_g(p, m_rho, m_RChi, ReR);
+                    //m_a = pow(m_p / m_g, 1.0 / 3.0);
+                    //m_Chi = m_g / (0.08167 * m_B0 * m_TE);
+
+                    m_g = Calculate_g(p, m_rho, m_RChi, ReR); // m_p_first is p at first echo time
+                    m_a = pow(p / m_g, 1.0 / 3.0);
+                    m_Chi = m_g / (0.08918167 * m_B0 * m_TE_first);
+                }
+                else
+                {
+                    m_Chi = 0;
+                    m_a = 0;
+                }
+                */
 
         if (m_SNR == 0)
         {
@@ -3332,22 +3315,17 @@ JNIEXPORT void JNICALL Java_JNIMethods_estBkgAndSpinDensity(JNIEnv *env, jobject
     int subpixRadius2 = round(m_R2 * m_SubPixels);
     int subpixRadius3 = round(m_R3 * m_SubPixels);
 
-    /*
-        double RES2 = SumCircleElementsReal3D(subpixRadius2, (int)ZoomedX, (int)ZoomedY, (int)lastValueSlice);
-        double RES3 = SumCircleElementsReal3D(subpixRadius3, (int)ZoomedX, (int)ZoomedY, (int)lastValueSlice);
-
-        double IMS2 = SumCircleElementsImag3D(subpixRadius2, (int)ZoomedX, (int)ZoomedY, (int)lastValueSlice);
-        double IMS3 = SumCircleElementsImag3D(subpixRadius3, (int)ZoomedX, (int)ZoomedY, (int)lastValueSlice);
-    */
-
     double RES2 = SumCircleElementsReal3D(subpixRadius2, (int)ZoomedX, (int)ZoomedY, (int)lastValueSlice);
     double RES3 = SumCircleElementsReal3D(subpixRadius3, (int)ZoomedX, (int)ZoomedY, (int)lastValueSlice);
 
     double IMS2 = SumCircleElementsImag3D(subpixRadius2, (int)ZoomedX, (int)ZoomedY, (int)lastValueSlice);
     double IMS3 = SumCircleElementsImag3D(subpixRadius3, (int)ZoomedX, (int)ZoomedY, (int)lastValueSlice);
 
+    ofstream of("cpp.txt");
+    of << RES2 << ' ' << RES3 << ' ' << IMS2 << ' ' << IMS3 << ' ' << m_R2 << ' ' << m_R3 << ' ' << rho << ' ' << BkgPhase << ' ' << '\n';
     CalculateSpinDensity(RES2, RES3, IMS2, IMS3, m_R2, m_R3, &rho, &BkgPhase);
-
+    of << RES2 << ' ' << RES3 << ' ' << IMS2 << ' ' << IMS3 << ' ' << m_R2 << ' ' << m_R3 << ' ' << rho << ' ' << BkgPhase << ' ' << '\n';
+    of.close();
     return;
 }
 

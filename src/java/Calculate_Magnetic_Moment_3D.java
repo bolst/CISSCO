@@ -795,6 +795,7 @@ public class Calculate_Magnetic_Moment_3D implements PlugIn {
     double cx = Double.parseDouble(gui.ltf_spx.getValue());
     double cy = Double.parseDouble(gui.ltf_spy.getValue());
     double cz = Double.parseDouble(gui.ltf_spz.getValue()) - 1.0;
+    logger.addVariable("bkgphase", item.bkgPhase);
     jni.passSpinDensValues(cx, cy, cz, r1, r2, r3, item.bkgPhase, mag_mom);
 
     // Calling C++ to calculate background phase and spin density
@@ -1058,9 +1059,11 @@ public class Calculate_Magnetic_Moment_3D implements PlugIn {
     } else {
       gui.ll_momenterror.setValue(String.valueOf(Math.round(jni.getUncertainty() * 100.0) / 100.0));
     }
-    gui.ll_dChi.setValue(String.valueOf(Math.round(jni.getChi() * 100.0) / 100.0));
-    gui.ll_a.setValue(String.valueOf(Math.round(jni.getA() * 100.0) / 100.0));
-    gui.ll_rho0.setValue(String.valueOf(Math.round(jni.getSpinDensity() * 100.0) / 100.0));
+    // gui.ll_dChi.setValue(String.valueOf(Math.round(jni.getChi() * 100.0) /
+    // 100.0));
+    // gui.ll_a.setValue(String.valueOf(Math.round(jni.getA() * 100.0) / 100.0));
+    // gui.ll_rho0.setValue(String.valueOf(Math.round(jni.getSpinDensity() * 100.0)
+    // / 100.0));
   }
 
   /*
