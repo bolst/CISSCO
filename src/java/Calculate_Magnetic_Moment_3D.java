@@ -303,26 +303,8 @@ public class Calculate_Magnetic_Moment_3D implements PlugIn {
       for (int m = 0; m < croppedImageSize * Nfinal; m++) {
         for (int k = 0; k < croppedImageSize * Nfinal; k++) {
           subpixelPhaseMatrix[k][m] = croppedPhaseValues3D[(int) (k / Nfinal)][(int) (m / Nfinal)][(int) m_R0];
-        }
-      }
-
-      // Interpolating XY subpixel mag matrix
-      for (int m = 0; m < croppedImageSize * Nfinal; m++) {
-        for (int k = 0; k < croppedImageSize * Nfinal; k++) {
           subpixelMagMatrix[k][m] = croppedMagnitudeValues3D[(int) (k / Nfinal)][(int) (m / Nfinal)][(int) m_R0];
-        }
-      }
-
-      // Interpolating XZ subpixel mag matrix
-      for (int m = 0; m < croppedImageSize * Nfinal; m++) {
-        for (int k = 0; k < croppedImageSize * Nfinal; k++) {
           subpixelMagMatrixXZ[k][m] = croppedMagnitudeValues3D[(int) (k / Nfinal)][(int) m_R0][(int) (m / Nfinal)];
-        }
-      }
-
-      // Interpolating XZ subpixel phase matrix
-      for (int m = 0; m < croppedImageSize * Nfinal; m++) {
-        for (int k = 0; k < croppedImageSize * Nfinal; k++) {
           subpixelPhaseMatrixXZ[k][m] = croppedPhaseValues3D[(int) (k / Nfinal)][(int) m_R0][(int) (m / Nfinal)];
         }
       }
