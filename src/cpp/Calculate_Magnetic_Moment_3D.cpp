@@ -19,6 +19,7 @@ using namespace std;
 #include <vector>
 #include <string>
 #include <cstring>
+#include <utility> // for std::pair
 #include <iostream>
 #include <fstream>
 #include <sstream>
@@ -2907,9 +2908,9 @@ double FindMoment3D(double RES1, double RES2, double RES3, double IMS1, double I
 
 // ---------- begin to calculate the spin density and bkg phase ---------- Do NOT change without discussion
 
-void CalculateSpinDensity(double RES2, double RES3, double IMS2, double IMS3, double R2, double R3, double *SpinDensity, double *BkgPhase)
+pair<double, double> CalculateSpinDensity(double RES2, double RES3, double IMS2, double IMS3, double R2, double R3, double p)
 {
-    double p = m_MagMoment;
+    // double p = m_MagMoment;
     double R2cube = R2 * R2 * R2;
     double R3cube = R3 * R3 * R3;
 
@@ -2925,13 +2926,21 @@ void CalculateSpinDensity(double RES2, double RES3, double IMS2, double IMS3, do
     double imf23 = R2cube * qromb3D_IMa(1, ph23, ph2) + qromb3D_IMb(-1, 2, p, ph2, ph3);
     double magf23 = sqrt((ref23 * ref23) + (imf23 * imf23));
 
-    *SpinDensity = (9 * sqrt(3.0) / (4.0 * PI)) * magS23 / magf23;
+    double localSpinDensity = (9 * sqrt(3.0) / (4.0 * PI)) * magS23 / magf23;
 
     // exp(i*BkgPhase) is proportional to (f*23)*(S23)
     double reBkgPhase = ref23 * reS23 + imf23 * imS23;
     double imBkgPhase = ref23 * imS23 - reS23 * imf23;
 
-    *BkgPhase = atan2(imBkgPhase, reBkgPhase);
+    // ofstream fout("BkgPhase.txt");
+    // fout << reBkgPhase << " " << imBkgPhase << endl;
+    // fout << ref23 << " " << imf23 << endl;
+    // fout << reS23 << " " << imS23 << endl;
+    // fout.close();
+
+    double localBkgPhase = atan2(imBkgPhase, reBkgPhase);
+
+    return make_pair(localSpinDensity, localBkgPhase);
 }
 // ---------- end to calculate the spin density and bkg phase
 
@@ -3321,11 +3330,14 @@ JNIEXPORT void JNICALL Java_JNIMethods_estBkgAndSpinDensity(JNIEnv *env, jobject
     double IMS2 = SumCircleElementsImag3D(subpixRadius2, (int)ZoomedX, (int)ZoomedY, (int)lastValueSlice);
     double IMS3 = SumCircleElementsImag3D(subpixRadius3, (int)ZoomedX, (int)ZoomedY, (int)lastValueSlice);
 
-    ofstream of("cpp.txt");
-    of << RES2 << ' ' << RES3 << ' ' << IMS2 << ' ' << IMS3 << ' ' << m_R2 << ' ' << m_R3 << ' ' << rho << ' ' << BkgPhase << ' ' << '\n';
-    CalculateSpinDensity(RES2, RES3, IMS2, IMS3, m_R2, m_R3, &rho, &BkgPhase);
-    of << RES2 << ' ' << RES3 << ' ' << IMS2 << ' ' << IMS3 << ' ' << m_R2 << ' ' << m_R3 << ' ' << rho << ' ' << BkgPhase << ' ' << '\n';
-    of.close();
+    // ofstream of("cpp.txt");
+    // of << subpixRadius2 << ' ' << subpixRadius3 << ' ' << ZoomedX << ' ' << ZoomedY << ' ' << lastValueSlice << ' ' << m_MagMoment << '\n';
+    // of << RES2 << ' ' << RES3 << ' ' << IMS2 << ' ' << IMS3 << ' ' << m_R2 << ' ' << m_R3 << ' ' << rho << ' ' << BkgPhase << ' ' << '\n';
+    pair<double, double> retval = CalculateSpinDensity(RES2, RES3, IMS2, IMS3, m_R2, m_R3, m_MagMoment);
+    rho = retval.first;
+    BkgPhase = retval.second;
+    // of << RES2 << ' ' << RES3 << ' ' << IMS2 << ' ' << IMS3 << ' ' << m_R2 << ' ' << m_R3 << ' ' << rho << ' ' << BkgPhase << ' ' << '\n';
+    // of.close();
     return;
 }
 

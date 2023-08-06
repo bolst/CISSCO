@@ -1,5 +1,6 @@
 {
     "files.associations": {
+        "*.js": "javascript",
         "array": "cpp",
         "string_view": "cpp",
         "initializer_list": "cpp",
@@ -8,6 +9,7 @@
         "cmath": "cpp",
         "bit": "cpp",
         "xlocale": "cpp",
-        "vector": "cpp"
+        "vector": "cpp",
+        "iosfwd": "cpp"
     }
 }
