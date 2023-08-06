@@ -3288,8 +3288,10 @@ JNIEXPORT jstring JNICALL Java_JNIMethods_calculateMagneticMoment(JNIEnv *env, j
 // Java function to remove background phase - will be called when the button in the GUI is clicked
 JNIEXPORT void JNICALL Java_JNIMethods_removeBackgroundPhase(JNIEnv *env, jobject thisObj, jdouble bPhase)
 {
-
     removeBGPhaseAndInterpolateVoxels(bPhase);
+    ofstream myfile("imag.txt");
+    // myfile << SubpixelImagMatrix3D << '\n';
+    myfile.close();
 
     return;
 }
@@ -3330,14 +3332,9 @@ JNIEXPORT void JNICALL Java_JNIMethods_estBkgAndSpinDensity(JNIEnv *env, jobject
     double IMS2 = SumCircleElementsImag3D(subpixRadius2, (int)ZoomedX, (int)ZoomedY, (int)lastValueSlice);
     double IMS3 = SumCircleElementsImag3D(subpixRadius3, (int)ZoomedX, (int)ZoomedY, (int)lastValueSlice);
 
-    // ofstream of("cpp.txt");
-    // of << subpixRadius2 << ' ' << subpixRadius3 << ' ' << ZoomedX << ' ' << ZoomedY << ' ' << lastValueSlice << ' ' << m_MagMoment << '\n';
-    // of << RES2 << ' ' << RES3 << ' ' << IMS2 << ' ' << IMS3 << ' ' << m_R2 << ' ' << m_R3 << ' ' << rho << ' ' << BkgPhase << ' ' << '\n';
     pair<double, double> retval = CalculateSpinDensity(RES2, RES3, IMS2, IMS3, m_R2, m_R3, m_MagMoment);
     rho = retval.first;
     BkgPhase = retval.second;
-    // of << RES2 << ' ' << RES3 << ' ' << IMS2 << ' ' << IMS3 << ' ' << m_R2 << ' ' << m_R3 << ' ' << rho << ' ' << BkgPhase << ' ' << '\n';
-    // of.close();
     return;
 }
 

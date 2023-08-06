@@ -385,6 +385,12 @@ public class Calculate_Magnetic_Moment_3D implements PlugIn {
       // resetting slice to center
       magnitudeImage.setSlice(item.centerS().get(2).intValue() + 1);
       phaseImage.setSlice(item.centerS().get(2).intValue() + 1);
+
+      // creating ROIs for later use
+      roiImgMag = new ROIS(subMagTitle);
+      roiImgMagXZ = new ROIS(subMagXZTitle);
+      roiImgPhase = new ROIS(subPhaseTitle);
+      roiImgPhaseXZ = new ROIS(subPhaseXZTitle);
     }
   }
 
@@ -506,35 +512,35 @@ public class Calculate_Magnetic_Moment_3D implements PlugIn {
         String.valueOf(sub_x) + ' ' + String.valueOf(sub_y) + ' ' + String.valueOf(sub_z));
 
     // Creating a new ROIS for the XY mag image
-    roiImgMag = new ROIS(subMagTitle);
+    roiImgMag.clear();
     // Adding the center as a point to the list
     roiImgMag.addPointROI(sub_x, sub_y);
-    if (gui.chkbx_showrc.isSelected()) {
-      // If the box is selected, adds RCenter circle ROI to the list
-      roiImgMag.addCircleROI(sub_x, sub_y, RCenter * 10.0);
-    }
+    // if (gui.chkbx_showrc.isSelected()) {
+    // // If the box is selected, adds RCenter circle ROI to the list
+    // roiImgMag.addCircleROI(sub_x, sub_y, RCenter * 10.0);
+    // }
     // Displays the ROIS on the image
     roiImgMag.displayROIS();
 
-    roiImgMagXZ = new ROIS(subMagXZTitle);
+    roiImgMagXZ.clear();
     roiImgMagXZ.addPointROI(sub_x, sub_z);
-    if (gui.chkbx_showrc.isSelected()) {
-      roiImgMagXZ.addCircleROI(sub_x, sub_z, RCenter * 10.0);
-    }
+    // if (gui.chkbx_showrc.isSelected()) {
+    // roiImgMagXZ.addCircleROI(sub_x, sub_z, RCenter * 10.0);
+    // }
     roiImgMagXZ.displayROIS();
 
-    roiImgPhase = new ROIS(subPhaseTitle);
+    roiImgPhase.clear();
     roiImgPhase.addPointROI(sub_x, sub_y);
-    if (gui.chkbx_showrc.isSelected()) {
-      roiImgPhase.addCircleROI(sub_x, sub_y, RCenter * 10.0);
-    }
+    // if (gui.chkbx_showrc.isSelected()) {
+    // roiImgPhase.addCircleROI(sub_x, sub_y, RCenter * 10.0);
+    // }
     roiImgPhase.displayROIS();
 
-    roiImgPhaseXZ = new ROIS(subPhaseXZTitle);
+    roiImgPhaseXZ.clear();
     roiImgPhaseXZ.addPointROI(sub_x, sub_z);
-    if (gui.chkbx_showrc.isSelected()) {
-      roiImgPhaseXZ.addCircleROI(sub_x, sub_z, RCenter * 10.0);
-    }
+    // if (gui.chkbx_showrc.isSelected()) {
+    // roiImgPhaseXZ.addCircleROI(sub_x, sub_z, RCenter * 10.0);
+    // }
     roiImgPhaseXZ.displayROIS();
 
     // ---------- end to put ROIS on images
@@ -593,35 +599,86 @@ public class Calculate_Magnetic_Moment_3D implements PlugIn {
 
     roiImgMag.clear();
     roiImgMag.addPointROI(sub_x, sub_y);
-    if (gui.chkbx_showrc.isSelected()) {
-      roiImgMag.addCircleROI(sub_x, sub_y, RCenter * 10.0);
-    }
+    // if (gui.chkbx_showrc.isSelected()) {
+    // roiImgMag.addCircleROI(sub_x, sub_y, RCenter * 10.0);
+    // }
     roiImgMag.displayROIS();
 
     // The next 3 blocks of code follow the same logic as described above
 
     roiImgMagXZ.clear();
     roiImgMagXZ.addPointROI(sub_x, sub_z);
-    if (gui.chkbx_showrc.isSelected()) {
-      roiImgMagXZ.addCircleROI(sub_x, sub_z, RCenter * 10.0);
-    }
+    // if (gui.chkbx_showrc.isSelected()) {
+    // roiImgMagXZ.addCircleROI(sub_x, sub_z, RCenter * 10.0);
+    // }
     roiImgMagXZ.displayROIS();
 
     roiImgPhase.clear();
     roiImgPhase.addPointROI(sub_x, sub_y);
-    if (gui.chkbx_showrc.isSelected()) {
-      roiImgPhase.addCircleROI(sub_x, sub_y, RCenter * 10.0);
-    }
+    // if (gui.chkbx_showrc.isSelected()) {
+    // roiImgPhase.addCircleROI(sub_x, sub_y, RCenter * 10.0);
+    // }
     roiImgPhase.displayROIS();
 
     roiImgPhaseXZ.clear();
     roiImgPhaseXZ.addPointROI(sub_x, sub_z);
-    if (gui.chkbx_showrc.isSelected()) {
-      roiImgPhaseXZ.addCircleROI(sub_x, sub_z, RCenter * 10.0);
-    }
+    // if (gui.chkbx_showrc.isSelected()) {
+    // roiImgPhaseXZ.addCircleROI(sub_x, sub_z, RCenter * 10.0);
+    // }
     roiImgPhaseXZ.displayROIS();
 
     // ---------- end to put ROIS on images
+  }
+
+  // =====================================================================================
+  // "Show RCenter"
+  // =====================================================================================
+  public static void showRCenter() {
+
+    boolean condition = (WindowManager.getImage(subMagTitle) != null && WindowManager.getImage(subMagXZTitle) != null
+        && WindowManager.getImage(subPhaseTitle) != null && WindowManager.getImage(subPhaseXZTitle) != null)
+        && !(gui.ltf_rcx.getValue().isEmpty() || gui.ltf_rcy.getValue().isEmpty() || gui.ltf_rcz.getValue().isEmpty()
+            && !(gui.ltf_rc.getValue().isEmpty()));
+
+    if (!condition) {
+      JOptionPane.showMessageDialog(gui.frame, "Error: subpixel images and/or center not found");
+      return;
+    }
+
+    double csx = Double.parseDouble(gui.ltf_rcx.getValue());
+    double csy = Double.parseDouble(gui.ltf_rcy.getValue());
+    double csz = Double.parseDouble(gui.ltf_rcz.getValue()) - 1.0;
+
+    // get rcenter from GUI
+    double RCenter = Double.parseDouble(gui.ltf_rc.getValue());
+
+    roiImgMag.clear();
+    roiImgMagXZ.clear();
+    roiImgPhase.clear();
+    roiImgPhaseXZ.clear();
+
+    // convert center to subpixel coordinates
+    int sub_x = (int) pixelToSubpixel(csx, 0);
+    int sub_y = (int) pixelToSubpixel(csy, 1);
+    int sub_z = (int) pixelToSubpixel(csz, 2);
+
+    // add point ROIS to each image
+    roiImgMag.addPointROI(sub_x, sub_y);
+    roiImgMagXZ.addPointROI(sub_x, sub_z);
+    roiImgPhase.addPointROI(sub_x, sub_y);
+    roiImgPhaseXZ.addPointROI(sub_x, sub_z);
+
+    // add circle ROIS to images
+    roiImgMag.addCircleROI(sub_x, sub_y, RCenter * 10.0);
+    roiImgMagXZ.addCircleROI(sub_x, sub_z, RCenter * 10.0);
+    roiImgPhase.addCircleROI(sub_x, sub_y, RCenter * 10.0);
+    roiImgPhaseXZ.addCircleROI(sub_x, sub_z, RCenter * 10.0);
+
+    // display ROIS
+    roiImgMag.displayROIS();
+    roiImgMagXZ.displayROIS();
+    roiImgPhase.displayROIS();
+    roiImgPhaseXZ.displayROIS();
   }
 
   // =====================================================================================

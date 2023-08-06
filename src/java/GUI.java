@@ -14,7 +14,6 @@ import net.miginfocom.swing.MigLayout;
 
 public class GUI {
     public JFrame frame;
-    public JCheckBox chkbx_showrc;
     public JLabel lbl_stepone, lbl_steptwo, lbl_stepthree, lbl_stepfour, lbl_stepfive, lbl_stepsix,
             lbl_stepseven, lbl_r3phaseAct, lbl_r2phaseAct, lbl_r1phaseAct, lbl_r3phaseCalc, lbl_r2phaseCalc,
             lbl_r1phaseCalc, lbl_r3AphaseUnit, lbl_r2AphaseUnit, lbl_r1AphaseUnit, lbl_r3phaseUnit,
@@ -23,7 +22,7 @@ public class GUI {
             lbl_calculated, lbl_actual, lbl_r1phase, lbl_r2phase,
             lbl_r3phase;
     public JButton btn_loadImages, btn_estCR, btn_genSubpix, btn_estSubC, btn_verifyRadii, btn_removeBkg,
-            btn_estBkgDens, btn_loadTE, btn_unk, btn_loadspinecho, btn_estRadSpinEcho, btn_redraw,
+            btn_estBkgDens, btn_showRCenter, btn_loadTE, btn_unk, btn_loadspinecho, btn_estRadSpinEcho, btn_redraw,
             btn_plotX, btn_plotY, btn_plotZ, btn_calcMagMom, btn_loadSimImg, btn_sumRi, btn_removeBkgS5;
     public LabeledTextField ltf_eqPhase, ltf_rc, ltf_r1, ltf_r2, ltf_r3, ltf_rcx, ltf_rcy, ltf_rcz, ltf_M, ltf_spx,
             ltf_spy, ltf_spz,
@@ -109,9 +108,12 @@ public class GUI {
         // btn_removeBkg = new JButton("Remove Bkg");
         // frame.getContentPane().add(btn_removeBkg, "cell 2 3");
 
-        chkbx_showrc = new JCheckBox("Show RCenter");
-        chkbx_showrc.setVerticalAlignment(SwingConstants.TOP);
-        frame.getContentPane().add(chkbx_showrc, "cell 4 3");
+        // chkbx_showrc = new JCheckBox("Show RCenter");
+        // chkbx_showrc.setVerticalAlignment(SwingConstants.TOP);
+        // frame.getContentPane().add(chkbx_showrc, "cell 4 3");
+
+        btn_showRCenter = new JButton("Show RCenter");
+        frame.getContentPane().add(btn_showRCenter, "cell 4 3");
 
         // lbl_gridSize = new JLabel("<html>Grid Size: 10<sup>3</sup></html>");
         // frame.getContentPane().add(lbl_gridSize, "flowx,cell 8 3");
@@ -797,6 +799,11 @@ public class GUI {
         btn_estCR.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 Calculate_Magnetic_Moment_3D.est_center_rad();
+            }
+        });
+        btn_showRCenter.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                Calculate_Magnetic_Moment_3D.showRCenter();
             }
         });
         btn_genSubpix.addActionListener(new ActionListener() {
