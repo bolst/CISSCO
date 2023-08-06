@@ -793,12 +793,12 @@ public class GUI {
         // ActionListeners
         btn_loadImages.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                Calculate_Magnetic_Moment_3D.load_mag_phase_images();
+                Calculate_Magnetic_Moment_3D.loadStep2Images();
             }
         });
         btn_estCR.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                Calculate_Magnetic_Moment_3D.est_center_rad();
+                Calculate_Magnetic_Moment_3D.estimateCenterAndRCenter();
             }
         });
         btn_showRCenter.addActionListener(new ActionListener() {
@@ -808,72 +808,72 @@ public class GUI {
         });
         btn_genSubpix.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                Calculate_Magnetic_Moment_3D.gen_subpix();
+                Calculate_Magnetic_Moment_3D.generateSubpixelImages();
             }
         });
         // btn_removeBkg.addActionListener(new ActionListener() {
         // public void actionPerformed(ActionEvent e) {
-        // Calculate_Magnetic_Moment_3D.remove_bkg();
+        // Calculate_Magnetic_Moment_3D.removeBkgPhase();
         // }
         // });
         btn_removeBkgS5.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                Calculate_Magnetic_Moment_3D.remove_bkg();
+                Calculate_Magnetic_Moment_3D.removeBkgPhase();
             }
         });
         btn_estSubC.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                Calculate_Magnetic_Moment_3D.est_subpix_ctr();
+                Calculate_Magnetic_Moment_3D.estimateSubpixelCenter();
             }
         });
         btn_redraw.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                Calculate_Magnetic_Moment_3D.redraw_center();
+                Calculate_Magnetic_Moment_3D.redrawCenter();
             }
         });
         btn_verifyRadii.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                Calculate_Magnetic_Moment_3D.verify_radii();
+                Calculate_Magnetic_Moment_3D.verifyRadii();
             }
         });
         btn_plotX.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                Calculate_Magnetic_Moment_3D.plot_x();
+                Calculate_Magnetic_Moment_3D.plotX();
             }
         });
         btn_plotY.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                Calculate_Magnetic_Moment_3D.plot_y();
+                Calculate_Magnetic_Moment_3D.plotY();
             }
         });
         btn_plotZ.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                Calculate_Magnetic_Moment_3D.plot_z();
+                Calculate_Magnetic_Moment_3D.plotZ();
             }
         });
         btn_estBkgDens.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                Calculate_Magnetic_Moment_3D.est_bkg_dens();
+                Calculate_Magnetic_Moment_3D.estimateBkgAndSpinDensity();
             }
         });
         btn_calcMagMom.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                Calculate_Magnetic_Moment_3D.calc_mag_moment();
+                Calculate_Magnetic_Moment_3D.calculateMagneticMoment();
             }
         });
         btn_loadSimImg.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                Calculate_Magnetic_Moment_3D.load_sim_images();
+                Calculate_Magnetic_Moment_3D.loadSimulatesImages();
             }
         });
         btn_sumRi.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                Calculate_Magnetic_Moment_3D.sum_ri();
+                Calculate_Magnetic_Moment_3D.sumRi();
             }
         });
         btn_loadTE.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                Calculate_Magnetic_Moment_3D.load_first_TEImgs();
+                Calculate_Magnetic_Moment_3D.loadTEFirstImages();
             }
         });
         btn_unk.addActionListener(new ActionListener() {
@@ -883,12 +883,12 @@ public class GUI {
         });
         btn_loadspinecho.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                Calculate_Magnetic_Moment_3D.load_spin_echoImgs();
+                Calculate_Magnetic_Moment_3D.loadSpinEchoImages();
             }
         });
         btn_estRadSpinEcho.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                Calculate_Magnetic_Moment_3D.est_radius_spin_echo();
+                Calculate_Magnetic_Moment_3D.estimateRadiusFromSpinEcho();
             }
         });
     }

@@ -549,7 +549,7 @@ public class ImageItem {
   // =====================================================================================
   // Function to remove current background phase from phase_nobkg array
   // =====================================================================================
-  public void remove_bkg() {
+  public void removeBkgPhase() {
     for (int iz = 0; iz <= roi_dz; iz++) {
       phase_img.setSlice(roi_zi + iz + 1);
       for (int iy = 0; iy <= roi_dy; iy++) {
