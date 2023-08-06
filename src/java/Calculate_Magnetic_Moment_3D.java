@@ -300,46 +300,30 @@ public class Calculate_Magnetic_Moment_3D implements PlugIn {
       int Nfinal = grid;
 
       // Interpolating XY subpixel phase matrix
-      for (int m = 0; m < croppedImageSize; m++) {
-        for (int k = 0; k < croppedImageSize; k++) {
-          for (int i = m * Nfinal; i < (m + 1) * Nfinal; i++) {
-            for (int j = k * Nfinal; j < (k + 1) * Nfinal; j++) {
-              subpixelPhaseMatrix[j][i] = croppedPhaseValues3D[k][m][(int) m_R0];
-            }
-          }
+      for (int m = 0; m < croppedImageSize * Nfinal; m++) {
+        for (int k = 0; k < croppedImageSize * Nfinal; k++) {
+          subpixelPhaseMatrix[k][m] = croppedPhaseValues3D[(int) (k / Nfinal)][(int) (m / Nfinal)][(int) m_R0];
         }
       }
 
       // Interpolating XY subpixel mag matrix
-      for (int m = 0; m < croppedImageSize; m++) {
-        for (int k = 0; k < croppedImageSize; k++) {
-          for (int i = m * Nfinal; i < (m + 1) * Nfinal; i++) {
-            for (int j = k * Nfinal; j < (k + 1) * Nfinal; j++) {
-              subpixelMagMatrix[j][i] = croppedMagnitudeValues3D[k][m][(int) m_R0];
-            }
-          }
-        }
-      }
-
-      // Interpolating XZ subpixel phase matrix
-      for (int m = 0; m < croppedImageSize; m++) {
-        for (int k = 0; k < croppedImageSize; k++) {
-          for (int i = m * Nfinal; i < (m + 1) * Nfinal; i++) {
-            for (int j = k * Nfinal; j < (k + 1) * Nfinal; j++) {
-              subpixelPhaseMatrixXZ[j][i] = croppedPhaseValues3D[k][(int) m_R0][m];
-            }
-          }
+      for (int m = 0; m < croppedImageSize * Nfinal; m++) {
+        for (int k = 0; k < croppedImageSize * Nfinal; k++) {
+          subpixelMagMatrix[k][m] = croppedMagnitudeValues3D[(int) (k / Nfinal)][(int) (m / Nfinal)][(int) m_R0];
         }
       }
 
       // Interpolating XZ subpixel mag matrix
-      for (int m = 0; m < croppedImageSize; m++) {
-        for (int k = 0; k < croppedImageSize; k++) {
-          for (int i = m * Nfinal; i < (m + 1) * Nfinal; i++) {
-            for (int j = k * Nfinal; j < (k + 1) * Nfinal; j++) {
-              subpixelMagMatrixXZ[j][i] = croppedMagnitudeValues3D[k][(int) m_R0][m];
-            }
-          }
+      for (int m = 0; m < croppedImageSize * Nfinal; m++) {
+        for (int k = 0; k < croppedImageSize * Nfinal; k++) {
+          subpixelMagMatrixXZ[k][m] = croppedMagnitudeValues3D[(int) (k / Nfinal)][(int) m_R0][(int) (m / Nfinal)];
+        }
+      }
+
+      // Interpolating XZ subpixel phase matrix
+      for (int m = 0; m < croppedImageSize * Nfinal; m++) {
+        for (int k = 0; k < croppedImageSize * Nfinal; k++) {
+          subpixelPhaseMatrixXZ[k][m] = croppedPhaseValues3D[(int) (k / Nfinal)][(int) m_R0][(int) (m / Nfinal)];
         }
       }
 
