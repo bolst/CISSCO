@@ -1960,6 +1960,88 @@ double SumCircleElementsImag3D(int radius, int Scan1, int Scan2, int Scan3)
     return sum;
 }
 // ---------- end to add up imaginary values inside a sphere
+// ---------- begin to add up real values inside a sphere
+double SumCircleElementsReal3D_NoBkg(int radius, int Scan1, int Scan2, int Scan3)
+{
+
+    int diameter = 2 * radius;
+    int newx, newy, newz, Xdiff, Ydiff, Zdiff;
+    double sum = 0, sumi = 0;
+    double distance;
+
+    int Nfinal = m_SubPixels;
+    int ratio = Nfinal * Nfinal * Nfinal;
+
+    for (int k = 0; k <= diameter; k++)
+    {
+        newz = Scan3 - radius + k;
+        Zdiff = newz - Scan3;
+        for (int i = 0; i <= diameter; i++)
+        {
+            newy = Scan2 - radius + i;
+            Ydiff = newy - Scan2;
+            for (int j = 0; j <= diameter; j++)
+            {
+                newx = Scan1 - radius + j;
+                Xdiff = newx - Scan1;
+
+                distance = sqrt((double)Xdiff * Xdiff + Ydiff * Ydiff + Zdiff * Zdiff);
+                if (distance <= radius)
+                {
+                    int x = (int)(newx / Nfinal);
+                    int y = (int)(newy / Nfinal);
+                    int z = (int)(newz / Nfinal);
+                    sumi = RealNumbers[x][y][z] / ratio;
+                    sum += sumi;
+                }
+            }
+        }
+    }
+    return sum;
+}
+// ---------- end to add up real values inside a sphere
+
+// ---------- begin to add up imaginary values inside a sphere ---------- Do NOT change without discussion
+
+double SumCircleElementsImag3D_NoBkg(int radius, int Scan1, int Scan2, int Scan3)
+{
+
+    int diameter = 2 * radius;
+    int newx, newy, newz, Xdiff, Ydiff, Zdiff;
+    double sum = 0, sumi = 0;
+    double distance;
+
+    int Nfinal = m_SubPixels;
+    int ratio = Nfinal * Nfinal * Nfinal;
+
+    for (int k = 0; k <= diameter; k++)
+    {
+        newz = Scan3 - radius + k;
+        Zdiff = newz - Scan3;
+        for (int i = 0; i <= diameter; i++)
+        {
+            newy = Scan2 - radius + i;
+            Ydiff = newy - Scan2;
+            for (int j = 0; j <= diameter; j++)
+            {
+                newx = Scan1 - radius + j;
+                Xdiff = newx - Scan1;
+
+                distance = sqrt((double)Xdiff * Xdiff + Ydiff * Ydiff + Zdiff * Zdiff);
+                if (distance <= radius)
+                {
+                    int x = (int)(newx / Nfinal);
+                    int y = (int)(newy / Nfinal);
+                    int z = (int)(newz / Nfinal);
+                    sumi = ImagNumbers[x][y][z] / ratio;
+                    sum += sumi;
+                }
+            }
+        }
+    }
+    return sum;
+}
+// ---------- end to add up imaginary values inside a sphere
 
 void polint(double xa[5], double ya[5], const double x, double &y, double &dy)
 {
@@ -3326,11 +3408,15 @@ JNIEXPORT void JNICALL Java_JNIMethods_estBkgAndSpinDensity(JNIEnv *env, jobject
     int subpixRadius2 = round(m_R2 * m_SubPixels);
     int subpixRadius3 = round(m_R3 * m_SubPixels);
 
-    double RES2 = SumCircleElementsReal3D(subpixRadius2, (int)ZoomedX, (int)ZoomedY, (int)lastValueSlice);
-    double RES3 = SumCircleElementsReal3D(subpixRadius3, (int)ZoomedX, (int)ZoomedY, (int)lastValueSlice);
+    // double RES2 = SumCircleElementsReal3D(subpixRadius2, (int)ZoomedX, (int)ZoomedY, (int)lastValueSlice);
+    // double RES3 = SumCircleElementsReal3D(subpixRadius3, (int)ZoomedX, (int)ZoomedY, (int)lastValueSlice);
+    // double IMS2 = SumCircleElementsImag3D(subpixRadius2, (int)ZoomedX, (int)ZoomedY, (int)lastValueSlice);
+    // double IMS3 = SumCircleElementsImag3D(subpixRadius3, (int)ZoomedX, (int)ZoomedY, (int)lastValueSlice);
 
-    double IMS2 = SumCircleElementsImag3D(subpixRadius2, (int)ZoomedX, (int)ZoomedY, (int)lastValueSlice);
-    double IMS3 = SumCircleElementsImag3D(subpixRadius3, (int)ZoomedX, (int)ZoomedY, (int)lastValueSlice);
+    double RES2 = SumCircleElementsReal3D_NoBkg(subpixRadius2, (int)ZoomedX, (int)ZoomedY, (int)lastValueSlice);
+    double RES3 = SumCircleElementsReal3D_NoBkg(subpixRadius3, (int)ZoomedX, (int)ZoomedY, (int)lastValueSlice);
+    double IMS2 = SumCircleElementsImag3D_NoBkg(subpixRadius2, (int)ZoomedX, (int)ZoomedY, (int)lastValueSlice);
+    double IMS3 = SumCircleElementsImag3D_NoBkg(subpixRadius3, (int)ZoomedX, (int)ZoomedY, (int)lastValueSlice);
 
     pair<double, double> retval = CalculateSpinDensity(RES2, RES3, IMS2, IMS3, m_R2, m_R3, m_MagMoment);
     rho = retval.first;
