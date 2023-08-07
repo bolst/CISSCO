@@ -1399,7 +1399,6 @@ void OnBnClickedEstimatecenter()
     */
     Simplex.resize(27, vector<double>(3, 0));
 
-    // fst << "resized\n";
     Simplex[1][0] = Simplex[0][0];
     Simplex[1][1] = Simplex[0][1] + neighborYMAX;
     Simplex[1][2] = Simplex[0][2] + neighborZMAX;
@@ -3014,12 +3013,6 @@ pair<double, double> CalculateSpinDensity(double RES2, double RES3, double IMS2,
     double reBkgPhase = ref23 * reS23 + imf23 * imS23;
     double imBkgPhase = ref23 * imS23 - reS23 * imf23;
 
-    // ofstream fout("BkgPhase.txt");
-    // fout << reBkgPhase << " " << imBkgPhase << endl;
-    // fout << ref23 << " " << imf23 << endl;
-    // fout << reS23 << " " << imS23 << endl;
-    // fout.close();
-
     double localBkgPhase = atan2(imBkgPhase, reBkgPhase);
 
     return make_pair(localSpinDensity, localBkgPhase);
@@ -3371,9 +3364,6 @@ JNIEXPORT jstring JNICALL Java_JNIMethods_calculateMagneticMoment(JNIEnv *env, j
 JNIEXPORT void JNICALL Java_JNIMethods_removeBackgroundPhase(JNIEnv *env, jobject thisObj, jdouble bPhase)
 {
     removeBGPhaseAndInterpolateVoxels(bPhase);
-    ofstream myfile("imag.txt");
-    // myfile << SubpixelImagMatrix3D << '\n';
-    myfile.close();
 
     return;
 }
