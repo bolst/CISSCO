@@ -459,6 +459,7 @@ public class Calculate_Magnetic_Moment_3D implements PlugIn {
     gui.ltf_spx.setValue(roundAndConvertToString(centerX_pixelCoordinates, 2));
     gui.ltf_spy.setValue(roundAndConvertToString(centerY_pixelCoordinates, 2));
     gui.ltf_spz.setValue(roundAndConvertToString(centerZ_pixelCoordinates, 2) + 1.0);
+    gui.ltf_spz.setValue(String.valueOf((Math.round(centerZ_pixelCoordinates * 100.0) / 100.0) + 1.0));
 
     // ---------- begin to put ROIs on images
 
