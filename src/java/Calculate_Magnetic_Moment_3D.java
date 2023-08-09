@@ -105,6 +105,12 @@ public class Calculate_Magnetic_Moment_3D implements PlugIn {
   // =====================================================================================
   public static void estimateCenterAndRCenter() {
 
+    if (WindowManager.getImage(subMagTitle) != null || WindowManager.getImage(subMagXZTitle) != null
+        || WindowManager.getImage(subPhaseTitle) != null || WindowManager.getImage(subPhaseXZTitle) != null) {
+      JOptionPane.showMessageDialog(gui.frame, "Error: Subpixel images already generated");
+      return;
+    }
+
     try {
 
       // if a center was already calculated and a new ROI is drawn, clear previously
