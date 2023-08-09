@@ -1543,7 +1543,6 @@ void OnBnClickedEstimatecenter()
         }
     */
     Amoeba(Simplex, SimplexY, ftol, nfunk, RCenterSubpixels, Grid, 1, CubeMask);
-    // fst << "amoeba\n";
 
     // if (ilo == 0)
     //     break;
@@ -1848,7 +1847,6 @@ void OnBnClickedEstimatecenter()
     m_CenterX = subpixelToPixel((int)Simplex[0][0] + 0.5, 0);
     m_CenterY = subpixelToPixel((int)Simplex[0][1] + 0.5, 1);
     m_CenterZ = subpixelToPixel((int)Simplex[0][2] + 0.5, 2);
-    // fst << m_CenterX << " " << m_CenterY << " " << m_CenterZ << '\n';
 
     return;
 }
@@ -1975,28 +1973,28 @@ double SumCircleElementsReal3D_NoBkg(int radius, int Scan1, int Scan2, int Scan3
     {
         newz = Scan3 - radius + k;
         Zdiff = newz - Scan3;
+        int z = (int)(newz / Nfinal);
         for (int i = 0; i <= diameter; i++)
         {
             newy = Scan2 - radius + i;
             Ydiff = newy - Scan2;
+            int y = (int)(newy / Nfinal);
             for (int j = 0; j <= diameter; j++)
             {
                 newx = Scan1 - radius + j;
                 Xdiff = newx - Scan1;
+                int x = (int)(newx / Nfinal);
 
                 distance = sqrt((double)Xdiff * Xdiff + Ydiff * Ydiff + Zdiff * Zdiff);
                 if (distance <= radius)
                 {
-                    int x = (int)(newx / Nfinal);
-                    int y = (int)(newy / Nfinal);
-                    int z = (int)(newz / Nfinal);
-                    sumi = RealNumbers[x][y][z] / ratio;
+                    sumi = RealNumbers[x][y][z];
                     sum += sumi;
                 }
             }
         }
     }
-    return sum;
+    return sum / ratio;
 }
 // ---------- end to add up real values inside a sphere
 
@@ -2017,28 +2015,28 @@ double SumCircleElementsImag3D_NoBkg(int radius, int Scan1, int Scan2, int Scan3
     {
         newz = Scan3 - radius + k;
         Zdiff = newz - Scan3;
+        int z = (int)(newz / Nfinal);
         for (int i = 0; i <= diameter; i++)
         {
             newy = Scan2 - radius + i;
             Ydiff = newy - Scan2;
+            int y = (int)(newy / Nfinal);
             for (int j = 0; j <= diameter; j++)
             {
                 newx = Scan1 - radius + j;
                 Xdiff = newx - Scan1;
+                int x = (int)(newx / Nfinal);
 
                 distance = sqrt((double)Xdiff * Xdiff + Ydiff * Ydiff + Zdiff * Zdiff);
                 if (distance <= radius)
                 {
-                    int x = (int)(newx / Nfinal);
-                    int y = (int)(newy / Nfinal);
-                    int z = (int)(newz / Nfinal);
-                    sumi = ImagNumbers[x][y][z] / ratio;
+                    sumi = ImagNumbers[x][y][z];
                     sum += sumi;
                 }
             }
         }
     }
-    return sum;
+    return sum / ratio;
 }
 // ---------- end to add up imaginary values inside a sphere
 
@@ -3171,33 +3169,6 @@ void OnBnClickedCalcmagmoment()
         m_R1 = m_ROuterPhase;
         m_R2 = m_RMiddlePhase;
         m_R3 = m_RInnerPhase;
-        /*
-                CalculateSpinDensity(RES2, RES3, IMS2, IMS3, R2, R3, &rho, &BkgPhase);
-                m_rho = rho;
-                // m_p0.Format(TEXT("%3.2f"), m_rho);
-
-                BackPhase = BkgPhase;
-                m_BackPhase = BackPhase;
-                // m_BackPhase.Format(TEXT("%3.2f"), BackPhase);
-
-                if ((m_RChi != 0) && (m_B0 != 0) && (m_TE_first != 0))
-                {
-                    ReR = SumCircleElementsReal3D(m_RChi, (int)ZoomedX, (int)ZoomedY, (int)lastValueSlice);
-
-                    //m_g = Calculate_g(p, m_rho, m_RChi, ReR);
-                    //m_a = pow(m_p / m_g, 1.0 / 3.0);
-                    //m_Chi = m_g / (0.08167 * m_B0 * m_TE);
-
-                    m_g = Calculate_g(p, m_rho, m_RChi, ReR); // m_p_first is p at first echo time
-                    m_a = pow(p / m_g, 1.0 / 3.0);
-                    m_Chi = m_g / (0.08918167 * m_B0 * m_TE_first);
-                }
-                else
-                {
-                    m_Chi = 0;
-                    m_a = 0;
-                }
-                */
 
         if (m_SNR == 0)
         {
@@ -3398,11 +3369,6 @@ JNIEXPORT void JNICALL Java_JNIMethods_estBkgAndSpinDensity(JNIEnv *env, jobject
     int subpixRadius2 = round(m_R2 * m_SubPixels);
     int subpixRadius3 = round(m_R3 * m_SubPixels);
 
-    // double RES2 = SumCircleElementsReal3D(subpixRadius2, (int)ZoomedX, (int)ZoomedY, (int)lastValueSlice);
-    // double RES3 = SumCircleElementsReal3D(subpixRadius3, (int)ZoomedX, (int)ZoomedY, (int)lastValueSlice);
-    // double IMS2 = SumCircleElementsImag3D(subpixRadius2, (int)ZoomedX, (int)ZoomedY, (int)lastValueSlice);
-    // double IMS3 = SumCircleElementsImag3D(subpixRadius3, (int)ZoomedX, (int)ZoomedY, (int)lastValueSlice);
-
     double RES2 = SumCircleElementsReal3D_NoBkg(subpixRadius2, (int)ZoomedX, (int)ZoomedY, (int)lastValueSlice);
     double RES3 = SumCircleElementsReal3D_NoBkg(subpixRadius3, (int)ZoomedX, (int)ZoomedY, (int)lastValueSlice);
     double IMS2 = SumCircleElementsImag3D_NoBkg(subpixRadius2, (int)ZoomedX, (int)ZoomedY, (int)lastValueSlice);
@@ -3460,7 +3426,7 @@ JNIEXPORT jdouble JNICALL Java_JNIMethods_calculateUncertainty(JNIEnv *env, jobj
     double IMS2 = SumCircleElementsImag3D(subpixRadius2, (int)ZoomedX, (int)ZoomedY, (int)lastValueSlice);
     double IMS3 = SumCircleElementsImag3D(subpixRadius3, (int)ZoomedX, (int)ZoomedY, (int)lastValueSlice);
 
-    m_Uncertainty = FindUncertainty3D(RES1, RES2, RES3, IMS1, IMS2, IMS3);
+    m_Uncertainty = FindUncertainty3D(RES1, RES2, RES3, IMS1, IMS2, IMS3) * 100;
     return m_Uncertainty;
 }
 
