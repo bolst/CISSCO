@@ -1067,7 +1067,7 @@ public class Calculate_Magnetic_Moment_3D implements PlugIn {
    * used for finding the uncertainty of the magnetic moment and for calculating
    * eij
    */
-  public static void loadSimulatesImages() {
+  public static void loadSimulatedImages() {
 
     double snr = Double.parseDouble(gui.ltf_snr.getValue());
     double e12 = Double.parseDouble(gui.ltf_eps12.getValue());

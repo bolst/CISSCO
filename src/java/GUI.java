@@ -863,7 +863,7 @@ public class GUI {
         });
         btn_loadSimImg.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                Calculate_Magnetic_Moment_3D.loadSimulatesImages();
+                Calculate_Magnetic_Moment_3D.loadSimulatedImages();
             }
         });
         btn_sumRi.addActionListener(new ActionListener() {

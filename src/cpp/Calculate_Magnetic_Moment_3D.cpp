@@ -944,15 +944,6 @@ void Amoeba(vector<vector<double>> &p, vector<double> &y, const double ftol, int
 // This function is used to estimate the subpixel center. It uses various tools from numerical recipes that can be found online
 void OnBnClickedEstimatecenter()
 {
-    // UpdateData(true);
-    //  Define pDoc. Get title to check if its subpixel or not.
-    // CMDIFrameWnd *pFrame = (CMDIFrameWnd *)AfxGetApp()->m_pMainWnd;
-    // CMDIChildWnd *pChild = (CMDIChildWnd *)pFrame->GetActiveFrame();
-    // CHipoView *pView = (CHipoView *)pChild->GetActiveView();
-    // CHipoDoc *pDoc = (CHipoDoc *)pView->GetDocument();
-    // CString TITLE = pDoc->GetTitle();
-
-    // pDoc->OnButtonRestore();
 
     errorMessage = "";
 
@@ -992,70 +983,6 @@ void OnBnClickedEstimatecenter()
     subpixelreal = 2 * m_R0 * m_SubPixels;
     Zsubpixelreal = 2 * Zhalfreal * m_SubPixels;
 
-    // First time drawing rectangle on original image
-    /*/Draw Rectangle on subpixel image NOT ANYMORE
-        ROIcheck=0;
-        while (ROIcheck==0){
-            GetRectangle(Xinitial, Yinitial, Grid); //center point now referenced to subpixel displayed image
-        }
-    */
-    // center of subpixel grid comes from Find_RCenter
-    // Shift 5 subpixels = 0.5 pixel below so the iso-center is at the center of a pixel
-
-    // Commented out because why is this even here?
-    /*
-        if ((REALXfirst - Xfirst) == 0)
-        {
-            Xinitial = subpixelreal / 2 + 5;
-        }
-        else
-        {
-            Xinitial = subpixelreal / 2; // Unclear about this condition;
-        }
-
-        if ((REALYfirst - Yfirst) == 0)
-        {
-            Yinitial = subpixelreal / 2 + 5;
-        }
-        else
-        {
-            Yinitial = subpixelreal / 2;
-        }
-    */
-
-    // Xinitial = (int)(((m_CenterX - Xfirst + halfdisplay + 0.46) / 0.1));
-    // Yinitial = (int)(((m_CenterY - Yfirst + halfdisplay + 0.46) / 0.1));
-
-    // Grid = 30; // in subpixels
-    //         UpdateData(true); // in case Rcenter is changes after first rectangle
-    // double RcenterMIN;
-    //        CString messagea = TEXT("");
-
-    // Removed because why is this here?
-    /*
-        if ((REALSlice - Zfirst) == 0)
-        {
-            Zinitial = Zsubpixelreal / 2 + 5;
-        }
-        else
-        {
-            Zinitial = Zsubpixelreal / 2;
-        }
-
-    Zinitial = (int)(((m_CenterZ - m_CenterZ2 + halfdisplay + 0.46) / 0.1));
-*/
-    /*
-        GridZ = 30; // maybe just try without this first.
-        RcenterMIN = ceil(Grid * sqrt(3.0)) / 10;
-
-        if (Grid > (Nfinal * RCenter / sqrt(3.0)))
-        {
-            RCenter = RcenterMIN; // make sure RCenter contains predefined GRID if not already.
-            // messagea.Format(TEXT("Search grid is too large. Changing RCenter to %3.2f to contain this grid."), RcenterMIN);
-            // AfxMessageBox(messagea, MB_OK | MB_ICONINFORMATION);
-            //  return ;
-        }
-    */
     // if ((Xinitial + Grid / 2 + ceil(Nfinal * RCenter) > subCONSTmat) || (Yinitial + Grid / 2 + ceil(Nfinal * RCenter) > subCONSTmat))
     if ((Xmax + ceil(Nfinal * RCenter) > subCONSTmat) || (Ymax + ceil(Nfinal * RCenter) > subCONSTmat))
     {
@@ -1088,12 +1015,6 @@ void OnBnClickedEstimatecenter()
         Zmin = floor(Zmin / 10.0) * 10.0;
         Zmax = ceil(Zmax / 10.0) * 10.0 - 1;
     }
-
-    // Find center
-    //  ---------- begin to set up a unit sphere inside a tight cube---------- Do NOT change without discussion
-    //  The center of the sphere is located at (radius, radius, radius). The cube has a size from 0 to 2*radius.
-    //  This function should be executed when RCenter is given or changed.
-    //  This 3D matrix, CubeMask, it needs to be stored in the memory and be used by the amoeba function.
 
     RCenterSubpixels = round(RCenter * Nfinal);
     int Dsubpixels = 2 * RCenterSubpixels;
@@ -1130,36 +1051,10 @@ void OnBnClickedEstimatecenter()
     const double ftol = 0.00001;
     int nfunk;
 
-    // From Nic: Had to change this - not sure how this vector was initialized like this in the first place?
-    // vector<vector<double>> Simplex(4, 3);
-
-    // vector<vector<double>> Simplex(4, vector<double>(3, 0));
-    // vector<double> SimplexY(4);
     vector<vector<double>> Simplex(11, vector<double>(3, 0));
     vector<double> SimplexY(11);
 
     RCenterSubpixels = round(RCenter * Nfinal);
-
-    // Order does not matter - check NUMERICAL RECIPES for clarification
-    /*
-        Simplex[0][0] = Xinitial;
-        Simplex[0][1] = Yinitial;
-        Simplex[0][2] = Zinitial;
-        Simplex[1][0] = Xinitial + 4;
-        Simplex[1][1] = Yinitial;
-        Simplex[1][2] = Zinitial;
-        Simplex[2][0] = Xinitial;
-        Simplex[2][1] = Yinitial + 4;
-        Simplex[2][2] = Zinitial;
-        Simplex[3][0] = Xinitial;
-        Simplex[3][1] = Yinitial;
-        Simplex[3][2] = Zinitial + 4;
-
-        SimplexY[0] = SumSphericalMask(RCenterSubpixels, (int)(Simplex[0][0]), (int)(Simplex[0][1]), (int)(Simplex[0][2]), CubeMask);
-        SimplexY[1] = SumSphericalMask(RCenterSubpixels, (int)(Simplex[1][0]), (int)(Simplex[1][1]), (int)(Simplex[1][2]), CubeMask);
-        SimplexY[2] = SumSphericalMask(RCenterSubpixels, (int)(Simplex[2][0]), (int)(Simplex[2][1]), (int)(Simplex[2][2]), CubeMask);
-        SimplexY[3] = SumSphericalMask(RCenterSubpixels, (int)(Simplex[3][0]), (int)(Simplex[3][1]), (int)(Simplex[3][2]), CubeMask);
-    */
 
     Simplex[0][0] = Xmin;
     Simplex[0][1] = Ymin;
@@ -1205,17 +1100,10 @@ void OnBnClickedEstimatecenter()
     Simplex[10][1] = pixelToSubpixel((double)(centerS_y), 1);
     Simplex[10][2] = pixelToSubpixel((double)(centerS_z), 2);
 
-    SimplexY[0] = SumSphericalMask(RCenterSubpixels, (int)(Simplex[0][0]), (int)(Simplex[0][1]), (int)(Simplex[0][2]), CubeMask);
-    SimplexY[1] = SumSphericalMask(RCenterSubpixels, (int)(Simplex[1][0]), (int)(Simplex[1][1]), (int)(Simplex[1][2]), CubeMask);
-    SimplexY[2] = SumSphericalMask(RCenterSubpixels, (int)(Simplex[2][0]), (int)(Simplex[2][1]), (int)(Simplex[2][2]), CubeMask);
-    SimplexY[3] = SumSphericalMask(RCenterSubpixels, (int)(Simplex[3][0]), (int)(Simplex[3][1]), (int)(Simplex[3][2]), CubeMask);
-    SimplexY[4] = SumSphericalMask(RCenterSubpixels, (int)(Simplex[4][0]), (int)(Simplex[4][1]), (int)(Simplex[4][2]), CubeMask);
-    SimplexY[5] = SumSphericalMask(RCenterSubpixels, (int)(Simplex[5][0]), (int)(Simplex[5][1]), (int)(Simplex[5][2]), CubeMask);
-    SimplexY[6] = SumSphericalMask(RCenterSubpixels, (int)(Simplex[6][0]), (int)(Simplex[6][1]), (int)(Simplex[6][2]), CubeMask);
-    SimplexY[7] = SumSphericalMask(RCenterSubpixels, (int)(Simplex[7][0]), (int)(Simplex[7][1]), (int)(Simplex[7][2]), CubeMask);
-    SimplexY[8] = SumSphericalMask(RCenterSubpixels, (int)(Simplex[8][0]), (int)(Simplex[8][1]), (int)(Simplex[8][2]), CubeMask);
-    SimplexY[9] = SumSphericalMask(RCenterSubpixels, (int)(Simplex[9][0]), (int)(Simplex[9][1]), (int)(Simplex[9][2]), CubeMask);
-    SimplexY[10] = SumSphericalMask(RCenterSubpixels, (int)(Simplex[10][0]), (int)(Simplex[10][1]), (int)(Simplex[10][2]), CubeMask);
+    for (int i = 0; i <= 10; i++)
+    {
+        SimplexY[i] = SumSphericalMask(RCenterSubpixels, (int)(Simplex[i][0]), (int)(Simplex[i][1]), (int)(Simplex[i][2]), CubeMask);
+    }
 
     //  ---------- end to set up corner points for the first amoeba search
 
@@ -1229,112 +1117,12 @@ void OnBnClickedEstimatecenter()
     m_CenterY = subpixelToPixel(ZoomedY, 1);
     m_CenterZ = subpixelToPixel(lastValueSlice, 2);
 
-    /*
-    // int dx = abs(ZoomedX - Xinitial);
-    // int dy = abs(ZoomedY - Yinitial);
-    // int dz = abs(lastValueSlice - Zinitial);
-    subCenter = (2 * m_R0 + 1) * (10.0 / 2.0);
-    int dx = abs(ZoomedX - subCenter);
-    int dy = abs(ZoomedY - subCenter);
-    int dz = abs(lastValueSlice - subCenter);
-
-    if ((dx >= dy) && (dx >= dz) && (dx > 10))
-        Grid = dx;
-    else if ((dy >= dx) && (dy >= dz) && (dy > 10))
-        Grid = dy;
-    else if ((dz >= dy) && (dz >= dx) && (dz > 10))
-        Grid = dz;
-    else
-        Grid = 10;
-
-    RCenter = m_RCenter;
-    if (Grid > (Nfinal * RCenter / sqrt(3.0)))
-    {
-        m_RCenter = ceil(Grid * sqrt(3.0)) / 10;
-    }
-        RCenterSubpixels = round(RCenter * m_SubPixels);
-
-        // ---------- begin to set up corner points for the second amoeba search
-
-        Simplex[1][0] = Simplex[0][0] + 4;
-        Simplex[1][1] = Simplex[0][1];
-        Simplex[1][2] = Simplex[0][2];
-        Simplex[2][0] = Simplex[0][0];
-        Simplex[2][1] = Simplex[0][1] + 4;
-        Simplex[2][2] = Simplex[0][2];
-        Simplex[3][0] = Simplex[0][0];
-        Simplex[3][1] = Simplex[0][1];
-        Simplex[3][2] = Simplex[0][2] + 4;
-
-        SimplexY[0] = SumSphericalMask(RCenterSubpixels, (int)(Simplex[0][0]), (int)(Simplex[0][1]), (int)(Simplex[0][2]), CubeMask);
-        SimplexY[1] = SumSphericalMask(RCenterSubpixels, (int)(Simplex[1][0]), (int)(Simplex[1][1]), (int)(Simplex[1][2]), CubeMask);
-        SimplexY[2] = SumSphericalMask(RCenterSubpixels, (int)(Simplex[2][0]), (int)(Simplex[2][1]), (int)(Simplex[2][2]), CubeMask);
-        SimplexY[3] = SumSphericalMask(RCenterSubpixels, (int)(Simplex[3][0]), (int)(Simplex[3][1]), (int)(Simplex[3][2]), CubeMask);
-
-        // ---------- end to set up corner points for the second amoeba search
-
-        Grid = 0;
-        Amoeba(Simplex, SimplexY, ftol, nfunk, RCenterSubpixels, Grid, 1, CubeMask);
-
-        ZoomedY = (int)Simplex[0][1];
-        ZoomedX = (int)Simplex[0][0];
-        lastValueSlice = (int)Simplex[0][2];
-
-        Xcenter = m_CenterX2 - halfdisplay - 0.45 + 0.1 * ZoomedX; // coordinate on original image
-        Ycenter = m_CenterY2 - halfdisplay - 0.45 + 0.1 * ZoomedY;
-        Zcenter = m_CenterZ2 - Zhalfreal - 0.45 + 0.1 * lastValueSlice;
-    */
-    // m_CenterX = Xcenter;
-    // m_CenterY = Ycenter;
-    // m_CenterZ = Zcenter;
-
-    // UpdateData(false);
-
-    // ---------- begin to check neighboring pixels with original Rcenter
-
     RCenterSubpixels = round(RCenter * m_SubPixels);
 
     SimplexY.resize(27);
     int i = 1;
     int ilo, max_it;
     max_it = 1;
-    /*
-        for (;;)
-        {
-
-            if (max_it == 10)
-            {
-                //::MessageBox(NULL, "Too many minimums found. Try reducing RCenter.", "Message", MB_OK);
-                errorMessage = "Too many minimums found. Try reducing RCenter.";
-                break;
-            }
-    */
-    /*
-     if (Simplex[0][0] > Xmax)
-     {
-         Simplex[0][0] = Xmax;
-     }
-     if (Simplex[0][0] < Xmin)
-     {
-         Simplex[0][0] = Xmin;
-     }
-     if (Simplex[0][1] > Ymax)
-     {
-         Simplex[0][1] = Ymax;
-     }
-     if (Simplex[0][1] < Ymin)
-     {
-         Simplex[0][1] = Ymin;
-     }
-     if (Simplex[0][2] > Zmax)
-     {
-         Simplex[0][2] = Zmax;
-     }
-     if (Simplex[0][2] < Zmin)
-     {
-         Simplex[0][2] = Zmin;
-     }
-     */
 
     // making sure simplex coordinates are in small box
     int neighborXMAX = 3;
@@ -1368,35 +1156,7 @@ void OnBnClickedEstimatecenter()
     {
         neighborZMIN = Simplex[0][2] - Zmin;
     }
-    /*
-     SimplexY[0] = SumSphericalMask(RCenterSubpixels, (int)(Simplex[0][0]), (int)(Simplex[0][1]), (int)(Simplex[0][2]), CubeMask);
-            SimplexY[1] = SumSphericalMask(RCenterSubpixels, (int)(Simplex[0][0]), (int)(Simplex[0][1]) + 3, (int)(Simplex[0][2]) + 3, CubeMask);
-            SimplexY[2] = SumSphericalMask(RCenterSubpixels, (int)(Simplex[0][0]), (int)(Simplex[0][1]) + 3, (int)(Simplex[0][2]), CubeMask);
-            SimplexY[3] = SumSphericalMask(RCenterSubpixels, (int)(Simplex[0][0]), (int)(Simplex[0][1]) + 3, (int)(Simplex[0][2]) - 3, CubeMask);
-            SimplexY[4] = SumSphericalMask(RCenterSubpixels, (int)(Simplex[0][0]), (int)(Simplex[0][1]) - 3, (int)(Simplex[0][2]) + 3, CubeMask);
-            SimplexY[5] = SumSphericalMask(RCenterSubpixels, (int)(Simplex[0][0]), (int)(Simplex[0][1]) - 3, (int)(Simplex[0][2]), CubeMask);
-            SimplexY[6] = SumSphericalMask(RCenterSubpixels, (int)(Simplex[0][0]), (int)(Simplex[0][1]) - 3, (int)(Simplex[0][2]) - 3, CubeMask);
-            SimplexY[7] = SumSphericalMask(RCenterSubpixels, (int)(Simplex[0][0]), (int)(Simplex[0][1]), (int)(Simplex[0][2]) + 3, CubeMask);
-            SimplexY[8] = SumSphericalMask(RCenterSubpixels, (int)(Simplex[0][0]), (int)(Simplex[0][1]), (int)(Simplex[0][2]) - 3, CubeMask);
-            SimplexY[9] = SumSphericalMask(RCenterSubpixels, (int)(Simplex[0][0]) + 3, (int)(Simplex[0][1]) + 3, (int)(Simplex[0][2]) + 3, CubeMask);
-            SimplexY[10] = SumSphericalMask(RCenterSubpixels, (int)(Simplex[0][0]) + 3, (int)(Simplex[0][1]) + 3, (int)(Simplex[0][2]), CubeMask);
-            SimplexY[11] = SumSphericalMask(RCenterSubpixels, (int)(Simplex[0][0]) + 3, (int)(Simplex[0][1]) + 3, (int)(Simplex[0][2]) - 3, CubeMask);
-            SimplexY[12] = SumSphericalMask(RCenterSubpixels, (int)(Simplex[0][0]) + 3, (int)(Simplex[0][1]), (int)(Simplex[0][2]) + 3, CubeMask);
-            SimplexY[13] = SumSphericalMask(RCenterSubpixels, (int)(Simplex[0][0]) + 3, (int)(Simplex[0][1]), (int)(Simplex[0][2]), CubeMask);
-            SimplexY[14] = SumSphericalMask(RCenterSubpixels, (int)(Simplex[0][0]) + 3, (int)(Simplex[0][1]), (int)(Simplex[0][2]) - 3, CubeMask);
-            SimplexY[15] = SumSphericalMask(RCenterSubpixels, (int)(Simplex[0][0]) + 3, (int)(Simplex[0][1]) - 3, (int)(Simplex[0][2]) + 3, CubeMask);
-            SimplexY[16] = SumSphericalMask(RCenterSubpixels, (int)(Simplex[0][0]) + 3, (int)(Simplex[0][1]) - 3, (int)(Simplex[0][2]), CubeMask);
-            SimplexY[17] = SumSphericalMask(RCenterSubpixels, (int)(Simplex[0][0]) + 3, (int)(Simplex[0][1]) - 3, (int)(Simplex[0][2]) - 3, CubeMask);
-            SimplexY[18] = SumSphericalMask(RCenterSubpixels, (int)(Simplex[0][0]) - 3, (int)(Simplex[0][1]) + 3, (int)(Simplex[0][2]) + 3, CubeMask);
-            SimplexY[19] = SumSphericalMask(RCenterSubpixels, (int)(Simplex[0][0]) - 3, (int)(Simplex[0][1]) + 3, (int)(Simplex[0][2]), CubeMask);
-            SimplexY[20] = SumSphericalMask(RCenterSubpixels, (int)(Simplex[0][0]) - 3, (int)(Simplex[0][1]) + 3, (int)(Simplex[0][2]) - 3, CubeMask);
-            SimplexY[21] = SumSphericalMask(RCenterSubpixels, (int)(Simplex[0][0]) - 3, (int)(Simplex[0][1]), (int)(Simplex[0][2]) + 3, CubeMask);
-            SimplexY[22] = SumSphericalMask(RCenterSubpixels, (int)(Simplex[0][0]) - 3, (int)(Simplex[0][1]), (int)(Simplex[0][2]), CubeMask);
-            SimplexY[23] = SumSphericalMask(RCenterSubpixels, (int)(Simplex[0][0]) - 3, (int)(Simplex[0][1]), (int)(Simplex[0][2]) - 3, CubeMask);
-            SimplexY[24] = SumSphericalMask(RCenterSubpixels, (int)(Simplex[0][0]) - 3, (int)(Simplex[0][1]) - 3, (int)(Simplex[0][2]) + 3, CubeMask);
-            SimplexY[25] = SumSphericalMask(RCenterSubpixels, (int)(Simplex[0][0]) - 3, (int)(Simplex[0][1]) - 3, (int)(Simplex[0][2]), CubeMask);
-            SimplexY[26] = SumSphericalMask(RCenterSubpixels, (int)(Simplex[0][0]) - 3, (int)(Simplex[0][1]) - 3, (int)(Simplex[0][2]) - 3, CubeMask);
-    */
+
     Simplex.resize(27, vector<double>(3, 0));
 
     Simplex[1][0] = Simplex[0][0];
@@ -1503,346 +1263,12 @@ void OnBnClickedEstimatecenter()
     Simplex[26][1] = Simplex[0][1] - neighborYMIN;
     Simplex[26][2] = Simplex[0][2] - neighborZMIN;
 
-    SimplexY[0] = SumSphericalMask(RCenterSubpixels, (int)(Simplex[0][0]), (int)(Simplex[0][1]), (int)(Simplex[0][2]), CubeMask);
-    SimplexY[1] = SumSphericalMask(RCenterSubpixels, (int)(Simplex[1][0]), (int)(Simplex[1][1]), (int)(Simplex[1][2]), CubeMask);
-    SimplexY[2] = SumSphericalMask(RCenterSubpixels, (int)(Simplex[2][0]), (int)(Simplex[2][1]), (int)(Simplex[2][2]), CubeMask);
-    SimplexY[3] = SumSphericalMask(RCenterSubpixels, (int)(Simplex[3][0]), (int)(Simplex[3][1]), (int)(Simplex[3][2]), CubeMask);
-    SimplexY[4] = SumSphericalMask(RCenterSubpixels, (int)(Simplex[4][0]), (int)(Simplex[4][1]), (int)(Simplex[4][2]), CubeMask);
-    SimplexY[5] = SumSphericalMask(RCenterSubpixels, (int)(Simplex[5][0]), (int)(Simplex[5][1]), (int)(Simplex[5][2]), CubeMask);
-    SimplexY[6] = SumSphericalMask(RCenterSubpixels, (int)(Simplex[6][0]), (int)(Simplex[6][1]), (int)(Simplex[6][2]), CubeMask);
-    SimplexY[7] = SumSphericalMask(RCenterSubpixels, (int)(Simplex[7][0]), (int)(Simplex[7][1]), (int)(Simplex[7][2]), CubeMask);
-    SimplexY[8] = SumSphericalMask(RCenterSubpixels, (int)(Simplex[8][0]), (int)(Simplex[8][1]), (int)(Simplex[8][2]), CubeMask);
-    SimplexY[9] = SumSphericalMask(RCenterSubpixels, (int)(Simplex[9][0]), (int)(Simplex[9][1]), (int)(Simplex[9][2]), CubeMask);
-    SimplexY[10] = SumSphericalMask(RCenterSubpixels, (int)(Simplex[10][0]), (int)(Simplex[10][1]), (int)(Simplex[10][2]), CubeMask);
-    SimplexY[11] = SumSphericalMask(RCenterSubpixels, (int)(Simplex[11][0]), (int)(Simplex[11][1]), (int)(Simplex[11][2]), CubeMask);
-    SimplexY[12] = SumSphericalMask(RCenterSubpixels, (int)(Simplex[12][0]), (int)(Simplex[12][1]), (int)(Simplex[12][2]), CubeMask);
-    SimplexY[13] = SumSphericalMask(RCenterSubpixels, (int)(Simplex[13][0]), (int)(Simplex[13][1]), (int)(Simplex[13][2]), CubeMask);
-    SimplexY[14] = SumSphericalMask(RCenterSubpixels, (int)(Simplex[14][0]), (int)(Simplex[14][1]), (int)(Simplex[14][2]), CubeMask);
-    SimplexY[15] = SumSphericalMask(RCenterSubpixels, (int)(Simplex[15][0]), (int)(Simplex[15][1]), (int)(Simplex[15][2]), CubeMask);
-    SimplexY[16] = SumSphericalMask(RCenterSubpixels, (int)(Simplex[16][0]), (int)(Simplex[16][1]), (int)(Simplex[16][2]), CubeMask);
-    SimplexY[17] = SumSphericalMask(RCenterSubpixels, (int)(Simplex[17][0]), (int)(Simplex[17][1]), (int)(Simplex[17][2]), CubeMask);
-    SimplexY[18] = SumSphericalMask(RCenterSubpixels, (int)(Simplex[18][0]), (int)(Simplex[18][1]), (int)(Simplex[18][2]), CubeMask);
-    SimplexY[19] = SumSphericalMask(RCenterSubpixels, (int)(Simplex[19][0]), (int)(Simplex[19][1]), (int)(Simplex[19][2]), CubeMask);
-    SimplexY[20] = SumSphericalMask(RCenterSubpixels, (int)(Simplex[20][0]), (int)(Simplex[20][1]), (int)(Simplex[20][2]), CubeMask);
-    SimplexY[21] = SumSphericalMask(RCenterSubpixels, (int)(Simplex[21][0]), (int)(Simplex[21][1]), (int)(Simplex[21][2]), CubeMask);
-    SimplexY[22] = SumSphericalMask(RCenterSubpixels, (int)(Simplex[22][0]), (int)(Simplex[22][1]), (int)(Simplex[22][2]), CubeMask);
-    SimplexY[23] = SumSphericalMask(RCenterSubpixels, (int)(Simplex[23][0]), (int)(Simplex[23][1]), (int)(Simplex[23][2]), CubeMask);
-    SimplexY[24] = SumSphericalMask(RCenterSubpixels, (int)(Simplex[24][0]), (int)(Simplex[24][1]), (int)(Simplex[24][2]), CubeMask);
-    SimplexY[25] = SumSphericalMask(RCenterSubpixels, (int)(Simplex[25][0]), (int)(Simplex[25][1]), (int)(Simplex[25][2]), CubeMask);
-    SimplexY[26] = SumSphericalMask(RCenterSubpixels, (int)(Simplex[26][0]), (int)(Simplex[26][1]), (int)(Simplex[26][2]), CubeMask);
+    for (int i = 0; i < 27; i++)
+    {
+        SimplexY[i] = SumSphericalMask(RCenterSubpixels, (int)(Simplex[i][0]), (int)(Simplex[i][1]), (int)(Simplex[i][2]), CubeMask);
+    }
 
-    /*
-        ilo = 0;
-        i = 1;
-
-        while (i < SimplexY.size())
-        {
-            if (SimplexY[i] < SimplexY[0])
-                ilo = i;
-            i++;
-        }
-    */
     Amoeba(Simplex, SimplexY, ftol, nfunk, RCenterSubpixels, Grid, 1, CubeMask);
-
-    // if (ilo == 0)
-    //     break;
-    /*
-        switch (ilo)
-        {
-            case 1:
-            Simplex[0][0] = Simplex[0][0];
-            Simplex[0][1] = Simplex[0][1] + 3;
-            Simplex[0][2] = Simplex[0][2] + 3;
-            break;
-        case 2:
-            Simplex[0][0] = Simplex[0][0];
-            Simplex[0][1] = Simplex[0][1] + 3;
-            Simplex[0][2] = Simplex[0][2];
-            break;
-        case 3:
-            Simplex[0][0] = Simplex[0][0];
-            Simplex[0][1] = Simplex[0][1] + 3;
-            Simplex[0][2] = Simplex[0][2] - 3;
-            break;
-        case 4:
-            Simplex[0][0] = Simplex[0][0];
-            Simplex[0][1] = Simplex[0][1] - 3;
-            Simplex[0][2] = Simplex[0][2] + 3;
-            break;
-        case 5:
-            Simplex[0][0] = Simplex[0][0];
-            Simplex[0][1] = Simplex[0][1] - 3;
-            Simplex[0][2] = Simplex[0][2];
-            break;
-        case 6:
-            Simplex[0][0] = Simplex[0][0];
-            Simplex[0][1] = Simplex[0][1] - 3;
-            Simplex[0][2] = Simplex[0][2] - 3;
-            break;
-        case 7:
-            Simplex[0][0] = Simplex[0][0];
-            Simplex[0][1] = Simplex[0][1];
-            Simplex[0][2] = Simplex[0][2] + 3;
-            break;
-        case 8:
-            Simplex[0][0] = Simplex[0][0];
-            Simplex[0][1] = Simplex[0][1];
-            Simplex[0][2] = Simplex[0][2] - 3;
-            break;
-        case 9:
-            Simplex[0][0] = Simplex[0][0] + 3;
-            Simplex[0][1] = Simplex[0][1] + 3;
-            Simplex[0][2] = Simplex[0][2] + 3;
-            break;
-        case 10:
-            Simplex[0][0] = Simplex[0][0] + 3;
-            Simplex[0][1] = Simplex[0][1] + 3;
-            Simplex[0][2] = Simplex[0][2];
-            break;
-        case 11:
-            Simplex[0][0] = Simplex[0][0] + 3;
-            Simplex[0][1] = Simplex[0][1] + 3;
-            Simplex[0][2] = Simplex[0][2] - 3;
-            break;
-        case 12:
-            Simplex[0][0] = Simplex[0][0] + 3;
-            Simplex[0][1] = Simplex[0][1];
-            Simplex[0][2] = Simplex[0][2] + 3;
-            break;
-        case 13:
-            Simplex[0][0] = Simplex[0][0] + 3;
-            Simplex[0][1] = Simplex[0][1];
-            Simplex[0][2] = Simplex[0][2];
-            break;
-        case 14:
-            Simplex[0][0] = Simplex[0][0] + 3;
-            Simplex[0][1] = Simplex[0][1];
-            Simplex[0][2] = Simplex[0][2] - 3;
-            break;
-        case 15:
-            Simplex[0][0] = Simplex[0][0] + 3;
-            Simplex[0][1] = Simplex[0][1] - 3;
-            Simplex[0][2] = Simplex[0][2] + 3;
-            break;
-        case 16:
-            Simplex[0][0] = Simplex[0][0] + 3;
-            Simplex[0][1] = Simplex[0][1] - 3;
-            Simplex[0][2] = Simplex[0][2];
-            break;
-        case 17:
-            Simplex[0][0] = Simplex[0][0] + 3;
-            Simplex[0][1] = Simplex[0][1] - 3;
-            Simplex[0][2] = Simplex[0][2] - 3;
-            break;
-        case 18:
-            Simplex[0][0] = Simplex[0][0] - 3;
-            Simplex[0][1] = Simplex[0][1] + 3;
-            Simplex[0][2] = Simplex[0][2] + 3;
-            break;
-        case 19:
-            Simplex[0][0] = Simplex[0][0] - 3;
-            Simplex[0][1] = Simplex[0][1] + 3;
-            Simplex[0][2] = Simplex[0][2];
-            break;
-        case 20:
-            Simplex[0][0] = Simplex[0][0] - 3;
-            Simplex[0][1] = Simplex[0][1] + 3;
-            Simplex[0][2] = Simplex[0][2] - 3;
-            break;
-        case 21:
-            Simplex[0][0] = Simplex[0][0] - 3;
-            Simplex[0][1] = Simplex[0][1];
-            Simplex[0][2] = Simplex[0][2] + 3;
-            break;
-        case 22:
-            Simplex[0][0] = Simplex[0][0] - 3;
-            Simplex[0][1] = Simplex[0][1];
-            Simplex[0][2] = Simplex[0][2];
-            break;
-        case 23:
-            Simplex[0][0] = Simplex[0][0] - 3;
-            Simplex[0][1] = Simplex[0][1];
-            Simplex[0][2] = Simplex[0][2] - 3;
-            break;
-        case 24:
-            Simplex[0][0] = Simplex[0][0] - 3;
-            Simplex[0][1] = Simplex[0][1] - 3;
-            Simplex[0][2] = Simplex[0][2] + 3;
-            break;
-        case 25:
-            Simplex[0][0] = Simplex[0][0] - 3;
-            Simplex[0][1] = Simplex[0][1] - 3;
-            Simplex[0][2] = Simplex[0][2];
-            break;
-        case 26:
-            Simplex[0][0] = Simplex[0][0] - 3;
-            Simplex[0][1] = Simplex[0][1] - 3;
-            Simplex[0][2] = Simplex[0][2] - 3;
-            break;
-
-
-        case 1:
-            Simplex[0][0] = Simplex[1][0];
-            Simplex[0][1] = Simplex[1][1];
-            Simplex[0][2] = Simplex[1][2];
-            break;
-        case 2:
-            Simplex[0][0] = Simplex[2][0];
-            Simplex[0][1] = Simplex[2][1];
-            Simplex[0][2] = Simplex[2][2];
-            break;
-        case 3:
-            Simplex[0][0] = Simplex[3][0];
-            Simplex[0][1] = Simplex[3][1];
-            Simplex[0][2] = Simplex[3][2];
-            break;
-        case 4:
-            Simplex[0][0] = Simplex[4][0];
-            Simplex[0][1] = Simplex[4][1];
-            Simplex[0][2] = Simplex[4][2];
-            break;
-        case 5:
-            Simplex[0][0] = Simplex[5][0];
-            Simplex[0][1] = Simplex[5][1];
-            Simplex[0][2] = Simplex[5][2];
-            break;
-        case 6:
-            Simplex[0][0] = Simplex[6][0];
-            Simplex[0][1] = Simplex[6][1];
-            Simplex[0][2] = Simplex[6][2];
-            break;
-        case 7:
-            Simplex[0][0] = Simplex[7][0];
-            Simplex[0][1] = Simplex[7][1];
-            Simplex[0][2] = Simplex[7][2];
-            break;
-        case 8:
-            Simplex[0][0] = Simplex[8][0];
-            Simplex[0][1] = Simplex[8][1];
-            Simplex[0][2] = Simplex[8][2];
-            break;
-        case 9:
-            Simplex[0][0] = Simplex[9][0];
-            Simplex[0][1] = Simplex[9][1];
-            Simplex[0][2] = Simplex[9][2];
-            break;
-        case 10:
-            Simplex[0][0] = Simplex[10][0];
-            Simplex[0][1] = Simplex[10][1];
-            Simplex[0][2] = Simplex[10][2];
-            break;
-        case 11:
-            Simplex[0][0] = Simplex[11][0];
-            Simplex[0][1] = Simplex[11][1];
-            Simplex[0][2] = Simplex[11][2];
-            break;
-        case 12:
-            Simplex[0][0] = Simplex[12][0];
-            Simplex[0][1] = Simplex[12][1];
-            Simplex[0][2] = Simplex[12][2];
-            break;
-        case 13:
-            Simplex[0][0] = Simplex[13][0];
-            Simplex[0][1] = Simplex[13][1];
-            Simplex[0][2] = Simplex[13][2];
-            break;
-        case 14:
-            Simplex[0][0] = Simplex[14][0];
-            Simplex[0][1] = Simplex[14][1];
-            Simplex[0][2] = Simplex[14][2];
-            break;
-        case 15:
-            Simplex[0][0] = Simplex[15][0];
-            Simplex[0][1] = Simplex[15][1];
-            Simplex[0][2] = Simplex[15][2];
-            break;
-        case 16:
-            Simplex[0][0] = Simplex[16][0];
-            Simplex[0][1] = Simplex[16][1];
-            Simplex[0][2] = Simplex[16][2];
-            break;
-        case 17:
-            Simplex[0][0] = Simplex[17][0];
-            Simplex[0][1] = Simplex[17][1];
-            Simplex[0][2] = Simplex[17][2];
-            break;
-        case 18:
-            Simplex[0][0] = Simplex[18][0];
-            Simplex[0][1] = Simplex[18][1];
-            Simplex[0][2] = Simplex[18][2];
-            break;
-        case 19:
-            Simplex[0][0] = Simplex[19][0];
-            Simplex[0][1] = Simplex[19][1];
-            Simplex[0][2] = Simplex[19][2];
-            break;
-        case 20:
-            Simplex[0][0] = Simplex[20][0];
-            Simplex[0][1] = Simplex[20][1];
-            Simplex[0][2] = Simplex[20][2];
-            break;
-        case 21:
-            Simplex[0][0] = Simplex[21][0];
-            Simplex[0][1] = Simplex[21][1];
-            Simplex[0][2] = Simplex[21][2];
-            break;
-        case 22:
-            Simplex[0][0] = Simplex[22][0];
-            Simplex[0][1] = Simplex[22][1];
-            Simplex[0][2] = Simplex[22][2];
-            break;
-        case 23:
-            Simplex[0][0] = Simplex[23][0];
-            Simplex[0][1] = Simplex[23][1];
-            Simplex[0][2] = Simplex[23][2];
-            break;
-        case 24:
-            Simplex[0][0] = Simplex[24][0];
-            Simplex[0][1] = Simplex[24][1];
-            Simplex[0][2] = Simplex[24][2];
-            break;
-        case 25:
-            Simplex[0][0] = Simplex[25][0];
-            Simplex[0][1] = Simplex[25][1];
-            Simplex[0][2] = Simplex[25][2];
-            break;
-        case 26:
-            Simplex[0][0] = Simplex[26][0];
-            Simplex[0][1] = Simplex[26][1];
-            Simplex[0][2] = Simplex[26][2];
-            break;
-        // From Nic: this is proper for a switch case, you should always have a default
-        default:
-            break;
-        }*/
-
-    // From Nic: Added this since it has the same logic that the switch() condition had. This is obviously more efficient
-    // Simplex[0][0] = Simplex[ilo][0];
-    // Simplex[0][1] = Simplex[ilo][1];
-    // Simplex[0][2] = Simplex[ilo][2];
-
-    /*
-                    if (ilo != 0)
-                    {
-
-                        double CenterX3 = m_CenterX2 - halfdisplay - 0.45 + 0.1 * (int)Simplex[0][0];
-                        double CenterY3 = m_CenterY2 - halfdisplay - 0.45 + 0.1 * (int)Simplex[0][1];
-                        double CenterZ3 = m_CenterZ2 - halfdisplay - 0.45 + 0.1 * (int)Simplex[0][2];
-
-                        // From Nic: I think this just set the other subpixel coordinate values in the GUI, so instead I'm passing these to Java
-
-                        m_CenterX3.Format(TEXT("%3.2f"), CenterX3);
-                        m_CenterY3.Format(TEXT("%3.2f"), CenterY3);
-                        m_CenterZ3.Format(TEXT("%3.2f"), CenterZ3);
-
-            m_CenterX3 = CenterX3;
-            m_CenterY3 = CenterY3;
-            m_CenterZ3 = CenterZ3;
-        }
-        */
-
-    // max_it = max_it + 1;
-    // ---------- end to check neighboring pixels with original Rcenter
 
     m_CenterX = subpixelToPixel((int)Simplex[0][0] + 0.5, 0);
     m_CenterY = subpixelToPixel((int)Simplex[0][1] + 0.5, 1);
@@ -1973,17 +1399,17 @@ double SumCircleElementsReal3D_NoBkg(int radius, int Scan1, int Scan2, int Scan3
     {
         newz = Scan3 - radius + k;
         Zdiff = newz - Scan3;
-        int z = (int)(newz / Nfinal);
+        int z = newz / Nfinal;
         for (int i = 0; i <= diameter; i++)
         {
             newy = Scan2 - radius + i;
             Ydiff = newy - Scan2;
-            int y = (int)(newy / Nfinal);
+            int y = newy / Nfinal;
             for (int j = 0; j <= diameter; j++)
             {
                 newx = Scan1 - radius + j;
                 Xdiff = newx - Scan1;
-                int x = (int)(newx / Nfinal);
+                int x = newx / Nfinal;
 
                 distance = sqrt((double)Xdiff * Xdiff + Ydiff * Ydiff + Zdiff * Zdiff);
                 if (distance <= radius)
@@ -2015,17 +1441,17 @@ double SumCircleElementsImag3D_NoBkg(int radius, int Scan1, int Scan2, int Scan3
     {
         newz = Scan3 - radius + k;
         Zdiff = newz - Scan3;
-        int z = (int)(newz / Nfinal);
+        int z = newz / Nfinal;
         for (int i = 0; i <= diameter; i++)
         {
             newy = Scan2 - radius + i;
             Ydiff = newy - Scan2;
-            int y = (int)(newy / Nfinal);
+            int y = newy / Nfinal;
             for (int j = 0; j <= diameter; j++)
             {
                 newx = Scan1 - radius + j;
                 Xdiff = newx - Scan1;
-                int x = (int)(newx / Nfinal);
+                int x = newx / Nfinal;
 
                 distance = sqrt((double)Xdiff * Xdiff + Ydiff * Ydiff + Zdiff * Zdiff);
                 if (distance <= radius)
