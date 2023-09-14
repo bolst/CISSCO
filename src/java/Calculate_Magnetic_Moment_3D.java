@@ -1196,12 +1196,10 @@ public class Calculate_Magnetic_Moment_3D implements PlugIn {
         gui.ltf_eps23.setValue(roundAndConvertToString(se23, 2));
 
         // Calculating uncertainty in C++
-        double uncertainty = jni.calculateUncertainty(se12, se23);
-
-        logger.addVariable("uncertainty", uncertainty);
-
+        // double uncertainty = jni.calculateUncertainty(se12, se23);
+        // logger.addVariable("uncertainty", uncertainty);
         // Setting uncertainty to GUI
-        gui.ll_momenterror.setValue(roundAndConvertToString(uncertainty, 2));
+        // gui.ll_momenterror.setValue(roundAndConvertToString(uncertainty, 2));
 
       }
     }
