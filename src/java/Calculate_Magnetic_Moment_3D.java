@@ -3,11 +3,7 @@
  * @version 3.12, May 5, 2023
  */
 
-import ij.gui.OvalRoi;
-import ij.gui.PointRoi;
-import ij.gui.Roi;
 import java.awt.Color;
-import java.awt.Rectangle;
 import java.util.ArrayList;
 import java.lang.Math;
 import javax.swing.JFileChooser;
@@ -21,7 +17,6 @@ import ij.ImageJ;
 import ij.ImagePlus;
 import ij.gui.*;
 import ij.plugin.PlugIn;
-import ij.plugin.frame.RoiManager;
 import ij.process.*;
 import ij.WindowManager;
 import ij.io.Opener;
@@ -1620,7 +1615,15 @@ public class Calculate_Magnetic_Moment_3D implements PlugIn {
     if (WindowManager.getImage(title) != null)
       WindowManager.getImage(title).close();
 
+    int window_count = WindowManager.getImageCount();
+
     IJ.open();
+
+    int new_count = WindowManager.getImageCount();
+
+    if (window_count == new_count)
+      return null;
+
     title = WindowManager.getCurrentImage().getTitle();
     title = WindowManager.makeUniqueName(title);
     WindowManager.getCurrentImage().setTitle(title);
