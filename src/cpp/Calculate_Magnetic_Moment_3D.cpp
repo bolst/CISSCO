@@ -29,8 +29,6 @@ using namespace std;
 #define PI 3.1415926535
 #define MAX_SUBPIXEL_DIM 640
 
-#include <ctime>
-
 int m_SubPixels;
 double m_R0, m_R1, m_R2, m_R3, m_radians, m_RCenter, m_CenterX, m_CenterY, m_CenterZ, m_CenterX2, m_CenterY2, m_CenterZ2, m_CenterX3, m_CenterY3, m_CenterZ3;
 float ***RealNumbers, ***ImagNumbers;

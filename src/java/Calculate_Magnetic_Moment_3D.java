@@ -6,12 +6,7 @@
 import java.awt.Color;
 import java.util.ArrayList;
 import java.lang.Math;
-import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
-import javax.swing.filechooser.FileSystemView;
-import java.io.File;
-import java.io.IOException;
-import java.util.Scanner;
 import ij.IJ;
 import ij.ImageJ;
 import ij.ImagePlus;
@@ -19,7 +14,6 @@ import ij.gui.*;
 import ij.plugin.PlugIn;
 import ij.process.*;
 import ij.WindowManager;
-import ij.io.Opener;
 
 public class Calculate_Magnetic_Moment_3D implements PlugIn {
 
@@ -40,7 +34,6 @@ public class Calculate_Magnetic_Moment_3D implements PlugIn {
 
   private static final int grid = 10;
   private static final double GAMMARBAR = 42.58;
-  private static final String ACCEPTED_FILE_TYPE = "nii";
   private static final String PLUS_MINUS = "\u00B1";
   private static final String subMagTitle = "Subpixel Mag Image";
   private static final String subMagXZTitle = "Subpixel Mag Image XZ";
@@ -1556,59 +1549,6 @@ public class Calculate_Magnetic_Moment_3D implements PlugIn {
     subpixelCoordinate = subCenter + (coordinate - (double) (item.subpix_image_center.get(axisFlag))) * 10.0;
 
     return subpixelCoordinate;
-  }
-
-  /**
-   * Function to load an image
-   * 
-   * @param title title to be displayed on ImageJ image window
-   * @param type  type of file to be opened - will be displayed on the chooser
-   *              window
-   * @return the unique title of the image
-   * @throws IOException if file is not a valid type
-   */
-  private static String loadImages(String title, String type) throws IOException {
-
-    String retval;
-
-    if (WindowManager.getImage(title) != null)
-      WindowManager.getImage(title).close();
-
-    JFileChooser chooser;
-    File setPathFile = new File("pth.txt");
-    if (setPathFile.exists()) {
-      try (Scanner scnr = new Scanner(setPathFile)) {
-        String set_path = scnr.nextLine();
-        chooser = new JFileChooser(set_path);
-      } catch (Exception exc) {
-        logger.addWarning(exc.toString());
-        chooser = new JFileChooser(FileSystemView.getFileSystemView().getHomeDirectory());
-      }
-    } else {
-      logger.addVariable("home", FileSystemView.getFileSystemView().getHomeDirectory());
-      chooser = new JFileChooser(FileSystemView.getFileSystemView().getHomeDirectory());
-    }
-    chooser.setDialogTitle("Open " + type);
-    int status = chooser.showSaveDialog(null);
-
-    Opener fOpener = new Opener();
-
-    // if user does not choose a file
-    if (status != JFileChooser.APPROVE_OPTION)
-      return "";
-
-    String img_path = chooser.getSelectedFile().getAbsolutePath();
-    String filename = chooser.getSelectedFile().getName();
-    retval = WindowManager.makeUniqueName(filename);
-    String format = img_path.substring(img_path.lastIndexOf(".") + 1);
-
-    if (format.compareTo(ACCEPTED_FILE_TYPE) != 0)
-      throw new IOException("File type not accepted");
-
-    fOpener.open(img_path);
-    WindowManager.getCurrentImage().setTitle(retval);
-
-    return retval;
   }
 
   private static String loadImagesIJ(String title) {
