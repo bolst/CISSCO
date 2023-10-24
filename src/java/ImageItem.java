@@ -3,6 +3,7 @@ import javax.swing.JOptionPane;
 import ij.ImagePlus;
 import ij.gui.*;
 import ij.WindowManager;
+import java.util.Arrays;
 
 public class ImageItem {
 
@@ -260,47 +261,40 @@ public class ImageItem {
       double[] YN,
       double[] ZP,
       double[] ZN) {
+    Calculate_Magnetic_Moment_3D.logger.addVariable("XP", Arrays.toString(XP));
+    Calculate_Magnetic_Moment_3D.logger.addVariable("XN", Arrays.toString(XN));
+    Calculate_Magnetic_Moment_3D.logger.addVariable("YP", Arrays.toString(YP));
+    Calculate_Magnetic_Moment_3D.logger.addVariable("YN", Arrays.toString(YN));
+    Calculate_Magnetic_Moment_3D.logger.addVariable("ZP", Arrays.toString(ZP));
+    Calculate_Magnetic_Moment_3D.logger.addVariable("ZN", Arrays.toString(ZN));
 
-    // finding radius where no values are 0.0 (recall values were set to 0.0 if
-    // below M%)
-    int dr = 0;
-    while (dr < XP.length &&
-        XP[dr] == 0.0 ||
-        XN[dr] == 0.0 ||
-        YP[dr] == 0.0 ||
-        YN[dr] == 0.0 ||
-        ZP[dr] == 0.0 ||
-        ZN[dr] == 0.0)
-      dr++;
+    int max_iter = Arrays.stream(new int[] { XP.length, XN.length, YP.length, YN.length, ZP.length, ZN.length }).min()
+        .getAsInt();
 
-    // Calculating ratio of each direction
-    // The non-MRI field directions should have a ratio of ~1
-    // The field that is responsible for the ratio not near 1 is the MRI field
-    // direction
+    double X = 0.0;
+    double Y = 0.0;
+    double Z = 0.0;
+    for (int i = 0; i < max_iter; i++) {
+      if (XP[i] == 0.0 ||
+          XN[i] == 0.0 ||
+          YP[i] == 0.0 ||
+          YN[i] == 0.0 ||
+          ZP[i] == 0.0 ||
+          ZN[i] == 0.0) {
+        continue;
+      }
 
-    // dr + accuracy cannot surpass size of smallest array
-    int accuracy = Math.min(XP.length - dr - 1, XN.length - dr - 1);
-    accuracy = Math.min(accuracy, YP.length - dr - 1);
-    accuracy = Math.min(accuracy, YN.length - dr - 1);
-    accuracy = Math.min(accuracy, ZP.length - dr - 1);
-    accuracy = Math.min(accuracy, ZN.length - dr - 1);
-    accuracy++;
-    double avgX = 0.0;
-    double avgY = 0.0;
-    double avgZ = 0.0;
-
-    for (int i = dr; i < dr + accuracy; i++) {
-      avgX += (Math.abs(XP[i]) + Math.abs(XN[i])) / accuracy;
-      avgY += (Math.abs(YP[i]) + Math.abs(YN[i])) / accuracy;
-      avgZ += (Math.abs(ZP[i]) + Math.abs(ZN[i])) / accuracy;
+      X += Math.abs(XP[i]) + Math.abs(XN[i]);
+      Y += Math.abs(YP[i]) + Math.abs(YN[i]);
+      Z += Math.abs(ZP[i]) + Math.abs(ZN[i]);
     }
 
-    double ratioXY = Math.abs(avgX / avgY - 1);
-    double ratioXZ = Math.abs(avgX / avgZ - 1);
-    double ratioYZ = Math.abs(avgY / avgZ - 1);
+    double ratioXY = Math.abs(X / Y - 1);
+    double ratioXZ = Math.abs(X / Z - 1);
+    double ratioYZ = Math.abs(Y / Z - 1);
     double minRatio = Math.min(Math.min(ratioXY, ratioXZ), ratioYZ);
 
-    Axis retval = minRatio == ratioXY ? Axis.Z : (minRatio == ratioXZ ? Axis.Y : Axis.X);
+    Axis retval = (minRatio == ratioXY) ? Axis.Z : (minRatio == ratioXZ ? Axis.Y : Axis.X);
     Calculate_Magnetic_Moment_3D.logger.addVariable("mri axis", retval);
 
     return retval;
