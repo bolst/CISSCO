@@ -136,16 +136,26 @@ public class Calculate_Magnetic_Moment_3D implements PlugIn {
       jni.setCenterL(item.centerL().get(0), item.centerL().get(1), item.centerL().get(2));
       item.calcCenterM();
       jni.setCenterM(item.centerM().get(0), item.centerM().get(1), item.centerM().get(2));
-      item.calcCenterS();
+      double center_sx;
+      double center_sy;
+      double center_sz;
+      try {
+        item.calcCenterS();
+        // grabbing center_s from item
+        center_sx = item.centerS().get(0);
+        center_sy = item.centerS().get(1);
+        center_sz = item.centerS().get(2);
+        logger.addInfo("cs", item.centerS());
+      } catch (Exception exc) {
+        logger.addError("center s exc" + exc.toString());
+        center_sx = item.centerM().get(0);
+        center_sy = item.centerM().get(1);
+        center_sz = item.centerM().get(2);
+        JOptionPane.showMessageDialog(gui.frame, "Unable to determine Center_S. Display Center_M instead");
+      }
 
       // setting GUI bkg phase to estimate bkg phase
       gui.ll_estBkgPhase.setValue(roundAndConvertToString(item.estBkg(), 2));
-
-      // grabbing center_s from item
-      double center_sx = item.centerS().get(0);
-      double center_sy = item.centerS().get(1);
-      double center_sz = item.centerS().get(2);
-      logger.addInfo("cs", item.centerS());
 
       // Setting center to GUI unless user already has an inputted center point
       if (gui.ltf_rcx.getValueTF().isDefault()) {
