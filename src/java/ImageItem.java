@@ -942,7 +942,7 @@ public class ImageItem {
     Calculate_Magnetic_Moment_3D.logger.addVariable("rmb zi", roi_mag_belowM_zi);
     Calculate_Magnetic_Moment_3D.logger.addVariable("rmb dx", roi_mag_belowM_dx);
     Calculate_Magnetic_Moment_3D.logger.addVariable("rmb dy", roi_mag_belowM_dy);
-    Calculate_Magnetic_Moment_3D.logger.addVariable("rmb dx", roi_mag_belowM_dz);
+    Calculate_Magnetic_Moment_3D.logger.addVariable("rmb dz", roi_mag_belowM_dz);
 
     // Summing z plane and putting it into array
     for (int k = 0; k <= roi_mag_belowM_dz; k++) {
@@ -1073,6 +1073,13 @@ public class ImageItem {
   // =====================================================================================
   public void setCenterSZ(double z) {
     center_s.set(2, z);
+  }
+
+  // =====================================================================================
+  // Setter for RCenter
+  // =====================================================================================
+  public void setRCenter(double rc) {
+    RCenter = rc;
   }
 
   /**

@@ -184,8 +184,15 @@ public class Calculate_Magnetic_Moment_3D implements PlugIn {
       item.removeBkgPhase();
       double RCenter = item.estimateRCenter();
 
-      // Updating GUI
-      gui.ltf_rc.setValue(roundAndConvertToString(RCenter, 1));
+      // Updating GUI/RCenter
+      if (gui.ltf_rc.getValueTF().isDefault()) {
+        gui.ltf_rc.setValue(roundAndConvertToString(RCenter, 1));
+        logger.addVariable("RCenter", RCenter);
+      } else {
+        RCenter = Double.parseDouble(gui.ltf_rc.getValue());
+        item.setRCenter(RCenter);
+        logger.addVariable("RCenter_", RCenter);
+      }
 
       item.calcR0123();
       double m_R0 = item.m_R0();
@@ -244,6 +251,9 @@ public class Calculate_Magnetic_Moment_3D implements PlugIn {
       ImagePlus phaseImage = WindowManager.getImage(s1PhaseWindowTitle);
       logger.addInfo("Got images");
 
+      item.setRCenter(Double.parseDouble(gui.ltf_rc.getValue()));
+      logger.addVariable("RCenter (gen subpix)", item.RCenter());
+      item.calcR0123();
       double m_R0 = item.m_R0();
 
       // Size of new images
@@ -327,6 +337,20 @@ public class Calculate_Magnetic_Moment_3D implements PlugIn {
           IP_subpixelPhaseImage.putPixelValue(i, j, subpixelPhaseMatrix[i][j] - item.bkgPhase);
           IP_subpixelPhaseImageXZ.putPixelValue(i, j, subpixelPhaseMatrixXZ[i][j] - item.bkgPhase);
         }
+      }
+
+      // delete old images if they exist
+      if (WindowManager.getImage(subMagTitle) != null) {
+        WindowManager.getImage(subMagTitle).close();
+      }
+      if (WindowManager.getImage(subMagXZTitle) != null) {
+        WindowManager.getImage(subMagXZTitle).close();
+      }
+      if (WindowManager.getImage(subPhaseTitle) != null) {
+        WindowManager.getImage(subPhaseTitle).close();
+      }
+      if (WindowManager.getImage(subPhaseXZTitle) != null) {
+        WindowManager.getImage(subPhaseXZTitle).close();
       }
 
       // Creating new ImagePlus objects with respective ImageProcessors to be
