@@ -685,15 +685,28 @@ double SumSphericalMask(int radius, int Scan1, int Scan2, int Scan3, vector<vect
     Scan2 = Scan2 - radius;
     Scan3 = Scan3 - radius;
 
+    ofstream of("cpp.txt");
+    of << "Scan1: " << Scan1 << endl;
+    of << "Scan2: " << Scan2 << endl;
+    of << "Scan3: " << Scan3 << endl;
+    of << "radius: " << radius << endl;
+    of << "CubeMask: " << CubeMask.size() << endl;
+    of << "CubeMask[0]: " << CubeMask[0].size() << endl;
+    of << "CubeMask[0][0]: " << CubeMask[0][0].size() << endl;
+    of << "SRM3D: " << SubpixelRealMatrix3D.size() << endl;
+    of << "SRM3D[0]: " << SubpixelRealMatrix3D[0].size() << endl;
+    of << "SRM3D[0][0]: " << SubpixelRealMatrix3D[0][0].size() << endl;
+    of.close();
+
     for (int k = 0; k <= diameter; k++)
     {
-        ktmp = Scan3 + k;
+        ktmp = min((int)SubpixelRealMatrix3D[0][0].size(), (int)(Scan3 + k));
         for (int i = 0; i <= diameter; i++)
         {
-            itmp = Scan2 + i;
+            itmp = min((int)SubpixelRealMatrix3D[0].size(), (int)(Scan2 + i));
             for (int j = 0; j <= diameter; j++)
             {
-                jtmp = Scan1 + j;
+                jtmp = min((int)SubpixelRealMatrix3D.size(), (int)(Scan1 + j));
                 sumi = SubpixelRealMatrix3D[jtmp][itmp][ktmp] * CubeMask[j][i][k];
                 sum += sumi;
             }
@@ -1100,6 +1113,7 @@ void OnBnClickedEstimatecenter()
 
     for (int i = 0; i <= 10; i++)
     {
+        // TODO: fix hs_err_pid error
         SimplexY[i] = SumSphericalMask(RCenterSubpixels, (int)(Simplex[i][0]), (int)(Simplex[i][1]), (int)(Simplex[i][2]), CubeMask);
     }
 

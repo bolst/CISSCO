@@ -756,8 +756,6 @@ public class ImageItem {
      * Other than that, m_R0 must be between 8 and 21
      */
     m_R0 = Math.pow((factor / Practical_Phase_Limit), exp);
-    m_R0 = m_R0 * (double) grid;
-    m_R0 = Math.ceil(m_R0) / (double) grid;
 
     if (m_R0 > 21.0)
       m_R0 = 21.0;

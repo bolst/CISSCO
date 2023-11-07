@@ -11,6 +11,7 @@
         "xlocale": "cpp",
         "vector": "cpp",
         "iosfwd": "cpp",
-        "string": "cpp"
+        "string": "cpp",
+        "ostream": "cpp"
     }
 }
