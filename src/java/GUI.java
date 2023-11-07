@@ -786,7 +786,7 @@ public class GUI {
          * frame.getContentPane().add(txt_M, "cell 5 1,alignx left");
          * txt_M.setColumns(2);
          */
-        ltf_M = new LabeledTextField("|M%|=", "50", null, 2);
+        ltf_M = new LabeledTextField("|M%|=", "50", "%", 2);
         frame.getContentPane().add(ltf_M, "cell 3 1 6 1");
 
         // ActionListeners
