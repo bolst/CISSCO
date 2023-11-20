@@ -17,7 +17,7 @@ import ij.WindowManager;
 
 public class Calculate_Magnetic_Moment_3D implements PlugIn {
 
-  private static JNIMethods jni = new JNIMethods();
+  private static JNIMethods jni = JNIMethods.getInstance();
   public static GUI gui;
 
   private static ImageItem item;

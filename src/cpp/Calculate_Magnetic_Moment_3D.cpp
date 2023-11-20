@@ -685,6 +685,10 @@ double SumSphericalMask(int radius, int Scan1, int Scan2, int Scan3, vector<vect
     Scan2 = Scan2 - radius;
     Scan3 = Scan3 - radius;
 
+    fstream fs("cpp.txt");
+    fs << "SRM3D" << Scan1 << ',' << Scan2 << ',' << Scan3 << '\n';
+    fs.close();
+
     for (int k = 0; k <= diameter; k++)
     {
         ktmp = Scan3 + k;

@@ -1,4 +1,16 @@
 class JNIMethods {
+
+    private static JNIMethods instance;
+
+    private JNIMethods() {
+    }
+
+    public static synchronized JNIMethods getInstance() {
+        if (instance == null)
+            instance = new JNIMethods();
+        return instance;
+    }
+
     private static final String DLL_PATH = System.getProperty("user.dir")
             + "\\plugins\\CISSCO\\Calculate_Magnetic_Moment_3D_Native.dll";
     private static final String SO_PATH = System.getProperty("user.dir")
