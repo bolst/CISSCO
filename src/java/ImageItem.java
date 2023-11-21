@@ -103,8 +103,7 @@ public class ImageItem {
     // Getting ROI parameters
     roi_xi = (int) user_roi.getXBase();
     roi_yi = (int) user_roi.getYBase();
-    roi_zi = (mag_img.getRoi() != null) ? mag_img.getCurrentSlice() - 1 : phase_img.getCurrentSlice() - 1;
-
+    roi_zi = (mag_img.getRoi() != null) ? mag_img.getSlice() - 1 : phase_img.getSlice() - 1;
     // square box dimensions are the larger of roi_dx and roi_dy
     roi_dx = roi_dy = roi_dz = Math.max((int) user_roi_rectangle.getWidth(),
         (int) user_roi_rectangle.getHeight());
