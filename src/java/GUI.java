@@ -48,7 +48,7 @@ public class GUI {
         frame = new JFrame("Calculate Magnetic Moment 3D");
         frame.setAlwaysOnTop(false);
         frame.setBounds(100, 100, 900, 850);
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         frame.getContentPane().setLayout(
                 new MigLayout("",
                         "[][][grow][][45px:45.00px:45px][45px:45px:45px,grow][45px:64.00px:45px,grow][35.00,grow][]",
