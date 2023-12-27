@@ -926,7 +926,7 @@ public class ImageItem {
   // =====================================================================================
   public void calcCenterS() {
 
-    center_s = new Triplet<Double>(0.0, 0.0, 0.0);
+    center_s = new Triplet<Double>(-1.0, -1.0, -1.0);
 
     // ------ Begin summing planes in innerbox
     // Initializing arrays for sums of planes in small box
@@ -1007,6 +1007,11 @@ public class ImageItem {
       }
     }
     // ---------- end to find Center_S
+
+    // if a component can't be found throw error
+    if (center_s.get(0) == -1.0 || center_s.get(1) == -1.0 || center_s.get(2) == -1.0)
+      throw new ArithmeticException("Unable to determine center_s completely");
+
   }
 
   // =====================================================================================
