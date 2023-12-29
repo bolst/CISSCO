@@ -152,6 +152,7 @@ public class Calculate_Magnetic_Moment_3D implements PlugIn {
         center_sy = item.centerM().get(1);
         center_sz = item.centerM().get(2);
         JOptionPane.showMessageDialog(gui.frame, "Unable to determine Center_S. Display Center_M instead");
+        JOptionPane.showMessageDialog(gui.frame, "Tip: redraw smaller/tighter box or reduce M%");
       }
 
       // setting GUI bkg phase to estimate bkg phase
