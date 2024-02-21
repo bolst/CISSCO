@@ -159,15 +159,15 @@ public class Calculate_Magnetic_Moment_3D implements PlugIn {
       gui.ll_estBkgPhase.setValue(roundAndConvertToString(item.estBkg(), 2));
 
       // Setting center to GUI unless user already has an inputted center point
-      if (gui.ltf_rcx.getValueTF().isDefault()) {
+      if (gui.ltf_rcx.getTextFieldInstance().isDefault()) {
         gui.ltf_rcx.setValue(String.valueOf(center_sx));
       }
 
-      if (gui.ltf_rcy.getValueTF().isDefault()) {
+      if (gui.ltf_rcy.getTextFieldInstance().isDefault()) {
         gui.ltf_rcy.setValue(String.valueOf(center_sy));
       }
 
-      if (gui.ltf_rcz.getValueTF().isDefault()) {
+      if (gui.ltf_rcz.getTextFieldInstance().isDefault()) {
         gui.ltf_rcz.setValue(String.valueOf(center_sz + 1));
       }
 
@@ -186,7 +186,7 @@ public class Calculate_Magnetic_Moment_3D implements PlugIn {
       double RCenter = item.estimateRCenter();
 
       // Updating GUI/RCenter
-      if (gui.ltf_rc.getValueTF().isDefault()) {
+      if (gui.ltf_rc.getTextFieldInstance().isDefault()) {
         gui.ltf_rc.setValue(roundAndConvertToString(RCenter, 1));
         logger.addVariable("RCenter", RCenter);
       } else {
@@ -708,62 +708,87 @@ public class Calculate_Magnetic_Moment_3D implements PlugIn {
     float R3_phase_actual = 0;
 
     // Summing up all phase values where the radii and equitorial axis intercept
+    // add background phase since subpixel images are generated with no background
+    // phase
     switch (item.MRIAxis()) {
       case X:
-
-        R1_phase_actual += subpixelPhaseImage.getProcessor().getPixelValue(sub_x, sub_y + (int) (m_R1 * 10));
+        R1_phase_actual += subpixelPhaseImage.getProcessor().getPixelValue(sub_x, sub_y + (int) (m_R1 * 10))
+            + item.bkgPhase;
         logger.addVariable("got coordinate", String.valueOf(sub_x) + ',' + String.valueOf(sub_y + (int) (m_R1 * 10)));
 
-        R1_phase_actual += subpixelPhaseImage.getProcessor().getPixelValue(sub_x, sub_y - (int) (m_R1 * 10));
+        R1_phase_actual += subpixelPhaseImage.getProcessor().getPixelValue(sub_x, sub_y - (int) (m_R1 * 10))
+            + item.bkgPhase;
         logger.addVariable("got coordinate", String.valueOf(sub_x) + ',' + String.valueOf(sub_y - (int) (m_R1 * 10)));
 
-        R1_phase_actual += subpixelPhaseImageXZ.getProcessor().getPixelValue(sub_x, sub_z + (int) (m_R1 * 10));
+        R1_phase_actual += subpixelPhaseImageXZ.getProcessor().getPixelValue(sub_x, sub_z + (int) (m_R1 * 10))
+            + item.bkgPhase;
         logger.addVariable("got coordinate", String.valueOf(sub_x) + ',' + String.valueOf(sub_z + (int) (m_R1 * 10)));
 
-        R1_phase_actual += subpixelPhaseImageXZ.getProcessor().getPixelValue(sub_x, sub_z - (int) (m_R1 * 10));
+        R1_phase_actual += subpixelPhaseImageXZ.getProcessor().getPixelValue(sub_x, sub_z - (int) (m_R1 * 10))
+            + item.bkgPhase;
         logger.addVariable("got coordinate", String.valueOf(sub_x) + ',' + String.valueOf(sub_z - (int) (m_R1 * 10)));
 
-        R2_phase_actual += subpixelPhaseImage.getProcessor().getPixelValue(sub_x, sub_y + (int) (m_R2 * 10));
-        R2_phase_actual += subpixelPhaseImage.getProcessor().getPixelValue(sub_x, sub_y - (int) (m_R2 * 10));
-        R2_phase_actual += subpixelPhaseImageXZ.getProcessor().getPixelValue(sub_x, sub_z + (int) (m_R2 * 10));
-        R2_phase_actual += subpixelPhaseImageXZ.getProcessor().getPixelValue(sub_x, sub_z - (int) (m_R2 * 10));
+        R2_phase_actual += subpixelPhaseImage.getProcessor().getPixelValue(sub_x, sub_y + (int) (m_R2 * 10))
+            + item.bkgPhase;
+        R2_phase_actual += subpixelPhaseImage.getProcessor().getPixelValue(sub_x, sub_y - (int) (m_R2 * 10))
+            + item.bkgPhase;
+        R2_phase_actual += subpixelPhaseImageXZ.getProcessor().getPixelValue(sub_x, sub_z + (int) (m_R2 * 10))
+            + item.bkgPhase;
+        R2_phase_actual += subpixelPhaseImageXZ.getProcessor().getPixelValue(sub_x, sub_z - (int) (m_R2 * 10))
+            + item.bkgPhase;
 
-        R3_phase_actual += subpixelPhaseImage.getProcessor().getPixelValue(sub_x, sub_y + (int) (m_R3 * 10));
-        R3_phase_actual += subpixelPhaseImage.getProcessor().getPixelValue(sub_x, sub_y - (int) (m_R3 * 10));
-        R3_phase_actual += subpixelPhaseImageXZ.getProcessor().getPixelValue(sub_x, sub_z + (int) (m_R3 * 10));
-        R3_phase_actual += subpixelPhaseImageXZ.getProcessor().getPixelValue(sub_x, sub_z - (int) (m_R3 * 10));
+        R3_phase_actual += subpixelPhaseImage.getProcessor().getPixelValue(sub_x, sub_y + (int) (m_R3 * 10))
+            + item.bkgPhase;
+        R3_phase_actual += subpixelPhaseImage.getProcessor().getPixelValue(sub_x, sub_y - (int) (m_R3 * 10))
+            + item.bkgPhase;
+        R3_phase_actual += subpixelPhaseImageXZ.getProcessor().getPixelValue(sub_x, sub_z + (int) (m_R3 * 10))
+            + item.bkgPhase;
+        R3_phase_actual += subpixelPhaseImageXZ.getProcessor().getPixelValue(sub_x, sub_z - (int) (m_R3 * 10))
+            + item.bkgPhase;
         break;
 
       case Y:
         R1_phase_actual += subpixelPhaseImageXZ.getProcessor().getPixelValue(sub_x + (int) (m_R1 * 10), sub_z);
         R1_phase_actual += subpixelPhaseImageXZ.getProcessor().getPixelValue(sub_x - (int) (m_R1 * 10), sub_z);
-        R1_phase_actual += subpixelPhaseImageXZ.getProcessor().getPixelValue(sub_x, sub_z + (int) (m_R1 * 10));
-        R1_phase_actual += subpixelPhaseImageXZ.getProcessor().getPixelValue(sub_x, sub_z - (int) (m_R1 * 10));
+        R1_phase_actual += subpixelPhaseImageXZ.getProcessor().getPixelValue(sub_x, sub_z + (int) (m_R1 * 10))
+            + item.bkgPhase;
+        R1_phase_actual += subpixelPhaseImageXZ.getProcessor().getPixelValue(sub_x, sub_z - (int) (m_R1 * 10))
+            + item.bkgPhase;
 
         R2_phase_actual += subpixelPhaseImageXZ.getProcessor().getPixelValue(sub_x + (int) (m_R2 * 10), sub_z);
         R2_phase_actual += subpixelPhaseImageXZ.getProcessor().getPixelValue(sub_x - (int) (m_R2 * 10), sub_z);
-        R2_phase_actual += subpixelPhaseImageXZ.getProcessor().getPixelValue(sub_x, sub_z + (int) (m_R2 * 10));
-        R2_phase_actual += subpixelPhaseImageXZ.getProcessor().getPixelValue(sub_x, sub_z - (int) (m_R2 * 10));
+        R2_phase_actual += subpixelPhaseImageXZ.getProcessor().getPixelValue(sub_x, sub_z + (int) (m_R2 * 10))
+            + item.bkgPhase;
+        R2_phase_actual += subpixelPhaseImageXZ.getProcessor().getPixelValue(sub_x, sub_z - (int) (m_R2 * 10))
+            + item.bkgPhase;
 
         R3_phase_actual += subpixelPhaseImageXZ.getProcessor().getPixelValue(sub_x + (int) (m_R3 * 10), sub_z);
         R3_phase_actual += subpixelPhaseImageXZ.getProcessor().getPixelValue(sub_x - (int) (m_R3 * 10), sub_z);
-        R3_phase_actual += subpixelPhaseImageXZ.getProcessor().getPixelValue(sub_x, sub_z + (int) (m_R3 * 10));
-        R3_phase_actual += subpixelPhaseImageXZ.getProcessor().getPixelValue(sub_x, sub_z - (int) (m_R3 * 10));
+        R3_phase_actual += subpixelPhaseImageXZ.getProcessor().getPixelValue(sub_x, sub_z + (int) (m_R3 * 10))
+            + item.bkgPhase;
+        R3_phase_actual += subpixelPhaseImageXZ.getProcessor().getPixelValue(sub_x, sub_z - (int) (m_R3 * 10))
+            + item.bkgPhase;
         break;
 
       case Z:
-        R1_phase_actual += subpixelPhaseImage.getProcessor().getPixelValue(sub_x, sub_y + (int) (m_R1 * 10));
-        R1_phase_actual += subpixelPhaseImage.getProcessor().getPixelValue(sub_x, sub_y - (int) (m_R1 * 10));
+        R1_phase_actual += subpixelPhaseImage.getProcessor().getPixelValue(sub_x, sub_y + (int) (m_R1 * 10))
+            + item.bkgPhase;
+        R1_phase_actual += subpixelPhaseImage.getProcessor().getPixelValue(sub_x, sub_y - (int) (m_R1 * 10))
+            + item.bkgPhase;
         R1_phase_actual += subpixelPhaseImage.getProcessor().getPixelValue(sub_x + (int) (m_R1 * 10), sub_y);
         R1_phase_actual += subpixelPhaseImage.getProcessor().getPixelValue(sub_x - (int) (m_R1 * 10), sub_y);
 
-        R2_phase_actual += subpixelPhaseImage.getProcessor().getPixelValue(sub_x, sub_y + (int) (m_R2 * 10));
-        R2_phase_actual += subpixelPhaseImage.getProcessor().getPixelValue(sub_x, sub_y - (int) (m_R2 * 10));
+        R2_phase_actual += subpixelPhaseImage.getProcessor().getPixelValue(sub_x, sub_y + (int) (m_R2 * 10))
+            + item.bkgPhase;
+        R2_phase_actual += subpixelPhaseImage.getProcessor().getPixelValue(sub_x, sub_y - (int) (m_R2 * 10))
+            + item.bkgPhase;
         R2_phase_actual += subpixelPhaseImage.getProcessor().getPixelValue(sub_x + (int) (m_R2 * 10), sub_y);
         R2_phase_actual += subpixelPhaseImage.getProcessor().getPixelValue(sub_x - (int) (m_R2 * 10), sub_y);
 
-        R3_phase_actual += subpixelPhaseImage.getProcessor().getPixelValue(sub_x, sub_y + (int) (m_R3 * 10));
-        R3_phase_actual += subpixelPhaseImage.getProcessor().getPixelValue(sub_x, sub_y - (int) (m_R3 * 10));
+        R3_phase_actual += subpixelPhaseImage.getProcessor().getPixelValue(sub_x, sub_y + (int) (m_R3 * 10))
+            + item.bkgPhase;
+        R3_phase_actual += subpixelPhaseImage.getProcessor().getPixelValue(sub_x, sub_y - (int) (m_R3 * 10))
+            + item.bkgPhase;
         R3_phase_actual += subpixelPhaseImage.getProcessor().getPixelValue(sub_x + (int) (m_R3 * 10), sub_y);
         R3_phase_actual += subpixelPhaseImage.getProcessor().getPixelValue(sub_x - (int) (m_R3 * 10), sub_y);
         break;

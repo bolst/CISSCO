@@ -20,7 +20,7 @@ public class ImageItem {
   public int M;
   private double RCenter;
   private double phaseValue;
-  private Axis MRI_axis;
+  private Axis MRI_axis = Axis.UNKNOWN;
   private double m_R0;
   private double estMagMoment;
   public double R1PhaseCalc, R2PhaseCalc, R3PhaseCalc;
@@ -33,17 +33,22 @@ public class ImageItem {
 
   public boolean isNearEdge = false;
 
-  public enum Axis {
-    X, Y, Z;
+  public static enum Axis {
+    X, Y, Z, UNKNOWN;
 
     @Override
     public String toString() {
-      if (this == Axis.X) {
-        return "X";
-      } else if (this == Axis.Y) {
-        return "Y";
+      switch (this) {
+        case X:
+          return "X";
+        case Y:
+          return "Y";
+        case Z:
+          return "Z";
+        case UNKNOWN:
+        default:
+          return "?";
       }
-      return "Z";
     }
   }
 
@@ -462,16 +467,16 @@ public class ImageItem {
       center_s.set(0, ((center_mri_axis + r1) + (center_mri_axis - r2)) / 2.0);
       center_s.set(0, Math.round(center_s.get(0) * 10.0) / 10.0);
       Calculate_Magnetic_Moment_3D.gui.ltf_rcx.setValue(String.valueOf(Math.round(center_s.get(0) * 10.0) / 10.0));
-    }
-    if (mri_dir == Axis.Y) {
+    } else if (mri_dir == Axis.Y) {
       center_s.set(1, ((center_mri_axis + r1) + (center_mri_axis - r2)) / 2.0);
       center_s.set(1, Math.round(center_s.get(1) * 10.0) / 10.0);
       Calculate_Magnetic_Moment_3D.gui.ltf_rcy.setValue(String.valueOf(Math.round(center_s.get(1) * 10.0) / 10.0));
-    }
-    if (mri_dir == Axis.Z) {
+    } else if (mri_dir == Axis.Z) {
       center_s.set(2, ((center_mri_axis + r1) + (center_mri_axis - r2)) / 2.0);
       center_s.set(2, Math.round(center_s.get(2) * 10.0) / 10.0);
       Calculate_Magnetic_Moment_3D.gui.ltf_rcz.setValue(String.valueOf(Math.round(center_s.get(2) * 10.0) / 10.0));
+    } else {
+      Calculate_Magnetic_Moment_3D.logger.addInfo("Unable to determine MRI axis");
     }
 
     // returning equation for RCenter
