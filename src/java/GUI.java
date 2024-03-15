@@ -3,7 +3,10 @@ import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
+
+import javax.swing.DefaultComboBoxModel;
 import javax.swing.JButton;
+import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
@@ -35,6 +38,7 @@ public class GUI {
             ltf_v2seX1, ltf_v2seX2, ltf_v2seY1, ltf_v2seY2, ltf_v2seZ1, ltf_v2seZ2;
     public LabeledLabel ll_estBkgPhase, ll_grid, ll_rho0, ll_ReRi, ll_ImRi, ll_momenterror, ll_rho0SE, ll_aSE, ll_dChi,
             ll_dChiSE, ll_a, ll_V0, ltf_magMom;
+    public LabeledDropDown<ImageItem.Axis> ldd_MriAxis;
 
     public GUI() {
         this.initialize();
@@ -348,6 +352,11 @@ public class GUI {
         ltf_M = new LabeledTextField("|M%|=", "50", "%", 2);
         frame.getContentPane().add(ltf_M, "cell 3 1 6 1");
 
+        ldd_MriAxis = new LabeledDropDown<ImageItem.Axis>("<html>B<sub>0</sub> Axis</html>",
+                new DefaultComboBoxModel<ImageItem.Axis>(
+                        new ImageItem.Axis[] { ImageItem.Axis.X, ImageItem.Axis.Y, ImageItem.Axis.Z }));
+        frame.getContentPane().add(ldd_MriAxis, "cell 6 1 2 1,growx");
+
         // ActionListeners
         btn_loadImages.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
@@ -575,4 +584,31 @@ class DefTextField extends JTextField {
         return this.getText().compareTo(this.defaultText) == 0;
     }
 
+}
+
+class LabeledDropDown<T> extends JPanel {
+    private JLabel label;
+    private JComboBox<T> comboBox;
+
+    public LabeledDropDown(String labelText, DefaultComboBoxModel<T> comboBoxModel) {
+        setLayout(new MigLayout("insets 0", "[grow,fill]", "[]"));
+        // Create and add the label component
+        label = new JLabel(labelText);
+        add(label);
+
+        // Create and add the combobox component
+        comboBox = new JComboBox<T>();
+        comboBox.setModel(comboBoxModel);
+        add(comboBox);
+    }
+
+    // Getter for the text field value
+    public T getValue() {
+        return (T) comboBox.getSelectedItem(); // uneditable so warning is ok
+    }
+
+    // Setter for the text field value
+    public void setValue(T value) {
+        comboBox.setSelectedItem(value);
+    }
 }

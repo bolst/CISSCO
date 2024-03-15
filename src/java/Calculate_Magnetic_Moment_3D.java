@@ -715,6 +715,7 @@ public class Calculate_Magnetic_Moment_3D implements PlugIn {
         R1_phase_actual += subpixelPhaseImage.getProcessor().getPixelValue(sub_x, sub_y + (int) (m_R1 * 10))
             + item.bkgPhase;
         logger.addVariable("got coordinate", String.valueOf(sub_x) + ',' + String.valueOf(sub_y + (int) (m_R1 * 10)));
+        logger.addVariable("got coordinate", subpixelPhaseMatrix[sub_x][sub_y + (int) (m_R1 * 10)]);
 
         R1_phase_actual += subpixelPhaseImage.getProcessor().getPixelValue(sub_x, sub_y - (int) (m_R1 * 10))
             + item.bkgPhase;
