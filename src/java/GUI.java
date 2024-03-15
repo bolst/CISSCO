@@ -16,6 +16,7 @@ import javax.swing.JTextField;
 import net.miginfocom.swing.MigLayout;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
+
 import java.util.Arrays;
 
 public class GUI {
@@ -354,7 +355,8 @@ public class GUI {
 
         ldd_MriAxis = new LabeledDropDown<ImageItem.Axis>("<html>B<sub>0</sub> Axis</html>",
                 new DefaultComboBoxModel<ImageItem.Axis>(
-                        new ImageItem.Axis[] { ImageItem.Axis.X, ImageItem.Axis.Y, ImageItem.Axis.Z }));
+                        new ImageItem.Axis[] { ImageItem.Axis.X, ImageItem.Axis.Y,
+                                ImageItem.Axis.Z }));
         frame.getContentPane().add(ldd_MriAxis, "cell 6 1 2 1,growx");
 
         // ActionListeners

@@ -668,6 +668,7 @@ public class ImageItem {
         // neglectedAxis = "x";
         MRI_axis = Axis.X;
         center_mri_axis = csx;
+        Calculate_Magnetic_Moment_3D.gui.ldd_MriAxis.setValue(Axis.X);
         // PVP1 = phaseVals_yPos;
         // PVN1 = phaseVals_yNeg;
         // axis1 = "y";
@@ -684,6 +685,7 @@ public class ImageItem {
         // neglectedAxis = "y";
         MRI_axis = Axis.Y;
         center_mri_axis = csy;
+        Calculate_Magnetic_Moment_3D.gui.ldd_MriAxis.setValue(Axis.Y);
         // PVP1 = phaseVals_xPos;
         // PVN1 = phaseVals_xNeg;
         // P1C = csx;
@@ -700,6 +702,7 @@ public class ImageItem {
         // neglectedAxis = "z";
         MRI_axis = Axis.Z;
         center_mri_axis = csz;
+        Calculate_Magnetic_Moment_3D.gui.ldd_MriAxis.setValue(Axis.Z);
         // PVP1 = phaseVals_xPos;
         // PVN1 = phaseVals_xNeg;
         // P1C = csx;
@@ -1044,6 +1047,7 @@ public class ImageItem {
   // Getter for MRI axis
   // =====================================================================================
   public Axis MRIAxis() {
+    MRI_axis = Calculate_Magnetic_Moment_3D.gui.ldd_MriAxis.getValue();
     return MRI_axis;
   }
 
