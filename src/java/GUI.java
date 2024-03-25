@@ -274,17 +274,20 @@ public class GUI {
                 "0.0", null, 4);
         frame.getContentPane().add(ltf_sigSE, "cell 2 19");
 
-        // "Second Image Center"
-        frame.getContentPane().add(new JLabel("Second Image Center:"), "cell 1 20,alignx right");
-        // "Second Image Center" coordinates
-        ltf_secondImgX = new LabeledTextField("(", "0", null, 4);
-        ltf_secondImgY = new LabeledTextField(",", "0", null, 4);
-        ltf_secondImgZ = new LabeledTextField(",", "0", "-1)", 4);
-        JPanel SECPanel = new JPanel(new MigLayout("", "[][][]", "[]"));
-        SECPanel.add(ltf_secondImgX);
-        SECPanel.add(ltf_secondImgY);
-        SECPanel.add(ltf_secondImgZ);
-        frame.getContentPane().add(SECPanel, "cell 2 20 7 1,alignx left");
+        /*
+         * // "Second Image Center"
+         * frame.getContentPane().add(new JLabel("Second Image Center:"),
+         * "cell 1 20,alignx right");
+         * // "Second Image Center" coordinates
+         * ltf_secondImgX = new LabeledTextField("(", "0", null, 4);
+         * ltf_secondImgY = new LabeledTextField(",", "0", null, 4);
+         * ltf_secondImgZ = new LabeledTextField(",", "0", "-1)", 4);
+         * JPanel SECPanel = new JPanel(new MigLayout("", "[][][]", "[]"));
+         * SECPanel.add(ltf_secondImgX);
+         * SECPanel.add(ltf_secondImgY);
+         * SECPanel.add(ltf_secondImgZ);
+         * frame.getContentPane().add(SECPanel, "cell 2 20 7 1,alignx left");
+         */
 
         // "V1,SE Region"
         frame.getContentPane().add(new JLabel("<html>V<sub>1,SE</sub> Box Coordinates:</html>"),

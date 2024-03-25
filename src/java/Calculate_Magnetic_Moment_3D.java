@@ -1431,27 +1431,38 @@ public class Calculate_Magnetic_Moment_3D implements PlugIn {
     int V2SE_size = (V2SE_x2 - V2SE_x1) * (V2SE_y2 - V2SE_y1) * (V2SE_z2 - V2SE_z1);
 
     // Getting center from GUI
-    int VSE_centerX = (int) Double.parseDouble(gui.ltf_secondImgX.getValue());
-    int VSE_centerY = (int) Double.parseDouble(gui.ltf_secondImgY.getValue());
-    int VSE_centerZ = (int) Double.parseDouble(gui.ltf_secondImgZ.getValue()) - 1;
+    // int VSE_centerX = (int) Double.parseDouble(gui.ltf_secondImgX.getValue());
+    // int VSE_centerY = (int) Double.parseDouble(gui.ltf_secondImgY.getValue());
+    // int VSE_centerZ = (int) Double.parseDouble(gui.ltf_secondImgZ.getValue()) -
+    // 1;
 
     // V1 must be bigger than V2 and center must be inside both
     if (V2SE_size > V1SE_size) {
       JOptionPane.showMessageDialog(gui.frame, "Error: V2 cannot be bigger than V1");
-    } else if (VSE_centerX < V1SE_x1 || VSE_centerX > V1SE_x2) {
-      JOptionPane.showMessageDialog(gui.frame, "Error: center x coordinate must be on image");
-    } else if (VSE_centerY < V1SE_y1 || VSE_centerY > V1SE_y2) {
-      JOptionPane.showMessageDialog(gui.frame, "Error: center y coordinate must be on image");
-    } else if (VSE_centerZ < V1SE_z1 || VSE_centerZ > V1SE_z2) {
-      JOptionPane.showMessageDialog(gui.frame, "Error: center z coordinate must be on image");
-    } else {
+    }
+    /*
+     * else if (VSE_centerX < V1SE_x1 || VSE_centerX > V1SE_x2) {
+     * JOptionPane.showMessageDialog(gui.frame, "Error: center x coordinate must be
+     * on image");
+     * } else if (VSE_centerY < V1SE_y1 || VSE_centerY > V1SE_y2) {
+     * JOptionPane.showMessageDialog(gui.frame, "Error: center y coordinate must be
+     * on image");
+     * } else if (VSE_centerZ < V1SE_z1 || VSE_centerZ > V1SE_z2) {
+     * JOptionPane.showMessageDialog(gui.frame, "Error: center z coordinate must be
+     * on image");
+     * }
+     */
+    else {
 
       // Initializing ImageProcessor objects to add data values to
       ImageProcessor IP_V1SE_XY = new FloatProcessor(V1SE_x2 - V1SE_x1, V1SE_y2 - V1SE_y1);
       ImageProcessor IP_V1SE_XZ = new FloatProcessor(V1SE_x2 - V1SE_x1, V1SE_z2 - V1SE_z1);
 
+      int middle_y = (V1SE_y2 - V1SE_y1) / 2;
+      int middle_z = (V1SE_z2 - V1SE_z1) / 2;
+
       // Adding data to new V1 image XY. Essentially just 'cropping' the V1 image
-      spinEchoImg.setSlice(VSE_centerZ + 1);
+      spinEchoImg.setSlice(middle_z + 1);
       for (int i = V1SE_x1; i <= V1SE_x2; i++) {
         for (int j = V1SE_y1; j <= V1SE_y2; j++) {
           IP_V1SE_XY.putPixelValue(i - V1SE_x1, j - V1SE_y1, spinEchoImg.getProcessor().getPixelValue(i, j));
@@ -1463,7 +1474,7 @@ public class Calculate_Magnetic_Moment_3D implements PlugIn {
         for (int j = V1SE_z1; j <= V1SE_z2; j++) {
           spinEchoImg.setSlice(j + 1);
           IP_V1SE_XZ.putPixelValue(i - V1SE_x1, j - V1SE_z1,
-              spinEchoImg.getProcessor().getPixelValue(i, VSE_centerY));
+              spinEchoImg.getProcessor().getPixelValue(i, middle_y));
         }
       }
 
@@ -1481,14 +1492,16 @@ public class Calculate_Magnetic_Moment_3D implements PlugIn {
 
       // Adding V2 box to V1 XY images
       roiImgV1SE = new ROIS(V1XY_Title);
-      roiImgV1SE.addPointROI(Math.abs(VSE_centerX - V1SE_x1), Math.abs(VSE_centerY - V1SE_y1));
+      // roiImgV1SE.addPointROI(Math.abs(VSE_centerX - V1SE_x1), Math.abs(VSE_centerY
+      // - V1SE_y1));
       roiImgV1SE.addRectangle(Math.abs(V1SE_x1 - V2SE_x1), Math.abs(V1SE_y1 - V2SE_y1), V2SE_x2 - V2SE_x1,
           V2SE_y2 - V2SE_y1);
       roiImgV1SE.displayROIS();
 
       // Same thing but for XZ
       roiImgV1SEXZ = new ROIS(V1XZ_Title);
-      roiImgV1SEXZ.addPointROI(Math.abs(VSE_centerX - V1SE_x1), Math.abs(VSE_centerZ - V1SE_z1));
+      // roiImgV1SEXZ.addPointROI(Math.abs(VSE_centerX - V1SE_x1),
+      // Math.abs(VSE_centerZ - V1SE_z1));
       roiImgV1SEXZ.addRectangle(Math.abs(V1SE_x1 - V2SE_x1), Math.abs(V1SE_z1 - V2SE_z1), V2SE_x2 - V2SE_x1,
           V2SE_z2 - V2SE_z1);
       roiImgV1SEXZ.displayROIS();
@@ -1584,6 +1597,7 @@ public class Calculate_Magnetic_Moment_3D implements PlugIn {
       gui.ll_dChiSE.setValue(roundAndConvertToString(dChi, 2) + " " + PLUS_MINUS + " "
           + roundAndConvertToString(d_dChi, 2));
     }
+
   }
 
   /*
