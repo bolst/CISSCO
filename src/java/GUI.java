@@ -606,7 +606,9 @@ class LabeledDropDown<T> extends JPanel {
 
     // Getter for the text field value
     public T getValue() {
-        return (T) comboBox.getSelectedItem(); // uneditable so warning is ok
+        @SuppressWarnings("unchecked")
+        T retval = (T) comboBox.getSelectedItem(); // combobox is uneditable so warning is ok
+        return retval;
     }
 
     // Setter for the text field value

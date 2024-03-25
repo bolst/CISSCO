@@ -12,7 +12,7 @@ public class ImageItem {
   private Triplet<Double> center_m;
   private Triplet<Double> center_s;
   public Triplet<Double> subpix_image_center;
-  public double bkgPhase;
+  public double bkgPhase, estimatedBkgPhase;
   private double roi_mag_belowM_sumX, roi_mag_belowM_sumY, roi_mag_belowM_sumZ;
   public int roi_xi, roi_yi, roi_zi, roi_dx, roi_dy, roi_dz;
   public int roi_mag_belowM_xi, roi_mag_belowM_yi, roi_mag_belowM_zi,
@@ -510,7 +510,7 @@ public class ImageItem {
   // This function also initializes the array in which these removed-bkg phase
   // values are stored in
   // =====================================================================================
-  public double estBkg() {
+  public double estimateBkgPhase() {
 
     // Initialize 3d array for phase values w/ removed background phase
     phase_nobkg = new double[roi_dx + 1][roi_dy + 1][roi_dz + 1];
@@ -538,6 +538,8 @@ public class ImageItem {
         + phase_img.getProcessor().getPixelValue(roi_xi + roi_dx, roi_yi + roi_dy);
 
     bkgPhase /= 8.0;
+
+    estimatedBkgPhase = bkgPhase;
 
     return bkgPhase;
 
