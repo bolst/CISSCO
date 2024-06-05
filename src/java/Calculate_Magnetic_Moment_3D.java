@@ -290,8 +290,8 @@ public class Calculate_Magnetic_Moment_3D implements PlugIn {
         phaseImage.setSlice(k + 1);
         for (int j = yi; j <= yi + 2 * (int) m_R0; j++) {
           for (int i = xi; i <= xi + 2 * (int) m_R0; i++) {
-            tempphase = phaseImage.getProcessor().getPixelValue(i, j);
-            tempmag = magnitudeImage.getProcessor().getPixelValue(i, j);
+            tempphase = phaseImage.getImageStack().getProcessor(item.echoImageIndex).getPixelValue(i, j);
+            tempmag = magnitudeImage.getImageStack().getProcessor(item.echoImageIndex).getPixelValue(i, j);
 
             croppedMagnitudeValues3D[i - xi][j - yi][k - zi] = (float) tempmag;
             croppedPhaseValues3D[i - xi][j - yi][k - zi] = (float) tempphase;

@@ -9,15 +9,11 @@ import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
 import javax.swing.JTextField;
 import net.miginfocom.swing.MigLayout;
-import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
-
-import java.util.Arrays;
 
 public class GUI {
 
@@ -350,8 +346,6 @@ public class GUI {
 
         ltf_rcz = new LabeledTextField("z=", "0.0", "-1 ,", 4);
         frame.getContentPane().add(ltf_rcz, "cell 2 1");
-
-        // TODO: only one of ltf_rcx, ltf_rcy, ltf_rcz can have a non-zero decimal value
 
         ltf_M = new LabeledTextField("|M%|=", "50", "%", 2);
         frame.getContentPane().add(ltf_M, "cell 3 1 6 1");
