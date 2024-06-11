@@ -1,6 +1,7 @@
 import java.awt.Rectangle;
 import javax.swing.JOptionPane;
 import ij.ImagePlus;
+import ij.process.ImageProcessor;
 import ij.gui.*;
 import ij.WindowManager;
 import java.util.Arrays;
@@ -92,9 +93,9 @@ public class ImageItem {
     try {
       mag_img = WindowManager.getImage(magTitle);
       phase_img = WindowManager.getImage(phaseTitle);
+
       echoImageIndex = (mag_img.getRoi() != null) ? mag_img.getFrame() : phase_img.getFrame();
       Calculate_Magnetic_Moment_3D.logger.addVariable("echo image index", echoImageIndex);
-
     } catch (Exception exc) {
       JOptionPane.showMessageDialog(Calculate_Magnetic_Moment_3D.gui.frame, exc);
     }
@@ -157,24 +158,22 @@ public class ImageItem {
     // ----------------------------------------------------------------------------
 
     // setting slice to starting ROI point in the z
-    mag_img.setSlice(roi_zi + 1);
+    int currFrame = mag_img.getFrame();
+    Calculate_Magnetic_Moment_3D.logger.addVariable("curr frame", currFrame);
 
     // summing all corners of ROI box in this slice
-    float avgCorners = mag_img.getImageStack().getProcessor(echoImageIndex).getPixelValue(roi_xi, roi_yi)
-        + mag_img.getImageStack().getProcessor(echoImageIndex).getPixelValue(roi_xi + (roi_dx - 1), roi_yi)
-        + mag_img.getImageStack().getProcessor(echoImageIndex).getPixelValue(roi_xi, roi_yi + (roi_dy - 1))
-        + mag_img.getImageStack().getProcessor(echoImageIndex).getPixelValue(roi_xi + (roi_dx - 1),
-            roi_xi + (roi_dy - 1));
-
-    // setting slice to ending ROI point in the z
-    mag_img.setSlice(roi_zi + roi_dz);
+    float avgCorners = ImageMethods.getVoxelValue(mag_img, roi_xi, roi_yi, roi_zi)
+        + ImageMethods.getVoxelValue(mag_img, roi_xi + (roi_dx - 1), roi_yi, roi_zi)
+        + ImageMethods.getVoxelValue(mag_img, roi_xi, roi_yi + (roi_dy - 1), roi_zi)
+        + ImageMethods.getVoxelValue(mag_img, roi_xi + (roi_dx - 1),
+            roi_xi + (roi_dy - 1), roi_zi);
 
     // adding these corners of the ROI box in this slice
-    avgCorners += mag_img.getImageStack().getProcessor(echoImageIndex).getPixelValue(roi_xi, roi_yi)
-        + mag_img.getImageStack().getProcessor(echoImageIndex).getPixelValue(roi_xi + (roi_dx - 1), roi_yi)
-        + mag_img.getImageStack().getProcessor(echoImageIndex).getPixelValue(roi_xi, roi_yi + (roi_dy - 1))
-        + mag_img.getImageStack().getProcessor(echoImageIndex).getPixelValue(roi_xi + (roi_dx - 1),
-            roi_xi + (roi_dy - 1));
+    avgCorners += ImageMethods.getVoxelValue(mag_img, roi_xi, roi_yi, roi_zi + roi_dz - 1)
+        + ImageMethods.getVoxelValue(mag_img, roi_xi + (roi_dx - 1), roi_yi, roi_zi + roi_dz - 1)
+        + ImageMethods.getVoxelValue(mag_img, roi_xi, roi_yi + (roi_dy - 1), roi_zi + roi_dz - 1)
+        + ImageMethods.getVoxelValue(mag_img, roi_xi + (roi_dx - 1),
+            roi_xi + (roi_dy - 1), roi_zi + roi_dz - 1);
 
     // dividing by 8 for average
     avgCorners /= 8.0;
@@ -213,11 +212,10 @@ public class ImageItem {
 
     // getting all pixel values that are below value
     for (int dz = 0; dz < roi_dz; dz++) {
-      mag_img.setSlice(roi_zi + dz + 1);
       for (int dx = 0; dx < roi_dx; dx++) {
         for (int dy = 0; dy < roi_dy; dy++) {
-          double mag_intensity = mag_img.getImageStack().getProcessor(echoImageIndex).getPixelValue(roi_xi + dx,
-              roi_yi + dy);
+          double mag_intensity = ImageMethods.getVoxelValue(mag_img, roi_xi + dx, roi_yi + dy, roi_zi + dz);
+
           if (mag_intensity < newbox_max) // if below value
           {
             // store value in array
@@ -333,37 +331,25 @@ public class ImageItem {
       Axis axis,
       boolean direction) {
 
-    // Setting slice to initial z point
-    mag_img.setSlice(roi_zi + 1);
     // getting average of ROI
-    double avgOfCorners = (double) (mag_img.getImageStack().getProcessor(echoImageIndex).getPixelValue(roi_xi,
-        roi_yi) +
-        mag_img.getImageStack().getProcessor(echoImageIndex).getPixelValue(roi_xi + roi_dx,
-            roi_yi)
-        +
-        mag_img.getImageStack().getProcessor(echoImageIndex).getPixelValue(roi_xi,
-            roi_yi + roi_dy)
-        +
-        mag_img.getImageStack().getProcessor(echoImageIndex).getPixelValue(roi_xi + roi_dx,
-            roi_yi + roi_dy));
+    double avgOfCorners = ImageMethods.getVoxelValue(mag_img, roi_xi, roi_yi, roi_zi)
+        + ImageMethods.getVoxelValue(mag_img, roi_xi + roi_dx, roi_yi, roi_zi)
+        + ImageMethods.getVoxelValue(mag_img, roi_xi, roi_yi + roi_dy, roi_zi)
+        + ImageMethods.getVoxelValue(mag_img, roi_xi + roi_dx, roi_yi + roi_dy, roi_zi);
 
-    mag_img.setSlice(roi_zi + roi_dz + 1);
-    avgOfCorners += (double) (mag_img.getImageStack().getProcessor(echoImageIndex).getPixelValue(roi_xi,
-        roi_yi) +
-        mag_img.getImageStack().getProcessor(echoImageIndex).getPixelValue(roi_xi + roi_dx,
-            roi_yi)
-        +
-        mag_img.getImageStack().getProcessor(echoImageIndex).getPixelValue(roi_xi,
-            roi_yi + roi_dy)
-        +
-        mag_img.getImageStack().getProcessor(echoImageIndex).getPixelValue(roi_xi + roi_dx,
-            roi_yi + roi_dy));
+    avgOfCorners += ImageMethods.getVoxelValue(mag_img, roi_xi, roi_yi, roi_zi + roi_dz)
+        + ImageMethods.getVoxelValue(mag_img, roi_xi + roi_dx, roi_yi, roi_zi + roi_dz)
+        + ImageMethods.getVoxelValue(mag_img, roi_xi, roi_yi + roi_dy, roi_zi + roi_dz)
+        + ImageMethods.getVoxelValue(mag_img, roi_xi + roi_dx, roi_yi + roi_dy, roi_zi + roi_dz);
+
     avgOfCorners /= 8.0;
 
     // all values below this variable will be negated
     double maxMagValue = avgOfCorners * (double) threshold / 100.0;
 
-    mag_img.setSlice(center_s.get(2).intValue() + 1);
+    int intCsx = center_s.get(0).intValue();
+    int intCsy = center_s.get(1).intValue();
+    int intCsz = center_s.get(2).intValue();
 
     // setting all values in array below maxMagValue to 0
     switch (axis) {
@@ -371,16 +357,14 @@ public class ImageItem {
         if (direction) {
           for (int i = 0; i < values.length; i++) {
             if (Math.abs(
-                mag_img.getImageStack().getProcessor(echoImageIndex).getPixelValue(i + r0,
-                    center_s.get(1).intValue())) < maxMagValue) {
+                ImageMethods.getVoxelValue(mag_img, i + r0, intCsy, intCsz)) < maxMagValue) {
               values[i] = 0.0;
             }
           }
           return;
         } else {
           for (int i = 0; i < values.length; i++) {
-            if (Math.abs(mag_img.getImageStack().getProcessor(echoImageIndex).getPixelValue(r0 - i,
-                center_s.get(1).intValue())) < maxMagValue) {
+            if (Math.abs(ImageMethods.getVoxelValue(mag_img, r0 - i, intCsy, intCsz)) < maxMagValue) {
               values[i] = 0.0;
             }
           }
@@ -389,16 +373,14 @@ public class ImageItem {
       case Y:
         if (direction) {
           for (int i = 0; i < values.length; i++) {
-            if (Math.abs(mag_img.getImageStack().getProcessor(echoImageIndex).getPixelValue(center_s.get(0).intValue(),
-                i + r0)) < maxMagValue) {
+            if (Math.abs(ImageMethods.getVoxelValue(mag_img, intCsx, i + r0, intCsz)) < maxMagValue) {
               values[i] = 0.0;
             }
           }
           return;
         } else {
           for (int i = 0; i < values.length; i++) {
-            if (Math.abs(mag_img.getImageStack().getProcessor(echoImageIndex).getPixelValue(center_s.get(0).intValue(),
-                r0 - i)) < maxMagValue) {
+            if (Math.abs(ImageMethods.getVoxelValue(mag_img, intCsx, r0 - i, intCsz)) < maxMagValue) {
               values[i] = 0.0;
             }
           }
@@ -407,18 +389,14 @@ public class ImageItem {
       case Z:
         if (direction) {
           for (int i = 0; i < values.length; i++) {
-            mag_img.setSlice(i + r0 + 1);
-            if (Math.abs(mag_img.getImageStack().getProcessor(echoImageIndex).getPixelValue(center_s.get(0).intValue(),
-                center_s.get(1).intValue())) < maxMagValue) {
+            if (Math.abs(ImageMethods.getVoxelValue(mag_img, intCsx, intCsy, i + r0)) < maxMagValue) {
               values[i] = 0.0;
             }
           }
           return;
         } else {
           for (int i = 0; i < values.length; i++) {
-            mag_img.setSlice(r0 - i + 1);
-            if (Math.abs(mag_img.getImageStack().getProcessor(echoImageIndex).getPixelValue(center_s.get(0).intValue(),
-                center_s.get(1).intValue())) < maxMagValue) {
+            if (Math.abs(ImageMethods.getVoxelValue(mag_img, intCsx, intCsy, r0 - i)) < maxMagValue) {
               values[i] = 0.0;
             }
           }
@@ -529,27 +507,23 @@ public class ImageItem {
     phase_nobkg = new double[roi_dx + 1][roi_dy + 1][roi_dz + 1];
     // Populate array with corresponding values
     for (int iz = 0; iz <= roi_dz; iz++) {
-      phase_img.setSlice(roi_zi + iz + 1);
       for (int iy = 0; iy <= roi_dy; iy++) {
         for (int ix = 0; ix <= roi_dx; ix++) {
-          phase_nobkg[ix][iy][iz] = phase_img.getImageStack().getProcessor(echoImageIndex).getPixelValue(roi_xi + ix,
-              roi_yi + iy);
+          phase_nobkg[ix][iy][iz] = ImageMethods.getVoxelValue(phase_img, roi_xi + ix, roi_yi + iy, roi_zi);
         }
       }
     }
 
     // ---------- Begin to find estimated background phase
-    phase_img.setSlice(roi_zi + 1);
-    bkgPhase = phase_img.getImageStack().getProcessor(echoImageIndex).getPixelValue(roi_xi, roi_yi)
-        + phase_img.getImageStack().getProcessor(echoImageIndex).getPixelValue(roi_xi + roi_dx, roi_yi)
-        + phase_img.getImageStack().getProcessor(echoImageIndex).getPixelValue(roi_xi, roi_yi + roi_dy)
-        + phase_img.getImageStack().getProcessor(echoImageIndex).getPixelValue(roi_xi + roi_dx, roi_yi + roi_dy);
+    bkgPhase = ImageMethods.getVoxelValue(phase_img, roi_xi, roi_yi, roi_zi)
+        + ImageMethods.getVoxelValue(phase_img, roi_xi + roi_dx, roi_yi, roi_zi)
+        + ImageMethods.getVoxelValue(phase_img, roi_xi, roi_yi + roi_dy, roi_zi)
+        + ImageMethods.getVoxelValue(phase_img, roi_xi + roi_dx, roi_yi + roi_dy, roi_zi);
 
-    phase_img.setSlice(roi_zi + roi_dz + 1);
-    bkgPhase += phase_img.getImageStack().getProcessor(echoImageIndex).getPixelValue(roi_xi, roi_yi)
-        + phase_img.getImageStack().getProcessor(echoImageIndex).getPixelValue(roi_xi + roi_dx, roi_yi)
-        + phase_img.getImageStack().getProcessor(echoImageIndex).getPixelValue(roi_xi, roi_yi + roi_dy)
-        + phase_img.getImageStack().getProcessor(echoImageIndex).getPixelValue(roi_xi + roi_dx, roi_yi + roi_dy);
+    bkgPhase += ImageMethods.getVoxelValue(phase_img, roi_xi, roi_yi, roi_zi + roi_dz)
+        + ImageMethods.getVoxelValue(phase_img, roi_xi + roi_dx, roi_yi, roi_zi + roi_dz)
+        + ImageMethods.getVoxelValue(phase_img, roi_xi, roi_yi + roi_dy, roi_zi + roi_dz)
+        + ImageMethods.getVoxelValue(phase_img, roi_xi + roi_dx, roi_yi + roi_dy, roi_zi + roi_dz);
 
     bkgPhase /= 8.0;
 
@@ -565,7 +539,6 @@ public class ImageItem {
   // =====================================================================================
   public void removeBkgPhase() {
     for (int iz = 0; iz <= roi_dz; iz++) {
-      phase_img.setSlice(roi_zi + iz + 1);
       for (int iy = 0; iy <= roi_dy; iy++) {
         for (int ix = 0; ix <= roi_dx; ix++) {
           phase_nobkg[ix][iy][iz] -= bkgPhase;
@@ -614,47 +587,44 @@ public class ImageItem {
     double[] phaseVals_yNeg = new double[yn_size];
     double[] phaseVals_zNeg = new double[zn_size];
 
-    // Setting slice to center_sz
-    phase_img.setSlice(csz + 1);
-
     // putting phase values into array, following respectively for other 5 loops
     for (int i = 0; i < xp_size; i++) {
       // phaseVals_xPos[i] = Math.abs((double)
-      // phase_img.getImageStack().getProcessor(echoImageIndex).getPixelValue(i + csx,
+      // getImageProcessor(phase_img).getPixelValue(i + csx,
       // csy));
-      phaseVals_xPos[i] = Math.abs(this.phase_noBkg(csx + i, csy, csz));
+      phaseVals_xPos[i] = Math.abs(phase_noBkg(csx + i, csy, csz));
     }
     for (int i = 0; i < xn_size; i++) {
       // phaseVals_xNeg[i] = Math.abs((double)
-      // phase_img.getImageStack().getProcessor(echoImageIndex).getPixelValue(csx - i,
+      // getImageProcessor(phase_img).getPixelValue(csx - i,
       // csy));
-      phaseVals_xNeg[i] = Math.abs(this.phase_noBkg(csx - i, csy, csz));
+      phaseVals_xNeg[i] = Math.abs(phase_noBkg(csx - i, csy, csz));
     }
     for (int j = 0; j < yp_size; j++) {
       // phaseVals_yPos[j] = Math.abs((double)
-      // phase_img.getImageStack().getProcessor(echoImageIndex).getPixelValue(csx, j +
+      // getImageProcessor(phase_img).getPixelValue(csx, j +
       // csy));
-      phaseVals_yPos[j] = Math.abs(this.phase_noBkg(csx, csy + j, csz));
+      phaseVals_yPos[j] = Math.abs(phase_noBkg(csx, csy + j, csz));
     }
     for (int j = 0; j < yn_size; j++) {
       // phaseVals_yNeg[j] = Math.abs((double)
-      // phase_img.getImageStack().getProcessor(echoImageIndex).getPixelValue(csx, csy
+      // getImageProcessor(phase_img).getPixelValue(csx, csy
       // - j));
-      phaseVals_yNeg[j] = Math.abs(this.phase_noBkg(csx, csy - j, csz));
+      phaseVals_yNeg[j] = Math.abs(phase_noBkg(csx, csy - j, csz));
     }
     for (int k = 0; k < zp_size; k++) {
       // phase_img.setSlice(k + csz + 1);
       // phaseVals_zPos[k] = Math.abs((double)
-      // phase_img.getImageStack().getProcessor(echoImageIndex).getPixelValue(csx,
+      // getImageProcessor(phase_img).getPixelValue(csx,
       // csy));
-      phaseVals_zPos[k] = Math.abs(this.phase_noBkg(csx, csy, csz + k));
+      phaseVals_zPos[k] = Math.abs(phase_noBkg(csx, csy, csz + k));
     }
     for (int k = 0; k < zn_size; k++) {
       // phase_img.setSlice(csz - k + 1);
       // phaseVals_zNeg[k] = Math.abs((double)
-      // phase_img.getImageStack().getProcessor(echoImageIndex).getPixelValue(csx,
+      // getImageProcessor(phase_img).getPixelValue(csx,
       // csy));
-      phaseVals_zNeg[k] = Math.abs(this.phase_noBkg(csx, csy, csz - k));
+      phaseVals_zNeg[k] = Math.abs(phase_noBkg(csx, csy, csz - k));
     }
 
     // Getting threshold (should be 50 unless user changes it)
@@ -883,9 +853,8 @@ public class ImageItem {
     for (int i = roi_xi; i < roi_xi + roi_dx; i++) {
       for (int j = roi_yi; j < roi_yi + roi_dy; j++) {
         for (int k = roi_zi; k < roi_zi + roi_dz; k++) {
-          mag_img.setSlice(k + 1);
-          if (mag_img.getImageStack().getProcessor(echoImageIndex).getPixelValue(i, j) < min) {
-            min = mag_img.getImageStack().getProcessor(echoImageIndex).getPixelValue(i, j);
+          if (ImageMethods.getVoxelValue(mag_img, i, j, k) < min) {
+            min = ImageMethods.getVoxelValue(mag_img, i, j, k);
             center_l.set(0, (double) i);
             center_l.set(1, (double) j);
             center_l.set(2, (double) k);
@@ -973,12 +942,11 @@ public class ImageItem {
 
     // Summing z plane and putting it into array
     for (int k = 0; k <= roi_mag_belowM_dz; k++) {
-      mag_img.setSlice(k + roi_mag_belowM_zi + 1);
       innerBox_sumOfZPlane[k] = 0;
       for (int i = 0; i <= roi_mag_belowM_dx; i++) {
         for (int j = 0; j <= roi_mag_belowM_dy; j++) {
-          innerBox_sumOfZPlane[k] += mag_img.getImageStack().getProcessor(echoImageIndex)
-              .getPixelValue(i + roi_mag_belowM_xi, j + roi_mag_belowM_yi);
+          innerBox_sumOfZPlane[k] += ImageMethods.getVoxelValue(mag_img, i + roi_mag_belowM_xi, j + roi_mag_belowM_yi,
+              k + roi_mag_belowM_zi);
         }
       }
     }
@@ -988,9 +956,8 @@ public class ImageItem {
       innerBox_sumOfXPlane[i] = 0;
       for (int j = 0; j <= roi_mag_belowM_dy; j++) {
         for (int k = 0; k <= roi_mag_belowM_dz; k++) {
-          mag_img.setSlice(k + roi_mag_belowM_zi + 1);
-          innerBox_sumOfXPlane[i] += mag_img.getImageStack().getProcessor(echoImageIndex)
-              .getPixelValue(i + roi_mag_belowM_xi, j + roi_mag_belowM_yi);
+          innerBox_sumOfXPlane[i] += ImageMethods.getVoxelValue(mag_img, i + roi_mag_belowM_xi, j + roi_mag_belowM_yi,
+              k + roi_mag_belowM_zi);
         }
       }
     }
@@ -999,10 +966,9 @@ public class ImageItem {
     for (int j = 0; j <= roi_mag_belowM_dy; j++) {
       innerBox_sumOfYPlane[j] = 0;
       for (int k = 0; k <= roi_mag_belowM_dz; k++) {
-        mag_img.setSlice(k + roi_mag_belowM_zi + 1);
         for (int i = 0; i <= roi_mag_belowM_dx; i++) {
-          innerBox_sumOfYPlane[j] += mag_img.getImageStack().getProcessor(echoImageIndex)
-              .getPixelValue(i + roi_mag_belowM_xi, j + roi_mag_belowM_yi);
+          innerBox_sumOfYPlane[j] += ImageMethods.getVoxelValue(mag_img, i + roi_mag_belowM_xi, j + roi_mag_belowM_yi,
+              k + roi_mag_belowM_zi);
         }
       }
     }
@@ -1073,6 +1039,7 @@ public class ImageItem {
   // =====================================================================================
   public Axis MRIAxis() {
     MRI_axis = Calculate_Magnetic_Moment_3D.gui.ldd_MriAxis.getValue();
+    Calculate_Magnetic_Moment_3D.logger.addVariable("MRI_Axis", MRI_axis);
     return MRI_axis;
   }
 
@@ -1158,5 +1125,15 @@ public class ImageItem {
   public void setSlice(int i) {
     mag_img.setSlice(i);
     phase_img.setSlice(i);
+  }
+
+  /**
+   * Function to set Z of both mag and phase images
+   *
+   * @param z z to set
+   */
+  public void setZ(int z) {
+    mag_img.setZ(z);
+    phase_img.setZ(z);
   }
 }

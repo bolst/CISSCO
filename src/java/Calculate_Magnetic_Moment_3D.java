@@ -207,7 +207,7 @@ public class Calculate_Magnetic_Moment_3D implements PlugIn {
           Math.pow(RCenter, 3));
 
       // setting slice to center
-      item.setSlice((int) Double.parseDouble(gui.ltf_rcz.getValue()));
+      item.setZ((int) Double.parseDouble(gui.ltf_rcz.getValue()));
 
     } catch (Exception exc) {
       JOptionPane.showMessageDialog(gui.frame, exc);
@@ -286,12 +286,10 @@ public class Calculate_Magnetic_Moment_3D implements PlugIn {
 
       // Getting 3D array data to give to C++ and for images
       for (int k = zi; k <= zi + 2 * (int) m_R0; k++) {
-        magnitudeImage.setSlice(k + 1);
-        phaseImage.setSlice(k + 1);
         for (int j = yi; j <= yi + 2 * (int) m_R0; j++) {
           for (int i = xi; i <= xi + 2 * (int) m_R0; i++) {
-            tempphase = phaseImage.getImageStack().getProcessor(item.echoImageIndex).getPixelValue(i, j);
-            tempmag = magnitudeImage.getImageStack().getProcessor(item.echoImageIndex).getPixelValue(i, j);
+            tempphase = ImageMethods.getVoxelValue(phaseImage, i, j, k);
+            tempmag = ImageMethods.getVoxelValue(magnitudeImage, i, j, k);
 
             croppedMagnitudeValues3D[i - xi][j - yi][k - zi] = (float) tempmag;
             croppedPhaseValues3D[i - xi][j - yi][k - zi] = (float) tempphase;
@@ -378,8 +376,8 @@ public class Calculate_Magnetic_Moment_3D implements PlugIn {
       jni.setMagXZMatrix(subpixelMagMatrixXZ);
 
       // resetting slice to center
-      magnitudeImage.setSlice(item.centerS().get(2).intValue() + 1);
-      phaseImage.setSlice(item.centerS().get(2).intValue() + 1);
+      magnitudeImage.setZ(item.centerS().get(2).intValue());
+      phaseImage.setZ(item.centerS().get(2).intValue());
 
       // creating ROIs for later use
       roiImgMag = new ROIS(subMagTitle);
@@ -674,6 +672,9 @@ public class Calculate_Magnetic_Moment_3D implements PlugIn {
     int sub_y = (int) pixelToSubpixel(item.centerS().get(1), 1);
     int sub_z = (int) pixelToSubpixel(item.centerS().get(2), 2);
     logger.addVariable("subxyz", String.valueOf(sub_x) + ',' + String.valueOf(sub_y) + ',' + String.valueOf(sub_z));
+    logger.addVariable("csxyz", item.centerS().toString());
+    logger.addVariable("mr123", String.valueOf(m_R1) + ',' + String.valueOf(m_R2) + ',' + String.valueOf(m_R3));
+    logger.addVariable("mri axis", item.MRIAxis());
 
     roiImgMag.clear();
     roiImgMag.addPointROI(sub_x, sub_y);
@@ -730,18 +731,24 @@ public class Calculate_Magnetic_Moment_3D implements PlugIn {
         break;
 
       case Y:
-        R1_phase_actual += subpixelPhaseMatrixXZ[sub_x + (int) (m_R1 * 10)][sub_z];
-        R1_phase_actual += subpixelPhaseMatrixXZ[sub_x - (int) (m_R1 * 10)][sub_z];
+        // R1_phase_actual += subpixelPhaseMatrixXZ[sub_x + (int) (m_R1 * 10)][sub_z];
+        // R1_phase_actual += subpixelPhaseMatrixXZ[sub_x - (int) (m_R1 * 10)][sub_z];
+        R1_phase_actual += subpixelPhaseMatrix[sub_x + (int) (m_R1 * 10)][sub_y];
+        R1_phase_actual += subpixelPhaseMatrix[sub_x - (int) (m_R1 * 10)][sub_y];
         R1_phase_actual += subpixelPhaseMatrixXZ[sub_x][sub_z + (int) (m_R1 * 10)];
         R1_phase_actual += subpixelPhaseMatrixXZ[sub_x][sub_z - (int) (m_R1 * 10)];
 
-        R2_phase_actual += subpixelPhaseMatrixXZ[sub_x + (int) (m_R2 * 10)][sub_z];
-        R2_phase_actual += subpixelPhaseMatrixXZ[sub_x - (int) (m_R2 * 10)][sub_z];
+        // R2_phase_actual += subpixelPhaseMatrixXZ[sub_x + (int) (m_R2 * 10)][sub_z];
+        // R2_phase_actual += subpixelPhaseMatrixXZ[sub_x - (int) (m_R2 * 10)][sub_z];
+        R2_phase_actual += subpixelPhaseMatrix[sub_x + (int) (m_R2 * 10)][sub_y];
+        R2_phase_actual += subpixelPhaseMatrix[sub_x - (int) (m_R2 * 10)][sub_y];
         R2_phase_actual += subpixelPhaseMatrixXZ[sub_x][sub_z + (int) (m_R2 * 10)];
         R2_phase_actual += subpixelPhaseMatrixXZ[sub_x][sub_z - (int) (m_R2 * 10)];
 
-        R3_phase_actual += subpixelPhaseMatrixXZ[sub_x + (int) (m_R3 * 10)][sub_z];
-        R3_phase_actual += subpixelPhaseMatrixXZ[sub_x - (int) (m_R3 * 10)][sub_z];
+        // R3_phase_actual += subpixelPhaseMatrixXZ[sub_x + (int) (m_R3 * 10)][sub_z];
+        // R3_phase_actual += subpixelPhaseMatrixXZ[sub_x - (int) (m_R3 * 10)][sub_z];
+        R3_phase_actual += subpixelPhaseMatrix[sub_x + (int) (m_R3 * 10)][sub_y];
+        R3_phase_actual += subpixelPhaseMatrix[sub_x - (int) (m_R3 * 10)][sub_y];
         R3_phase_actual += subpixelPhaseMatrixXZ[sub_x][sub_z + (int) (m_R3 * 10)];
         R3_phase_actual += subpixelPhaseMatrixXZ[sub_x][sub_z - (int) (m_R3 * 10)];
         break;
@@ -1163,12 +1170,10 @@ public class Calculate_Magnetic_Moment_3D implements PlugIn {
 
         // Loop to get real numbers from simulated images using (mag * cos(phase))
         for (int k = k_i, nk = 0; k <= k_f; k++, nk++) {
-          simulatedMagnitudeImage.setSlice(k + 1);
-          simulatedPhaseImage.setSlice(k + 1);
           for (int j = j_i, nj = 0; j <= j_f; j++, nj++) {
             for (int i = i_i, ni = 0; i <= i_f; i++, ni++) {
-              tempmag = simulatedMagnitudeImage.getProcessor().getPixelValue(i, j);
-              tempphase = simulatedPhaseImage.getProcessor().getPixelValue(i, j);
+              tempmag = ImageMethods.getVoxelValue(simulatedMagnitudeImage, i, j, k);
+              tempphase = ImageMethods.getVoxelValue(simulatedPhaseImage, i, j, k);
               simulatedRealNumbers[ni][nj][nk] = (float) (tempmag * Math.cos(tempphase));
               simulatedImagNumbers[ni][nj][nk] = (float) (tempmag * Math.sin(tempphase));
             }
@@ -1491,10 +1496,9 @@ public class Calculate_Magnetic_Moment_3D implements PlugIn {
 
       // Getting S1 sum and volume
       for (int k = V1SE_z1; k <= V1SE_z2; k++) {
-        spinEchoImg.setSlice(k + 1);
         for (int j = V1SE_y1; j <= V1SE_y2; j++) {
           for (int i = V1SE_x1; i <= V1SE_x2; i++, V1_SE++) {
-            S1_SE += spinEchoImg.getProcessor().getPixelValue(i, j);
+            S1_SE += ImageMethods.getVoxelValue(spinEchoImg, i, j, k);
           }
         }
       }
@@ -1505,10 +1509,9 @@ public class Calculate_Magnetic_Moment_3D implements PlugIn {
 
       // Getting S2 sum and volume
       for (int k = V2SE_z1; k <= V2SE_z2; k++) {
-        spinEchoImg.setSlice(k + 1);
         for (int j = V2SE_y1; j <= V2SE_y2; j++) {
           for (int i = V2SE_x1; i <= V2SE_x2; i++, V2_SE++) {
-            S2_SE += spinEchoImg.getProcessor().getPixelValue(i, j);
+            S2_SE += ImageMethods.getVoxelValue(spinEchoImg, i, j, k);
           }
         }
       }
