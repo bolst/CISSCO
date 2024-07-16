@@ -29,7 +29,8 @@ i. ~~Because phase values along the MRI field direction are twice of the phase v
 
 (Note: Find out the highest absolute phase value and its corresponding voxel index along all three axes through Center_S.)
 
-j. Along each of the positive and negative MRI field directions, identify two adjacent voxels that have absolute phase values covering $\phi_{Rcenter}$, which is chosen by the user and is 1 radian by default. Interpolate phase values between those two adjacent voxels such that at the distance away from Center_S the interpolated subvoxel has a phase value of roughly $\phi_{Rcenter}$. Label the two distances away from Center_S along the positive and negative MRI field directions to be $r_z+$ and $r_z-$, and determine both values at the subvoxel level.
+j. Along each of the positive and negative MRI field directions, identify two adjacent voxels that have absolute phase values covering $\phi_{Rcenter}$, which is chosen by the user and is 1 radian by default. Interpolate phase values between those two adjacent voxels such that at the distance away from Center_S the interpolated subvoxel has a phase value of roughly $\phi_{Rcenter}$. Label the two distances away from Center_S along the positive and negative MRI field directions to be $r_{z+}$ and $r_{z-}
+$, and determine both values at the subvoxel level.
 
 (Notes: If we choose $R_{center}$ such that its corresponding phase value on the equatorial plane is $\phi_{Rcenter}$, then
 
@@ -42,7 +43,9 @@ $$ \phi_{Rcenter} = 2*p/r^3 = 2*\phi_{Rcenter}* (R_{center}^3) /r^3 $$
 
 Then we still solve $ 2*(R_{center}/r)^3 = 1 $ for Step.2j, except that the corresponding phase value is $\phi_{Rcenter}$. The solution is $$ R_{center} = r/2^{1/3} $$
 
-k. Update the coordinate of Center_S along the MRI field direction to be $(r_z+ + r_z-)/2$. Assign $$ R_{center} = |r_z+ - r_z-| / (2*2^{1/3}) $$
+k. Update the coordinate of Center_S along the MRI field direction to be $(r_{z+} + r_{z-}
+)/2$. Assign $$ R_{center} = |r_{z+} - r_{z-}
+| / (2*2^{1/3}) $$
 
 Step 2a: For the first time running the software, the initial background phase should be assigned to zero until it is calculated later.
 
