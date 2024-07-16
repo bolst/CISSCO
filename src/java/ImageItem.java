@@ -438,11 +438,14 @@ public class ImageItem {
       // this condition is if the current voxel is nested between two voxels greater
       // and less than the user-defined phase value
       if ((phaseVals_pos[i] > phaseValue) && (phaseVals_pos[i + 1] < phaseValue)) {
+        Calculate_Magnetic_Moment_3D.logger.addVariable("Found pos phase 1", phaseVals_pos[i]);
+        Calculate_Magnetic_Moment_3D.logger.addVariable("Found pos phase 2", phaseVals_pos[i + 1]);
         // this condition is if the interpolation value is greater than 1.6, because the
         // object radius has to be greater than 1.6
         if (interpolation(phaseValue, phaseVals_pos[i], phaseVals_pos[i + 1], i, i + 1) > 1.6) {
           r_pos = interpolation(phaseValue, phaseVals_pos[i], phaseVals_pos[i + 1], i, i + 1);
         }
+        Calculate_Magnetic_Moment_3D.logger.addVariable("r_pos", r_pos);
         break;
       }
     }
@@ -450,9 +453,12 @@ public class ImageItem {
     // Same thing as above just the opposite direction
     for (int i = 0; i < phaseVals_neg.length - 1; i++) {
       if ((phaseVals_neg[i] > phaseValue) && (phaseVals_neg[i + 1] < phaseValue)) {
+        Calculate_Magnetic_Moment_3D.logger.addVariable("Found neg phase 1", phaseVals_neg[i]);
+        Calculate_Magnetic_Moment_3D.logger.addVariable("Found neg phase 2", phaseVals_neg[i + 1]);
         if (interpolation(phaseValue, phaseVals_neg[i], phaseVals_neg[i + 1], i, i + 1) > 1.6) {
           r_neg = interpolation(phaseValue, phaseVals_neg[i], phaseVals_neg[i + 1], i, i + 1);
         }
+        Calculate_Magnetic_Moment_3D.logger.addVariable("r_neg", r_neg);
         break;
       }
     }

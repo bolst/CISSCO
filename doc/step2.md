@@ -36,13 +36,13 @@ j. Along each of the positive and negative MRI field directions, identify two ad
 $$ p/(R_{center}^3) = \phi_{Rcenter} $$
 This leads to $p = (R_{center}^3) * \phi_{Rcenter}$
 Along the z-direction, we have
-$$ 2*p/r^3 = phase $$
+$$ 2*p/r^3 = \phi $$
 Now, if we choose the same $\phi_{Rcenter}$ along the field direction, then we have:
 $$ \phi_{Rcenter} = 2*p/r^3 = 2*\phi_{Rcenter}* (R_{center}^3) /r^3 $$
 
-Then we still solve $ 2*(R_{center}/r)^3 = 1 $ for Step.2j, except that the corresponding phase value is $\phi_{Rcenter}$. The solution is $$ R_{center} = r/pow(2, 1/3) $$
+Then we still solve $ 2*(R_{center}/r)^3 = 1 $ for Step.2j, except that the corresponding phase value is $\phi_{Rcenter}$. The solution is $$ R_{center} = r/2^{1/3} $$
 
-k. Update the coordinate of Center_S along the MRI field direction to be $(r_z+ + r_z-)/2$. Assign $$ R_{center} = |r_z+ - r_z-|/(2*pow(2, 1/3)) $$
+k. Update the coordinate of Center_S along the MRI field direction to be $(r_z+ + r_z-)/2$. Assign $$ R_{center} = |r_z+ - r_z-| / (2*2^{1/3}) $$
 
 Step 2a: For the first time running the software, the initial background phase should be assigned to zero until it is calculated later.
 
