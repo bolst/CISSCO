@@ -29,23 +29,23 @@ i. ~~Because phase values along the MRI field direction are twice of the phase v
 
 (Note: Find out the highest absolute phase value and its corresponding voxel index along all three axes through Center_S.)
 
-j. Along each of the positive and negative MRI field directions, identify two adjacent voxels that have absolute phase values covering $phase_{Rcenter}$, which is chosen by the user and is 1 radian by default. Interpolate phase values between those two adjacent voxels such that at the distance away from Center_S the interpolated subvoxel has a phase value of roughly $phase_{Rcenter}$. Label the two distances away from Center_S along the positive and negative MRI field directions to be $r_z+$ and $r_z-$, and determine both values at the subvoxel level.
+j. Along each of the positive and negative MRI field directions, identify two adjacent voxels that have absolute phase values covering $\phi_{Rcenter}$, which is chosen by the user and is 1 radian by default. Interpolate phase values between those two adjacent voxels such that at the distance away from Center_S the interpolated subvoxel has a phase value of roughly $\phi_{Rcenter}$. Label the two distances away from Center_S along the positive and negative MRI field directions to be $r_z+$ and $r_z-$, and determine both values at the subvoxel level.
 
-(Notes: If we choose $R_{center}$ such that its corresponding phase value on the equatorial plane is $phase_{Rcenter}$, then
+(Notes: If we choose $R_{center}$ such that its corresponding phase value on the equatorial plane is $\phi_{Rcenter}$, then
 
-$$ p/(R_{center}^3) = phase_{Rcenter} $$
-This leads to $p = (R_{center}^3) * phase_{Rcenter}$
+$$ p/(R_{center}^3) = \phi_{Rcenter} $$
+This leads to $p = (R_{center}^3) * \phi_{Rcenter}$
 Along the z-direction, we have
 $$ 2*p/r^3 = phase $$
-Now, if we choose the same $phase_{Rcenter}$ along the field direction, then we have:
-$$ phase_{Rcenter} = 2*p/r^3 = 2*phase_{Rcenter}* (R_{center}^3) /r^3 $$
+Now, if we choose the same $\phi_{Rcenter}$ along the field direction, then we have:
+$$ \phi_{Rcenter} = 2*p/r^3 = 2*\phi_{Rcenter}* (R_{center}^3) /r^3 $$
 
-Then we still solve $ 2*(R_{center}/r)^3 = 1 $ for Step.2j, except that the corresponding phase value is $phase_{Rcenter}$. The solution is $$ R_{center} = r/pow(2, 1/3) $$
+Then we still solve $ 2*(R_{center}/r)^3 = 1 $ for Step.2j, except that the corresponding phase value is $\phi_{Rcenter}$. The solution is $$ R_{center} = r/pow(2, 1/3) $$
 
 k. Update the coordinate of Center_S along the MRI field direction to be $(r_z+ + r_z-)/2$. Assign $$ R_{center} = |r_z+ - r_z-|/(2*pow(2, 1/3)) $$
 
 Step 2a: For the first time running the software, the initial background phase should be assigned to zero until it is calculated later.
 
-Step 2b: How to estimate Rcenter with the phase value ($phase_{Rcenter}$) entered by a user in the GUI?
+Step 2b: How to estimate Rcenter with the phase value ($\phi_{Rcenter}$) entered by a user in the GUI?
 
 We first need to null phase values inside the sphere. We need to use magnitude images for this purpose. From averaging the 8 corners of the box that a user draws in the GUI, we know the averaged intensity value outside the sphere. Then consider that the magnitude intensity inside the sphere is to be less than 50% or 60%. Thus you can write a function to exclude pixels with magnitude intensities less than a specified value. The overall pixels you will exclude reflect the volume of the sphere. Use that volume and estimate the radius of the spherical object. This radius will be needed at the end of the GUI.
