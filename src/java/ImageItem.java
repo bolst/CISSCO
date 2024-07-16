@@ -422,8 +422,8 @@ public class ImageItem {
       Axis mri_dir,
       double[] phaseVals_pos,
       double[] phaseVals_neg) {
-    double r1 = 1.6;
-    double r2 = 1.6;
+    double r_pos = 1.6;
+    double r_neg = 1.6;
 
     /*
      * The logic below works by finding a voxel phase value that is between the
@@ -441,7 +441,7 @@ public class ImageItem {
         // this condition is if the interpolation value is greater than 1.6, because the
         // object radius has to be greater than 1.6
         if (interpolation(phaseValue, phaseVals_pos[i], phaseVals_pos[i + 1], i, i + 1) > 1.6) {
-          r1 = interpolation(phaseValue, phaseVals_pos[i], phaseVals_pos[i + 1], i, i + 1);
+          r_pos = interpolation(phaseValue, phaseVals_pos[i], phaseVals_pos[i + 1], i, i + 1);
         }
         break;
       }
@@ -451,7 +451,7 @@ public class ImageItem {
     for (int i = 0; i < phaseVals_neg.length - 1; i++) {
       if ((phaseVals_neg[i] > phaseValue) && (phaseVals_neg[i + 1] < phaseValue)) {
         if (interpolation(phaseValue, phaseVals_neg[i], phaseVals_neg[i + 1], i, i + 1) > 1.6) {
-          r2 = interpolation(phaseValue, phaseVals_neg[i], phaseVals_neg[i + 1], i, i + 1);
+          r_neg = interpolation(phaseValue, phaseVals_neg[i], phaseVals_neg[i + 1], i, i + 1);
         }
         break;
       }
@@ -460,15 +460,15 @@ public class ImageItem {
     // Set the center_s MRI axis value to the average of the found radii + the
     // found center point of the MRI field axis
     if (mri_dir == Axis.X) {
-      center_s.set(0, ((center_mri_axis + r1) + (center_mri_axis - r2)) / 2.0);
+      center_s.set(0, ((center_mri_axis + r_pos) + (center_mri_axis - r_neg)) / 2.0);
       center_s.set(0, Math.round(center_s.get(0) * 10.0) / 10.0);
       Calculate_Magnetic_Moment_3D.gui.ltf_rcx.setValue(String.valueOf(Math.round(center_s.get(0) * 10.0) / 10.0));
     } else if (mri_dir == Axis.Y) {
-      center_s.set(1, ((center_mri_axis + r1) + (center_mri_axis - r2)) / 2.0);
+      center_s.set(1, ((center_mri_axis + r_pos) + (center_mri_axis - r_neg)) / 2.0);
       center_s.set(1, Math.round(center_s.get(1) * 10.0) / 10.0);
       Calculate_Magnetic_Moment_3D.gui.ltf_rcy.setValue(String.valueOf(Math.round(center_s.get(1) * 10.0) / 10.0));
     } else if (mri_dir == Axis.Z) {
-      center_s.set(2, ((center_mri_axis + r1) + (center_mri_axis - r2)) / 2.0);
+      center_s.set(2, ((center_mri_axis + r_pos) + (center_mri_axis - r_neg)) / 2.0);
       center_s.set(2, Math.round(center_s.get(2) * 10.0) / 10.0);
       Calculate_Magnetic_Moment_3D.gui.ltf_rcz.setValue(String.valueOf(Math.round(center_s.get(2) * 10.0) / 10.0));
     } else {
@@ -476,7 +476,7 @@ public class ImageItem {
     }
 
     // returning equation for RCenter
-    RCenter = ((r1 + r2) / 2.0) / Math.cbrt(2);
+    RCenter = ((r_pos + r_neg) / 2.0) / Math.cbrt(2);
     return RCenter;
   }
 
