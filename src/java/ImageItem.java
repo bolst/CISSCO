@@ -247,6 +247,11 @@ public class ImageItem {
       }
     }
 
+    Calculate_Magnetic_Moment_3D.logger.addVariable("roi xi yi zi",
+        new Triplet<Integer>(roi_mag_belowM_xi, roi_mag_belowM_yi, roi_mag_belowM_zi).toString());
+    Calculate_Magnetic_Moment_3D.logger.addVariable("roi dx dy dz",
+        new Triplet<Integer>(roi_mag_belowM_dx, roi_mag_belowM_dy, roi_mag_belowM_dz).toString());
+
     // Remainder of step2 implementation is in other functions in this class
 
   }
@@ -648,19 +653,15 @@ public class ImageItem {
     double[] phaseVals_neg;
     int center_mri_axis;
     // String neglectedAxis;
-    switch (calculateMRIAxis(phaseVals_xPos,
-        phaseVals_xNeg,
-        phaseVals_yPos,
-        phaseVals_yNeg,
-        phaseVals_zPos,
-        phaseVals_zNeg)) {
+    MRI_axis = calculateMRIAxis(phaseVals_xPos, phaseVals_xNeg, phaseVals_yPos, phaseVals_yNeg, phaseVals_zPos,
+        phaseVals_zNeg);
+    Calculate_Magnetic_Moment_3D.gui.ldd_MriAxis.setValue(MRI_axis);
+    switch (MRI_axis) {
       case X:
         phaseVals_pos = phaseVals_xPos;
         phaseVals_neg = phaseVals_xNeg;
         // neglectedAxis = "x";
-        MRI_axis = Axis.X;
         center_mri_axis = csx;
-        Calculate_Magnetic_Moment_3D.gui.ldd_MriAxis.setValue(Axis.X);
         // PVP1 = phaseVals_yPos;
         // PVN1 = phaseVals_yNeg;
         // axis1 = "y";
@@ -675,9 +676,7 @@ public class ImageItem {
         phaseVals_pos = phaseVals_yPos;
         phaseVals_neg = phaseVals_yNeg;
         // neglectedAxis = "y";
-        MRI_axis = Axis.Y;
         center_mri_axis = csy;
-        Calculate_Magnetic_Moment_3D.gui.ldd_MriAxis.setValue(Axis.Y);
         // PVP1 = phaseVals_xPos;
         // PVN1 = phaseVals_xNeg;
         // P1C = csx;
@@ -692,9 +691,7 @@ public class ImageItem {
         phaseVals_pos = phaseVals_zPos;
         phaseVals_neg = phaseVals_zNeg;
         // neglectedAxis = "z";
-        MRI_axis = Axis.Z;
         center_mri_axis = csz;
-        Calculate_Magnetic_Moment_3D.gui.ldd_MriAxis.setValue(Axis.Z);
         // PVP1 = phaseVals_xPos;
         // PVN1 = phaseVals_xNeg;
         // P1C = csx;
@@ -932,13 +929,6 @@ public class ImageItem {
     double[] innerBox_sumOfXPlane = new double[roi_mag_belowM_dx + 1];
     double[] innerBox_sumOfYPlane = new double[roi_mag_belowM_dy + 1];
     double[] innerBox_sumOfZPlane = new double[roi_mag_belowM_dz + 1];
-
-    Calculate_Magnetic_Moment_3D.logger.addVariable("rmb xi", roi_mag_belowM_xi);
-    Calculate_Magnetic_Moment_3D.logger.addVariable("rmb yi", roi_mag_belowM_yi);
-    Calculate_Magnetic_Moment_3D.logger.addVariable("rmb zi", roi_mag_belowM_zi);
-    Calculate_Magnetic_Moment_3D.logger.addVariable("rmb dx", roi_mag_belowM_dx);
-    Calculate_Magnetic_Moment_3D.logger.addVariable("rmb dy", roi_mag_belowM_dy);
-    Calculate_Magnetic_Moment_3D.logger.addVariable("rmb dz", roi_mag_belowM_dz);
 
     // Summing z plane and putting it into array
     for (int k = 0; k <= roi_mag_belowM_dz; k++) {
