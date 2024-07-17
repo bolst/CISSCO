@@ -445,7 +445,6 @@ public class ImageItem {
         if (interpolation(phaseValue, phaseVals_pos[i], phaseVals_pos[i + 1], i, i + 1) > 1.6) {
           r_pos = interpolation(phaseValue, phaseVals_pos[i], phaseVals_pos[i + 1], i, i + 1);
         }
-        Calculate_Magnetic_Moment_3D.logger.addVariable("r_pos", r_pos);
         break;
       }
     }
@@ -458,7 +457,6 @@ public class ImageItem {
         if (interpolation(phaseValue, phaseVals_neg[i], phaseVals_neg[i + 1], i, i + 1) > 1.6) {
           r_neg = interpolation(phaseValue, phaseVals_neg[i], phaseVals_neg[i + 1], i, i + 1);
         }
-        Calculate_Magnetic_Moment_3D.logger.addVariable("r_neg", r_neg);
         break;
       }
     }
@@ -481,8 +479,10 @@ public class ImageItem {
       Calculate_Magnetic_Moment_3D.logger.addInfo("Unable to determine MRI axis");
     }
 
+    Calculate_Magnetic_Moment_3D.logger.addVariable("r_pos", r_pos);
+    Calculate_Magnetic_Moment_3D.logger.addVariable("r_neg", r_neg);
     // returning equation for RCenter
-    RCenter = ((r_pos + r_neg) / 2.0) / Math.cbrt(2);
+    RCenter = (r_pos + r_neg) / 2.0 / Math.cbrt(2);
     return RCenter;
   }
 
