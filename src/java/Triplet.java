@@ -20,7 +20,7 @@ class Triplet<T> {
             default:
                 return null;
         }
-    }
+	}
 
     public void set(int i, T val) {
         switch (i) {

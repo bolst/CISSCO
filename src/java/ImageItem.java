@@ -482,7 +482,7 @@ public class ImageItem {
     Calculate_Magnetic_Moment_3D.logger.addVariable("r_pos", r_pos);
     Calculate_Magnetic_Moment_3D.logger.addVariable("r_neg", r_neg);
     // returning equation for RCenter
-    RCenter = (r_pos + r_neg) / 2.0 / Math.cbrt(2);
+    RCenter = Math.abs(r_pos + r_neg) / 2.0 / Math.cbrt(2);
     return RCenter;
   }
 
