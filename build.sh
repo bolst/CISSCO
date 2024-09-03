@@ -38,17 +38,17 @@ if [ $? -ne 0 ]; then
 fi
 
 mv src/java/*.class bin 2>/dev/null
-mv Calculate_Magnetic_Moment_3D_Native.so lib 2>/dev/null
+mv Calculate_Magnetic_Moment_3D_Native.so bin 2>/dev/null
 mv Calculate_Magnetic_Moment_3D.o bin 2>/dev/null
 if [ $? -ne 0 ]; then
-    echo "Unable to move files to bin & lib"
+    echo "Unable to move files to bin"
     exit 1
 fi
 
 mkdir -p ext/ImageJ.app/plugins/CISSCO
 cp bin/* ext/ImageJ.app/plugins/CISSCO/ 2>/dev/null
 cp lib/ml.jar ext/ImageJ.app/plugins/CISSCO/ 2>/dev/null
-cp lib/Calculate_Magnetic_Moment_3D_Native.so ext/ImageJ.app/plugins/CISSCO/ 2>/dev/null
+cp bin/Calculate_Magnetic_Moment_3D_Native.so ext/ImageJ.app/plugins/CISSCO/ 2>/dev/null
 if [ $? -ne 0 ]; then
     echo "Unable to copy files to ImageJ.app/plugins/CISSCO"
     exit 1
