@@ -2,9 +2,11 @@ import ij.ImagePlus;
 
 public class ImageMethods {
 
-    public static float getVoxelValue(ImagePlus image, int x, int y, int z) {
+    // gets voxel value of a given image
+    // specify an echo time if t > 0
+    public static float getVoxelValue(ImagePlus image, int x, int y, int z, int t) {
         if (image.isHyperStack()) {
-            int currFrame = image.getFrame();
+            int currFrame = t > 0 ? t : image.getFrame();
             int T = image.getT();
             int Z = image.getZ();
 
