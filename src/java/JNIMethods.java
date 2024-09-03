@@ -14,7 +14,7 @@ class JNIMethods {
     private static final String DLL_PATH = System.getProperty("user.dir")
             + "\\plugins\\CISSCO\\Calculate_Magnetic_Moment_3D_Native.dll";
     private static final String SO_PATH = System.getProperty("user.dir")
-            + "/ImageJ/plugins/CISSCO/Calculate_Magnetic_Moment_3D_Native.so";
+            + "/plugins/CISSCO/Calculate_Magnetic_Moment_3D_Native.so";
 
     static {
         Calculate_Magnetic_Moment_3D.logger = new LogManager();
