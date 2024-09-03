@@ -12,8 +12,6 @@ C++ technically does not have arrays but pointers, unlike Java. So the firstleve
 
 */
 
-using namespace std;
-
 #include <cmath>
 #include <limits>
 #include <vector>
@@ -23,6 +21,9 @@ using namespace std;
 #include <iostream>
 #include <fstream>
 #include <sstream>
+
+using namespace std;
+
 #include <jni.h>
 #include "JNIMethods.h"
 

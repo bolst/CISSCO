@@ -34,8 +34,8 @@ $, and determine both values at the subvoxel level.
 
 (Notes: If we choose $R_\text{center}$ such that its corresponding phase value on the equatorial plane is $\phi_{R\text{center}}$, then
 
-$$ p/(R_\text{center}^3) = \phi_{R\text{center}} $$
-This leads to $p = (R_\text{center}^3)  \phi_{R\text{center}}$
+$$ p/(R_\text{center})^3 = \phi_{R\text{center}} $$
+This leads to $p = (R_\text{center})^3  \phi_{R\text{center}}$
 Along the z-direction, we have
 $$ 2p/r^3 = \phi $$
 Now, if we choose the same $\phi_{R\text{center}}$ along the field direction, then we have:

@@ -1,5 +1,7 @@
 @echo off
 
+echo Note: this script is no longer maintained
+
 echo cleaning...
 del /q bin\*.*
 del /q ext\ImageJ\plugins\CISSCO\*.*

@@ -4,7 +4,7 @@ Calculate Magnetic Moment 3D (CMM3D) is an ImageJ plug-in developed as an implem
 
 ## __Developing with this repo__
 
-If one wishes to develop/modify the code in `src/` and test within ImageJ, I have written build+run scripts in cmd for convenience.
+If one wishes to develop/modify the code in `src/` and test within ImageJ, I have written build scripts.
 
 Java 8 must be used. ImageJ is written in Java 8 and thus CISSCO is also. My C++ compiler is g++ 12.2.0 (MinGW-W64 x86_64-ucrt-posix-seh) and is also required.
 
@@ -13,8 +13,7 @@ To test CISSCO within ImageJ, perform the following steps:
 1. Clone this repo to a folder
 2. Create a folder called `ext`. It should be on the same level as `src`,`lib`,etc
 3. Place a version of ImageJ within `ext`. The path should look like `CISSCO/ext/ImageJ/...`. 
-4. Create a folder `CISSCO` within `ImageJ/plugins/`
-5. Execute `build.*` from its location (I suggest using a terminal, `cd` to its location and execute it). ImageJ should open with the CISSCO plug-in included
+4. Execute `build.*` from its location. ImageJ should open with the CISSCO plug-in included
 
 ## __Dependencies__
 

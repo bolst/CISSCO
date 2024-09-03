@@ -1,0 +1,10 @@
+# ignore all sample images
+test/images
+
+# ignore where imagej is
+ext
+
+# ignore output files
+bin
+
+.vscode
