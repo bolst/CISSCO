@@ -8,3 +8,4 @@ ext
 bin
 
 .vscode
+.DS_STORE
