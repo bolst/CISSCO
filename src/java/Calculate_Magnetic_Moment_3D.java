@@ -145,7 +145,6 @@ public class Calculate_Magnetic_Moment_3D implements PlugIn {
         center_sx = item.centerS().get(0);
         center_sy = item.centerS().get(1);
         center_sz = item.centerS().get(2);
-        logger.addInfo("cs", item.centerS());
       } catch (Exception exc) {
         logger.addError("center s exc" + exc.toString());
         center_sx = item.centerM().get(0);
@@ -285,11 +284,12 @@ public class Calculate_Magnetic_Moment_3D implements PlugIn {
       double tempphase;
 
       // Getting 3D array data to give to C++ and for images
+      int t = item.echoImageIndex;
       for (int k = zi; k <= zi + 2 * (int) m_R0; k++) {
         for (int j = yi; j <= yi + 2 * (int) m_R0; j++) {
           for (int i = xi; i <= xi + 2 * (int) m_R0; i++) {
-            tempphase = ImageMethods.getVoxelValue(phaseImage, i, j, k);
-            tempmag = ImageMethods.getVoxelValue(magnitudeImage, i, j, k);
+            tempphase = ImageMethods.getVoxelValue(phaseImage, i, j, k, t);
+            tempmag = ImageMethods.getVoxelValue(magnitudeImage, i, j, k, t);
 
             croppedMagnitudeValues3D[i - xi][j - yi][k - zi] = (float) tempmag;
             croppedPhaseValues3D[i - xi][j - yi][k - zi] = (float) tempphase;
@@ -1172,8 +1172,8 @@ public class Calculate_Magnetic_Moment_3D implements PlugIn {
         for (int k = k_i, nk = 0; k <= k_f; k++, nk++) {
           for (int j = j_i, nj = 0; j <= j_f; j++, nj++) {
             for (int i = i_i, ni = 0; i <= i_f; i++, ni++) {
-              tempmag = ImageMethods.getVoxelValue(simulatedMagnitudeImage, i, j, k);
-              tempphase = ImageMethods.getVoxelValue(simulatedPhaseImage, i, j, k);
+              tempmag = ImageMethods.getVoxelValue(simulatedMagnitudeImage, i, j, k, 0);
+              tempphase = ImageMethods.getVoxelValue(simulatedPhaseImage, i, j, k, 0);
               simulatedRealNumbers[ni][nj][nk] = (float) (tempmag * Math.cos(tempphase));
               simulatedImagNumbers[ni][nj][nk] = (float) (tempmag * Math.sin(tempphase));
             }
@@ -1498,7 +1498,7 @@ public class Calculate_Magnetic_Moment_3D implements PlugIn {
       for (int k = V1SE_z1; k <= V1SE_z2; k++) {
         for (int j = V1SE_y1; j <= V1SE_y2; j++) {
           for (int i = V1SE_x1; i <= V1SE_x2; i++, V1_SE++) {
-            S1_SE += ImageMethods.getVoxelValue(spinEchoImg, i, j, k);
+            S1_SE += ImageMethods.getVoxelValue(spinEchoImg, i, j, k, 0);
           }
         }
       }
@@ -1511,7 +1511,7 @@ public class Calculate_Magnetic_Moment_3D implements PlugIn {
       for (int k = V2SE_z1; k <= V2SE_z2; k++) {
         for (int j = V2SE_y1; j <= V2SE_y2; j++) {
           for (int i = V2SE_x1; i <= V2SE_x2; i++, V2_SE++) {
-            S2_SE += ImageMethods.getVoxelValue(spinEchoImg, i, j, k);
+            S2_SE += ImageMethods.getVoxelValue(spinEchoImg, i, j, k, 0);
           }
         }
       }

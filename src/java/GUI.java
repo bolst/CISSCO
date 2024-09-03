@@ -37,6 +37,9 @@ public class GUI {
             ll_dChiSE, ll_a, ll_V0, ltf_magMom;
     public LabeledDropDown<ImageItem.Axis> ldd_MriAxis;
 
+    private final int WIDTH = 1000;
+    private final int HEIGHT = 900;
+
     public GUI() {
         this.initialize();
         this.frame.setVisible(true);
@@ -53,7 +56,7 @@ public class GUI {
     private void initialize() {
         frame = new JFrame("Calculate Magnetic Moment 3D");
         frame.setAlwaysOnTop(false);
-        frame.setBounds(100, 100, 900, 850);
+        frame.setBounds(100, 100, WIDTH, HEIGHT);
         frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         frame.getContentPane().setLayout(
                 new MigLayout("",
