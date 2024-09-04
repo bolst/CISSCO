@@ -4,6 +4,7 @@ import ij.ImagePlus;
 import ij.gui.*;
 import ij.WindowManager;
 import java.util.Arrays;
+import java.util.function.Consumer;
 
 public class ImageItem {
 
@@ -281,35 +282,61 @@ public class ImageItem {
     Calculate_Magnetic_Moment_3D.logger.addVariable("ZP", Arrays.toString(ZP));
     Calculate_Magnetic_Moment_3D.logger.addVariable("ZN", Arrays.toString(ZN));
 
-    int max_iter = Arrays.stream(new int[] { XP.length, XN.length, YP.length, YN.length, ZP.length, ZN.length }).min()
-        .getAsInt();
+    // to hold distances from center_s where phase is non-zero
+    // indexed xp,xn,yp,yn,zp,zn
+    final int nDims = 6;
+    int[] r0s = new int[] { 0, 0, 0, 0, 0, 0 };
+    double[][] Ps = new double[][] { XP, XN, YP, YN, ZP, ZN };
 
-    double X = 0.0;
-    double Y = 0.0;
-    double Z = 0.0;
-    for (int i = 0; i < max_iter; i++) {
-      if (XP[i] == 0.0 ||
-          XN[i] == 0.0 ||
-          YP[i] == 0.0 ||
-          YN[i] == 0.0 ||
-          ZP[i] == 0.0 ||
-          ZN[i] == 0.0) {
-        continue;
+    Calculate_Magnetic_Moment_3D.logger.addInfo("HI");
+
+    // for each direction
+    for (int i = 0; i < nDims; i++) {
+      // get direction
+      double[] P = Ps[i];
+
+      // for each phase value in phase direction from center_s
+      for (int r = 0; r < P.length; r++) {
+        double phase = P[r];
+        // find peak phase value
+        if (phase != 0.0) {
+          if (phase > P[r0s[i]]) {
+            r0s[i] = r;
+          }
+        }
       }
-
-      X += Math.abs(XP[i]) + Math.abs(XN[i]);
-      Y += Math.abs(YP[i]) + Math.abs(YN[i]);
-      Z += Math.abs(ZP[i]) + Math.abs(ZN[i]);
     }
 
-    double ratioXY = Math.abs(X / Y - 1);
-    double ratioXZ = Math.abs(X / Z - 1);
-    double ratioYZ = Math.abs(Y / Z - 1);
-    double minRatio = Math.min(Math.min(ratioXY, ratioXZ), ratioYZ);
+    Calculate_Magnetic_Moment_3D.logger.addInfo("HI");
+    double[] averages = new double[3];
+    for (int i = 0; i < nDims; i += 2) {
+      int j = i + 1;
 
-    Axis retval = (minRatio == ratioXY) ? Axis.Z : (minRatio == ratioXZ ? Axis.Y : Axis.X);
+      int r0p = r0s[i];
+      int r0n = r0s[j];
+
+      double pos0 = (r0p < Ps.length - 1) ? Ps[i][r0p + 1] : 0;
+      double neg0 = (r0n < Ps.length - 1) ? Ps[j][r0n + 1] : 0;
+
+      double pos = Math.abs(Ps[i][r0p] - pos0);
+      double neg = Math.abs(Ps[j][r0n] - neg0);
+      averages[(int) (i / 2)] = (pos + neg) / 2.0;
+    }
+
+    Calculate_Magnetic_Moment_3D.logger.addVariable("average x", averages[0]);
+    Calculate_Magnetic_Moment_3D.logger.addVariable("average y", averages[1]);
+    Calculate_Magnetic_Moment_3D.logger.addVariable("average z", averages[2]);
+
+    double minAvg = Math.min(Math.min(averages[0], averages[1]), averages[2]);
+    Axis retval = Axis.X;
+    if (minAvg == averages[2])
+      retval = Axis.Z;
+    else if (minAvg == averages[1])
+      retval = Axis.Y;
+    else
+      retval = Axis.X;
+
     Calculate_Magnetic_Moment_3D.logger.addVariable("mri axis", retval);
-
     return retval;
   }
 
@@ -517,7 +544,7 @@ public class ImageItem {
     for (int iz = 0; iz <= roi_dz; iz++) {
       for (int iy = 0; iy <= roi_dy; iy++) {
         for (int ix = 0; ix <= roi_dx; ix++) {
-          phase_nobkg[ix][iy][iz] = ImageMethods.getVoxelValue(phase_img, roi_xi + ix, roi_yi + iy, roi_zi,
+          phase_nobkg[ix][iy][iz] = ImageMethods.getVoxelValue(phase_img, roi_xi + ix, roi_yi + iy, roi_zi + iz,
               echoImageIndex);
         }
       }
@@ -584,10 +611,10 @@ public class ImageItem {
 
     // Phase values for each direction
     int xp_size = roi_xi + roi_dx - csx + 1;
-    int xn_size = csx - roi_xi + 1;
     int yp_size = roi_yi + roi_dy - csy + 1;
-    int yn_size = csy - roi_yi + 1;
     int zp_size = roi_zi + roi_dz - csz + 1;
+    int xn_size = csx - roi_xi + 1;
+    int yn_size = csy - roi_yi + 1;
     int zn_size = csz - roi_zi + 1;
     double[] phaseVals_xPos = new double[xp_size];
     double[] phaseVals_yPos = new double[yp_size];
