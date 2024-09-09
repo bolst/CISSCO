@@ -119,8 +119,6 @@ public class Calculate_Magnetic_Moment_3D implements PlugIn {
           gui.ltf_rcx.setValue("0.0");
           gui.ltf_rcy.setValue("0.0");
           gui.ltf_rcz.setValue("0.0");
-
-          new_item = null; // don't need this anymore
         }
       }
 
