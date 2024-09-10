@@ -142,8 +142,9 @@ public class ImageMethods {
         Calculate_Magnetic_Moment_3D.logger.addVariable("Found pos phase 2", phaseValsPos[i + 1]);
         // this condition is if the interpolation value is greater than 1.6, because the
         // object radius has to be greater than 1.6
-        if (Utilities.interpolation(phaseValue, phaseValsPos[i], phaseValsPos[i + 1], i, i + 1) > 1.6) {
-          r_pos = Utilities.interpolation(phaseValue, phaseValsPos[i], phaseValsPos[i + 1], i, i + 1);
+        double interpolatedPhase = Utilities.interpolation(phaseValue, phaseValsPos[i], phaseValsPos[i + 1], i, i + 1);
+        if (interpolatedPhase > 1.6) {
+          r_pos = interpolatedPhase;
         }
         break;
       }
@@ -154,8 +155,9 @@ public class ImageMethods {
       if ((phaseValsNeg[i] > phaseValue) && (phaseValsNeg[i + 1] < phaseValue)) {
         Calculate_Magnetic_Moment_3D.logger.addVariable("Found neg phase 1", phaseValsNeg[i]);
         Calculate_Magnetic_Moment_3D.logger.addVariable("Found neg phase 2", phaseValsNeg[i + 1]);
-        if (Utilities.interpolation(phaseValue, phaseValsNeg[i], phaseValsNeg[i + 1], i, i + 1) > 1.6) {
-          r_neg = Utilities.interpolation(phaseValue, phaseValsNeg[i], phaseValsNeg[i + 1], i, i + 1);
+        double interpolatedPhase = Utilities.interpolation(phaseValue, phaseValsNeg[i], phaseValsNeg[i + 1], i, i + 1);
+        if (interpolatedPhase > 1.6) {
+          r_neg = interpolatedPhase;
         }
         break;
       }
@@ -163,6 +165,7 @@ public class ImageMethods {
 
     Calculate_Magnetic_Moment_3D.logger.addVariable("r_pos", r_pos);
     Calculate_Magnetic_Moment_3D.logger.addVariable("r_neg", r_neg);
+    Calculate_Magnetic_Moment_3D.logger.addVariable("MRI axis center", mriAxisCenter);
 
     // RCenter to return
     double RCenter = Math.abs(r_pos + r_neg) / 2.0 / Math.cbrt(2);
@@ -251,7 +254,7 @@ public class ImageMethods {
         }
         // y axis
       case Y:
-        int cy0 = centerS.get(0).intValue();
+        int cy0 = centerS.get(1).intValue();
         // positive y direction
         if (direction) {
           for (int i = 0; i < values.length; i++) {
@@ -272,7 +275,7 @@ public class ImageMethods {
         }
         // z axis
       case Z:
-        int cz0 = centerS.get(0).intValue();
+        int cz0 = centerS.get(2).intValue();
         // positive z direction
         if (direction) {
           for (int i = 0; i < values.length; i++) {

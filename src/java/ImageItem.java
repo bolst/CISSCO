@@ -412,6 +412,7 @@ public class ImageItem {
     double newCenter = RCenterAndNewCenter[1];
     // new center rounded to one decimal place
     double newCenter1f = Math.round(newCenter * 10.0) / 10.0;
+    Calculate_Magnetic_Moment_3D.logger.addVariable("newCenter rounded", newCenter1f);
 
     // Set the center_s MRI axis value to the average of the found radii + the
     // found center point of the MRI field axis
