@@ -503,24 +503,23 @@ public class ImageItem {
         phaseValue);
     RCenter = RCenterAndNewCenter[0];
     double newCenter = RCenterAndNewCenter[1];
+    // new center rounded to one decimal place
+    double newCenter1f = Math.round(newCenter * 10.0) / 10.0;
 
     // Set the center_s MRI axis value to the average of the found radii + the
     // found center point of the MRI field axis
     switch (mriAxis) {
       case X:
-        center_s.set(0, newCenter);
-        center_s.set(0, Math.round(center_s.get(0) * 10.0) / 10.0);
-        Calculate_Magnetic_Moment_3D.gui.ltf_rcx.setValue(String.valueOf(Math.round(center_s.get(0) * 10.0) / 10.0));
+        center_s.set(0, newCenter1f);
+        Calculate_Magnetic_Moment_3D.gui.ltf_rcx.setValue(String.valueOf(newCenter1f));
         break;
       case Y:
-        center_s.set(1, newCenter);
-        center_s.set(1, Math.round(center_s.get(1) * 10.0) / 10.0);
-        Calculate_Magnetic_Moment_3D.gui.ltf_rcy.setValue(String.valueOf(Math.round(center_s.get(1) * 10.0) / 10.0));
+        center_s.set(1, newCenter1f);
+        Calculate_Magnetic_Moment_3D.gui.ltf_rcy.setValue(String.valueOf(newCenter1f));
         break;
       case Z:
-        center_s.set(2, newCenter);
-        center_s.set(2, Math.round(center_s.get(2) * 10.0) / 10.0);
-        Calculate_Magnetic_Moment_3D.gui.ltf_rcz.setValue(String.valueOf(Math.round(center_s.get(2) * 10.0) / 10.0));
+        center_s.set(2, newCenter1f);
+        Calculate_Magnetic_Moment_3D.gui.ltf_rcz.setValue(String.valueOf(newCenter1f));
         break;
       default:
         Calculate_Magnetic_Moment_3D.logger.addInfo("Unable to determine MRI axis");
