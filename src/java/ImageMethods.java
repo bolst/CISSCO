@@ -55,8 +55,6 @@ public class ImageMethods {
     int[] r0s = new int[] { 0, 0, 0, 0, 0, 0 };
     double[][] Ps = new double[][] { XP, XN, YP, YN, ZP, ZN };
 
-    Calculate_Magnetic_Moment_3D.logger.addInfo("HI");
-
     // for each direction
     for (int i = 0; i < nDims; i++) {
       // get direction
@@ -73,8 +71,6 @@ public class ImageMethods {
         }
       }
     }
-
-    Calculate_Magnetic_Moment_3D.logger.addInfo("HI");
 
     // TODO: fix potential out of bounds
     double[] averages = new double[3];
