@@ -108,4 +108,71 @@ public class ImageMethods {
     Calculate_Magnetic_Moment_3D.logger.addVariable("mri axis", retval);
     return retval;
   }
+
+  /*
+   * Function used to estimate radius on MRI field axis
+   * Uses the theory that on this axis, phase values follow a 2/r^3 trend
+   *
+   * @return averaged radius in both directions
+   */
+  public static double[] calculateRC(int mriAxisCenter,
+      Axis mriAxis,
+      double[] phaseValsPos,
+      double[] phaseValsNeg,
+      double phaseValue) {
+
+    // radius in each direction
+    double r_pos = 1.6;
+    double r_neg = 1.6;
+
+    /*
+     * The logic below works by finding a voxel phase value that is between the
+     * user-inputted phase value.
+     * So by default it is 1, so the program finds the voxel that is between two
+     * voxels that have greater phase than 1 and less than 1.
+     * The program then interpolates the distance between these two voxels to
+     * estimate how far from the center a phase value of 1 is
+     */
+
+    for (int i = 0; i < phaseValsPos.length - 1; i++) {
+      // this condition is if the current voxel is nested between two voxels greater
+      // and less than the user-defined phase value
+      if ((phaseValsPos[i] > phaseValue) && (phaseValsPos[i + 1] < phaseValue)) {
+        Calculate_Magnetic_Moment_3D.logger.addVariable("Found pos phase 1", phaseValsPos[i]);
+        Calculate_Magnetic_Moment_3D.logger.addVariable("Found pos phase 2", phaseValsPos[i + 1]);
+        // this condition is if the interpolation value is greater than 1.6, because the
+        // object radius has to be greater than 1.6
+        if (Utilities.interpolation(phaseValue, phaseValsPos[i], phaseValsPos[i + 1], i, i + 1) > 1.6) {
+          r_pos = Utilities.interpolation(phaseValue, phaseValsPos[i], phaseValsPos[i + 1], i, i + 1);
+        }
+        break;
+      }
+    }
+
+    // Same thing as above just the opposite direction
+    for (int i = 0; i < phaseValsNeg.length - 1; i++) {
+      if ((phaseValsNeg[i] > phaseValue) && (phaseValsNeg[i + 1] < phaseValue)) {
+        Calculate_Magnetic_Moment_3D.logger.addVariable("Found neg phase 1", phaseValsNeg[i]);
+        Calculate_Magnetic_Moment_3D.logger.addVariable("Found neg phase 2", phaseValsNeg[i + 1]);
+        if (Utilities.interpolation(phaseValue, phaseValsNeg[i], phaseValsNeg[i + 1], i, i + 1) > 1.6) {
+          r_neg = Utilities.interpolation(phaseValue, phaseValsNeg[i], phaseValsNeg[i + 1], i, i + 1);
+        }
+        break;
+      }
+    }
+
+    Calculate_Magnetic_Moment_3D.logger.addVariable("r_pos", r_pos);
+    Calculate_Magnetic_Moment_3D.logger.addVariable("r_neg", r_neg);
+
+    // RCenter to return
+    double RCenter = Math.abs(r_pos + r_neg) / 2.0 / Math.cbrt(2);
+
+    // new center to return
+    double newCenter = ((mriAxisCenter + r_pos) + (mriAxisCenter - r_neg)) / 2.0;
+
+    double[] retval = new double[] { RCenter, newCenter };
+
+    return retval;
+  }
+
 }

@@ -21,7 +21,7 @@ public class ImageItem {
   public int M;
   private double RCenter;
   private double phaseValue;
-  private Axis MRI_axis = Axis.UNKNOWN;
+  private Axis mriAxis = Axis.UNKNOWN;
   private double m_R0;
   private double estMagMoment;
   public double R1PhaseCalc, R2PhaseCalc, R3PhaseCalc;
@@ -313,101 +313,6 @@ public class ImageItem {
     }
   }
 
-  /*
-   * Helper function used to estimate radius on MRI field axis
-   * Uses the theory that on this axis, phase values follow a 2/r^3 trend
-   *
-   * @return averaged radius in both directions
-   */
-  private double calculateRC(int center_mri_axis,
-      Axis mri_dir,
-      double[] phaseVals_pos,
-      double[] phaseVals_neg) {
-    double r_pos = 1.6;
-    double r_neg = 1.6;
-
-    /*
-     * The logic below works by finding a voxel phase value that is between the
-     * user-inputted phase value.
-     * So by default it is 1, so the program finds the voxel that is between two
-     * voxels that have greater phase than 1 and less than 1.
-     * The program then interpolates the distance between these two voxels to
-     * estimate how far from the center a phase value of 1 is
-     */
-
-    for (int i = 0; i < phaseVals_pos.length - 1; i++) {
-      // this condition is if the current voxel is nested between two voxels greater
-      // and less than the user-defined phase value
-      if ((phaseVals_pos[i] > phaseValue) && (phaseVals_pos[i + 1] < phaseValue)) {
-        Calculate_Magnetic_Moment_3D.logger.addVariable("Found pos phase 1", phaseVals_pos[i]);
-        Calculate_Magnetic_Moment_3D.logger.addVariable("Found pos phase 2", phaseVals_pos[i + 1]);
-        // this condition is if the interpolation value is greater than 1.6, because the
-        // object radius has to be greater than 1.6
-        if (interpolation(phaseValue, phaseVals_pos[i], phaseVals_pos[i + 1], i, i + 1) > 1.6) {
-          r_pos = interpolation(phaseValue, phaseVals_pos[i], phaseVals_pos[i + 1], i, i + 1);
-        }
-        break;
-      }
-    }
-
-    // Same thing as above just the opposite direction
-    for (int i = 0; i < phaseVals_neg.length - 1; i++) {
-      if ((phaseVals_neg[i] > phaseValue) && (phaseVals_neg[i + 1] < phaseValue)) {
-        Calculate_Magnetic_Moment_3D.logger.addVariable("Found neg phase 1", phaseVals_neg[i]);
-        Calculate_Magnetic_Moment_3D.logger.addVariable("Found neg phase 2", phaseVals_neg[i + 1]);
-        if (interpolation(phaseValue, phaseVals_neg[i], phaseVals_neg[i + 1], i, i + 1) > 1.6) {
-          r_neg = interpolation(phaseValue, phaseVals_neg[i], phaseVals_neg[i + 1], i, i + 1);
-        }
-        break;
-      }
-    }
-
-    // Set the center_s MRI axis value to the average of the found radii + the
-    // found center point of the MRI field axis
-    if (mri_dir == Axis.X) {
-      center_s.set(0, ((center_mri_axis + r_pos) + (center_mri_axis - r_neg)) / 2.0);
-      center_s.set(0, Math.round(center_s.get(0) * 10.0) / 10.0);
-      Calculate_Magnetic_Moment_3D.gui.ltf_rcx.setValue(String.valueOf(Math.round(center_s.get(0) * 10.0) / 10.0));
-    } else if (mri_dir == Axis.Y) {
-      center_s.set(1, ((center_mri_axis + r_pos) + (center_mri_axis - r_neg)) / 2.0);
-      center_s.set(1, Math.round(center_s.get(1) * 10.0) / 10.0);
-      Calculate_Magnetic_Moment_3D.gui.ltf_rcy.setValue(String.valueOf(Math.round(center_s.get(1) * 10.0) / 10.0));
-    } else if (mri_dir == Axis.Z) {
-      center_s.set(2, ((center_mri_axis + r_pos) + (center_mri_axis - r_neg)) / 2.0);
-      center_s.set(2, Math.round(center_s.get(2) * 10.0) / 10.0);
-      Calculate_Magnetic_Moment_3D.gui.ltf_rcz.setValue(String.valueOf(Math.round(center_s.get(2) * 10.0) / 10.0));
-    } else {
-      Calculate_Magnetic_Moment_3D.logger.addInfo("Unable to determine MRI axis");
-    }
-
-    Calculate_Magnetic_Moment_3D.logger.addVariable("r_pos", r_pos);
-    Calculate_Magnetic_Moment_3D.logger.addVariable("r_neg", r_neg);
-    // returning equation for RCenter
-    RCenter = Math.abs(r_pos + r_neg) / 2.0 / Math.cbrt(2);
-    return RCenter;
-  }
-
-  /*
-   * Standard method used for interpolation. Used to find distance to RCenter
-   * Phase
-   *
-   * @param x Target point for desired y value - used as the RCenter Phase
-   *
-   * @param x1 First phase value that is greater than and adjacent to RCenter
-   * Phase
-   *
-   * @param x2 Second phase value that is less than and adjacent to RCenter Phase
-   *
-   * @param y1 The first phase value's distance from RCenter
-   *
-   * @param y2 The second phase value's distance from RCenter
-   *
-   * @return The interpolated distance to what would be RCenter Phase
-   */
-  private double interpolation(double x, double x1, double x2, double y1, double y2) {
-    return y1 + ((x - x1) / (x2 - x1)) * (y2 - y1);
-  }
-
   // =====================================================================================
   // Function to estimate background phase by averaging corners of user-drawn ROI
   // This function also initializes the array in which these removed-bkg phase
@@ -561,11 +466,11 @@ public class ImageItem {
     double[] phaseVals_neg;
     int center_mri_axis;
     // String neglectedAxis;
-    MRI_axis = ImageMethods.calculateMRIAxis(phaseVals_xPos, phaseVals_xNeg, phaseVals_yPos, phaseVals_yNeg,
+    mriAxis = ImageMethods.calculateMRIAxis(phaseVals_xPos, phaseVals_xNeg, phaseVals_yPos, phaseVals_yNeg,
         phaseVals_zPos,
         phaseVals_zNeg);
-    Calculate_Magnetic_Moment_3D.gui.ldd_MriAxis.setValue(MRI_axis);
-    switch (MRI_axis) {
+    Calculate_Magnetic_Moment_3D.gui.ldd_MriAxis.setValue(mriAxis);
+    switch (mriAxis) {
       case X:
         phaseVals_pos = phaseVals_xPos;
         phaseVals_neg = phaseVals_xNeg;
@@ -591,9 +496,37 @@ public class ImageItem {
         break;
     }
 
-    Calculate_Magnetic_Moment_3D.logger.addVariable("MRI_axis", MRI_axis);
-    // returning the estimated radius along the MRI field direction
-    return calculateRC(center_mri_axis, MRI_axis, phaseVals_pos, phaseVals_neg);
+    Calculate_Magnetic_Moment_3D.logger.addVariable("mriAxis", mriAxis);
+
+    // calculate RCenter and new center
+    double[] RCenterAndNewCenter = ImageMethods.calculateRC(center_mri_axis, mriAxis, phaseVals_pos, phaseVals_neg,
+        phaseValue);
+    RCenter = RCenterAndNewCenter[0];
+    double newCenter = RCenterAndNewCenter[1];
+
+    // Set the center_s MRI axis value to the average of the found radii + the
+    // found center point of the MRI field axis
+    switch (mriAxis) {
+      case X:
+        center_s.set(0, newCenter);
+        center_s.set(0, Math.round(center_s.get(0) * 10.0) / 10.0);
+        Calculate_Magnetic_Moment_3D.gui.ltf_rcx.setValue(String.valueOf(Math.round(center_s.get(0) * 10.0) / 10.0));
+        break;
+      case Y:
+        center_s.set(1, newCenter);
+        center_s.set(1, Math.round(center_s.get(1) * 10.0) / 10.0);
+        Calculate_Magnetic_Moment_3D.gui.ltf_rcy.setValue(String.valueOf(Math.round(center_s.get(1) * 10.0) / 10.0));
+        break;
+      case Z:
+        center_s.set(2, newCenter);
+        center_s.set(2, Math.round(center_s.get(2) * 10.0) / 10.0);
+        Calculate_Magnetic_Moment_3D.gui.ltf_rcz.setValue(String.valueOf(Math.round(center_s.get(2) * 10.0) / 10.0));
+        break;
+      default:
+        Calculate_Magnetic_Moment_3D.logger.addInfo("Unable to determine MRI axis");
+    }
+
+    return RCenter;
   }
 
   public void calcR0123() {
@@ -929,9 +862,9 @@ public class ImageItem {
   // Getter for MRI axis
   // =====================================================================================
   public Axis MRIAxis() {
-    MRI_axis = Calculate_Magnetic_Moment_3D.gui.ldd_MriAxis.getValue();
-    Calculate_Magnetic_Moment_3D.logger.addVariable("MRI_Axis", MRI_axis);
-    return MRI_axis;
+    mriAxis = Calculate_Magnetic_Moment_3D.gui.ldd_MriAxis.getValue();
+    Calculate_Magnetic_Moment_3D.logger.addVariable("mriAxis", mriAxis);
+    return mriAxis;
   }
 
   // =====================================================================================
