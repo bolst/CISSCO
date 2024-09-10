@@ -59,27 +59,6 @@ public class ImageItem {
     return WindowManager.getImage(mag_title) != null && WindowManager.getImage(phase_title) != null;
   }
 
-  public Roi getROI(String mag_title, String phase_title) {
-    if (!imagesOpen(mag_title, phase_title)) {
-      return null;
-    }
-
-    ImagePlus mag_image;
-    ImagePlus phase_image;
-    try {
-      mag_image = WindowManager.getImage(mag_title);
-      phase_image = WindowManager.getImage(phase_title);
-    } catch (Exception exc) {
-      return null;
-    }
-
-    if (mag_image.getRoi() == null && phase_image.getRoi() == null) {
-      return null;
-    }
-
-    return (mag_image.getRoi() != null) ? mag_image.getRoi() : phase_image.getRoi();
-  }
-
   public ImageItem(String magTitle, String phaseTitle, int M_pct, double pV) {
     M = M_pct;
     phaseValue = pV;
