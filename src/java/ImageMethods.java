@@ -175,4 +175,125 @@ public class ImageMethods {
     return retval;
   }
 
+  /*
+   * Function to void all values below the param M.
+   *
+   * @param values array of values in one direction
+   *
+   * @param M the % to negate, default is 50
+   *
+   * @param r0 the center coordinate of the direction inputted
+   *
+   * @param axis The direction
+   *
+   * @param direction Flag to specify if function should iterate in the + or -
+   * direction
+   */
+  public static void removeValuesBelow(
+      double[] values,
+      ImagePlus magImg,
+      Triplet<Double> centerS,
+      Triplet<Integer> roiCorner,
+      Triplet<Integer> roiSize,
+      int echoImageIndex,
+      int M,
+      Axis axis,
+      boolean direction) {
+
+    int roi_xi = roiCorner.get(0);
+    int roi_yi = roiCorner.get(1);
+    int roi_zi = roiCorner.get(2);
+    int roi_dx = roiSize.get(0);
+    int roi_dy = roiSize.get(1);
+    int roi_dz = roiSize.get(2);
+
+    // getting average of ROI
+    double avgOfCorners = 0.0;
+    for (int x : new int[] { roi_xi, roi_xi + roi_dx }) {
+      for (int y : new int[] { roi_yi, roi_yi + roi_dy }) {
+        for (int z : new int[] { roi_zi, roi_zi + roi_dz }) {
+          avgOfCorners += ImageMethods.getVoxelValue(magImg, x, y, z, echoImageIndex);
+        }
+      }
+    }
+    avgOfCorners /= 8.0;
+
+    // all values below this variable will be negated
+    double maxMagValue = avgOfCorners * (double) M / 100.0;
+
+    int intCsx = centerS.get(0).intValue();
+    int intCsy = centerS.get(1).intValue();
+    int intCsz = centerS.get(2).intValue();
+
+    // setting all values in array below maxMagValue to 0
+    switch (axis) {
+      // x axis
+      case X:
+        int cx0 = centerS.get(0).intValue();
+        // positive x direction
+        if (direction) {
+          for (int i = 0; i < values.length; i++) {
+            if (Math.abs(
+                ImageMethods.getVoxelValue(magImg, i + cx0, intCsy, intCsz, echoImageIndex)) < maxMagValue) {
+              values[i] = 0.0;
+            }
+          }
+          return;
+        }
+        // negative x direction
+        else {
+          for (int i = 0; i < values.length; i++) {
+            if (Math.abs(ImageMethods.getVoxelValue(magImg, cx0 - i, intCsy, intCsz, echoImageIndex)) < maxMagValue) {
+              values[i] = 0.0;
+            }
+          }
+          return;
+        }
+        // y axis
+      case Y:
+        int cy0 = centerS.get(0).intValue();
+        // positive y direction
+        if (direction) {
+          for (int i = 0; i < values.length; i++) {
+            if (Math.abs(ImageMethods.getVoxelValue(magImg, intCsx, i + cy0, intCsz, echoImageIndex)) < maxMagValue) {
+              values[i] = 0.0;
+            }
+          }
+          return;
+        }
+        // negative y direction
+        else {
+          for (int i = 0; i < values.length; i++) {
+            if (Math.abs(ImageMethods.getVoxelValue(magImg, intCsx, cy0 - i, intCsz, echoImageIndex)) < maxMagValue) {
+              values[i] = 0.0;
+            }
+          }
+          return;
+        }
+        // z axis
+      case Z:
+        int cz0 = centerS.get(0).intValue();
+        // positive z direction
+        if (direction) {
+          for (int i = 0; i < values.length; i++) {
+            if (Math.abs(ImageMethods.getVoxelValue(magImg, intCsx, intCsy, i + cz0, echoImageIndex)) < maxMagValue) {
+              values[i] = 0.0;
+            }
+          }
+          return;
+        }
+        // negative z direction
+        else {
+          for (int i = 0; i < values.length; i++) {
+            if (Math.abs(ImageMethods.getVoxelValue(magImg, intCsx, intCsy, cz0 - i, echoImageIndex)) < maxMagValue) {
+              values[i] = 0.0;
+            }
+          }
+          return;
+        }
+      default:
+        break;
+    }
+  }
+
 }

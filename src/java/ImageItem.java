@@ -215,102 +215,6 @@ public class ImageItem {
 
   }
 
-  /*
-   * Function to void all values below the param threshold.
-   *
-   * @param values array of values in one direction
-   *
-   * @param threshold the % to negate, default is 50
-   *
-   * @param r0 the center coordinate of the direction inputted
-   *
-   * @param axis The direction
-   *
-   * @param direction Flag to specify if function should iterate in the + or -
-   * direction
-   */
-  private void removeValuesBelow(double[] values,
-      int threshold,
-      int r0,
-      Axis axis,
-      boolean direction) {
-
-    // getting average of ROI
-    double avgOfCorners = ImageMethods.getVoxelValue(mag_img, roi_xi, roi_yi, roi_zi, echoImageIndex)
-        + ImageMethods.getVoxelValue(mag_img, roi_xi + roi_dx, roi_yi, roi_zi, echoImageIndex)
-        + ImageMethods.getVoxelValue(mag_img, roi_xi, roi_yi + roi_dy, roi_zi, echoImageIndex)
-        + ImageMethods.getVoxelValue(mag_img, roi_xi + roi_dx, roi_yi + roi_dy, roi_zi, echoImageIndex);
-
-    avgOfCorners += ImageMethods.getVoxelValue(mag_img, roi_xi, roi_yi, roi_zi + roi_dz, echoImageIndex)
-        + ImageMethods.getVoxelValue(mag_img, roi_xi + roi_dx, roi_yi, roi_zi + roi_dz, echoImageIndex)
-        + ImageMethods.getVoxelValue(mag_img, roi_xi, roi_yi + roi_dy, roi_zi + roi_dz, echoImageIndex)
-        + ImageMethods.getVoxelValue(mag_img, roi_xi + roi_dx, roi_yi + roi_dy, roi_zi + roi_dz, echoImageIndex);
-
-    avgOfCorners /= 8.0;
-
-    // all values below this variable will be negated
-    double maxMagValue = avgOfCorners * (double) threshold / 100.0;
-
-    int intCsx = center_s.get(0).intValue();
-    int intCsy = center_s.get(1).intValue();
-    int intCsz = center_s.get(2).intValue();
-
-    // setting all values in array below maxMagValue to 0
-    switch (axis) {
-      case X:
-        if (direction) {
-          for (int i = 0; i < values.length; i++) {
-            if (Math.abs(
-                ImageMethods.getVoxelValue(mag_img, i + r0, intCsy, intCsz, echoImageIndex)) < maxMagValue) {
-              values[i] = 0.0;
-            }
-          }
-          return;
-        } else {
-          for (int i = 0; i < values.length; i++) {
-            if (Math.abs(ImageMethods.getVoxelValue(mag_img, r0 - i, intCsy, intCsz, echoImageIndex)) < maxMagValue) {
-              values[i] = 0.0;
-            }
-          }
-          return;
-        }
-      case Y:
-        if (direction) {
-          for (int i = 0; i < values.length; i++) {
-            if (Math.abs(ImageMethods.getVoxelValue(mag_img, intCsx, i + r0, intCsz, echoImageIndex)) < maxMagValue) {
-              values[i] = 0.0;
-            }
-          }
-          return;
-        } else {
-          for (int i = 0; i < values.length; i++) {
-            if (Math.abs(ImageMethods.getVoxelValue(mag_img, intCsx, r0 - i, intCsz, echoImageIndex)) < maxMagValue) {
-              values[i] = 0.0;
-            }
-          }
-          return;
-        }
-      case Z:
-        if (direction) {
-          for (int i = 0; i < values.length; i++) {
-            if (Math.abs(ImageMethods.getVoxelValue(mag_img, intCsx, intCsy, i + r0, echoImageIndex)) < maxMagValue) {
-              values[i] = 0.0;
-            }
-          }
-          return;
-        } else {
-          for (int i = 0; i < values.length; i++) {
-            if (Math.abs(ImageMethods.getVoxelValue(mag_img, intCsx, intCsy, r0 - i, echoImageIndex)) < maxMagValue) {
-              values[i] = 0.0;
-            }
-          }
-          return;
-        }
-      default:
-        break;
-    }
-  }
-
   // =====================================================================================
   // Function to estimate background phase by averaging corners of user-drawn ROI
   // This function also initializes the array in which these removed-bkg phase
@@ -443,17 +347,22 @@ public class ImageItem {
       phaseVals_zNeg[k] = Math.abs(phase_noBkg(csx, csy, csz - k));
     }
 
-    // Getting threshold (should be 50 unless user changes it)
-    // M = M_pct;
-
     // negating all the values that are below the threshold (because phase values
     // can be random within the object)
-    removeValuesBelow(phaseVals_xPos, M, csx, Axis.X, true);
-    removeValuesBelow(phaseVals_xNeg, M, csx, Axis.X, false);
-    removeValuesBelow(phaseVals_yPos, M, csy, Axis.Y, true);
-    removeValuesBelow(phaseVals_yNeg, M, csy, Axis.Y, false);
-    removeValuesBelow(phaseVals_zPos, M, csz, Axis.Z, true);
-    removeValuesBelow(phaseVals_zNeg, M, csz, Axis.Z, false);
+    Triplet<Integer> roiCorner = new Triplet<Integer>(roi_xi, roi_yi, roi_zi);
+    Triplet<Integer> roiSize = new Triplet<Integer>(roi_dx, roi_dy, roi_dz);
+    ImageMethods.removeValuesBelow(phaseVals_xPos, mag_img, center_s, roiCorner, roiSize, echoImageIndex, M, Axis.X,
+        true);
+    ImageMethods.removeValuesBelow(phaseVals_xNeg, mag_img, center_s, roiCorner, roiSize, echoImageIndex, M, Axis.X,
+        false);
+    ImageMethods.removeValuesBelow(phaseVals_yPos, mag_img, center_s, roiCorner, roiSize, echoImageIndex, M, Axis.Y,
+        true);
+    ImageMethods.removeValuesBelow(phaseVals_yNeg, mag_img, center_s, roiCorner, roiSize, echoImageIndex, M, Axis.Y,
+        false);
+    ImageMethods.removeValuesBelow(phaseVals_zPos, mag_img, center_s, roiCorner, roiSize, echoImageIndex, M, Axis.Z,
+        true);
+    ImageMethods.removeValuesBelow(phaseVals_zNeg, mag_img, center_s, roiCorner, roiSize, echoImageIndex, M, Axis.Z,
+        false);
     Calculate_Magnetic_Moment_3D.logger.addInfo("negated");
 
     // Putting equitorial plane and MRI field direction into new variables (since we
