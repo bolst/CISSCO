@@ -1,9 +1,9 @@
-class Triplet<T> {
+class Vec3<T> {
     private T first;
     private T second;
     private T third;
 
-    public Triplet(T first, T second, T third) {
+    public Vec3(T first, T second, T third) {
         this.first = first;
         this.second = second;
         this.third = third;
@@ -20,7 +20,7 @@ class Triplet<T> {
             default:
                 return null;
         }
-	}
+    }
 
     public void set(int i, T val) {
         switch (i) {

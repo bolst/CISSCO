@@ -195,9 +195,9 @@ public class ImageMethods {
   public static void removeValuesBelow(
       double[] values,
       ImagePlus magImg,
-      Triplet<Double> centerS,
-      Triplet<Integer> roiCorner,
-      Triplet<Integer> roiSize,
+      Vec3<Double> centerS,
+      Vec3<Integer> roiCorner,
+      Vec3<Integer> roiSize,
       int echoImageIndex,
       int M,
       Axis axis,

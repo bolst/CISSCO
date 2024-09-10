@@ -7,10 +7,10 @@ import ij.WindowManager;
 public class ImageItem {
 
   private ImagePlus mag_img, phase_img;
-  private Triplet<Double> center_l;
-  private Triplet<Double> center_m;
-  private Triplet<Double> center_s;
-  public Triplet<Double> subpix_image_center;
+  private Vec3<Double> center_l;
+  private Vec3<Double> center_m;
+  private Vec3<Double> center_s;
+  public Vec3<Double> subpix_image_center;
   public double bkgPhase, estimatedBkgPhase;
   private double roi_mag_belowM_sumX, roi_mag_belowM_sumY, roi_mag_belowM_sumZ;
   public int roi_xi, roi_yi, roi_zi, roi_dx, roi_dy, roi_dz;
@@ -79,12 +79,12 @@ public class ImageItem {
 
     roi_zi = roi_zi - roi_dz / 2;
 
-    Calculate_Magnetic_Moment_3D.logger.addVariable("roi_d", new Triplet<>(roi_dx, roi_dy, roi_dz).toString());
+    Calculate_Magnetic_Moment_3D.logger.addVariable("roi_d", new Vec3<>(roi_dx, roi_dy, roi_dz).toString());
 
     // get current slice from whatever image ROI is on
 
     Calculate_Magnetic_Moment_3D.logger.addVariable("roi before",
-        new Triplet<>(roi_xi, roi_yi, roi_zi).toString() + ',' + new Triplet<>(roi_dx, roi_dy, roi_dz));
+        new Vec3<>(roi_xi, roi_yi, roi_zi).toString() + ',' + new Vec3<>(roi_dx, roi_dy, roi_dz));
     // making sure roi parameters fit onto image
     roi_xi = goodROI(mag_img.getWidth(), roi_xi, roi_dx).get(0);
     roi_dx = goodROI(mag_img.getWidth(), roi_xi, roi_dx).get(1);
@@ -109,7 +109,7 @@ public class ImageItem {
       phase_img.setRoi(user_roi_rectangle);
 
     Calculate_Magnetic_Moment_3D.logger.addVariable("roi after",
-        new Triplet<>(roi_xi, roi_yi, roi_zi).toString() + ',' + new Triplet<>(roi_dx, roi_dy, roi_dz));
+        new Vec3<>(roi_xi, roi_yi, roi_zi).toString() + ',' + new Vec3<>(roi_dx, roi_dy, roi_dz));
 
     // ----------------------------------------------------------------------------
     // Finding average mag intensity of box corners (2b of step2.md)
@@ -207,9 +207,9 @@ public class ImageItem {
     }
 
     Calculate_Magnetic_Moment_3D.logger.addVariable("roi xi yi zi",
-        new Triplet<Integer>(roi_mag_belowM_xi, roi_mag_belowM_yi, roi_mag_belowM_zi).toString());
+        new Vec3<Integer>(roi_mag_belowM_xi, roi_mag_belowM_yi, roi_mag_belowM_zi).toString());
     Calculate_Magnetic_Moment_3D.logger.addVariable("roi dx dy dz",
-        new Triplet<Integer>(roi_mag_belowM_dx, roi_mag_belowM_dy, roi_mag_belowM_dz).toString());
+        new Vec3<Integer>(roi_mag_belowM_dx, roi_mag_belowM_dy, roi_mag_belowM_dz).toString());
 
     // Remainder of step2 implementation is in other functions in this class
 
@@ -350,8 +350,8 @@ public class ImageItem {
 
     // negating all the values that are below the threshold (because phase values
     // can be random within the object)
-    Triplet<Integer> roiCorner = new Triplet<Integer>(roi_xi, roi_yi, roi_zi);
-    Triplet<Integer> roiSize = new Triplet<Integer>(roi_dx, roi_dy, roi_dz);
+    Vec3<Integer> roiCorner = new Vec3<Integer>(roi_xi, roi_yi, roi_zi);
+    Vec3<Integer> roiSize = new Vec3<Integer>(roi_dx, roi_dy, roi_dz);
     ImageMethods.removeValuesBelow(phaseVals_xPos, mag_img, center_s, roiCorner, roiSize, echoImageIndex, M, Axis.X,
         true);
     ImageMethods.removeValuesBelow(phaseVals_xNeg, mag_img, center_s, roiCorner, roiSize, echoImageIndex, M, Axis.X,
@@ -575,7 +575,7 @@ public class ImageItem {
   public void calcCenterL() {
 
     float min = Float.POSITIVE_INFINITY;
-    center_l = new Triplet<Double>(0.0, 0.0, 0.0);
+    center_l = new Vec3<Double>(0.0, 0.0, 0.0);
 
     for (int i = roi_xi; i < roi_xi + roi_dx; i++) {
       for (int j = roi_yi; j < roi_yi + roi_dy; j++) {
@@ -602,7 +602,7 @@ public class ImageItem {
     // Finding center_m (i.e., center of M% region) (2/2 of 2e of step2.md)
     // ----------------------------------------------------------------------------
 
-    center_m = new Triplet<Double>(0.0, 0.0, 0.0);
+    center_m = new Vec3<Double>(0.0, 0.0, 0.0);
     int x1 = roi_mag_belowM_xi;
     int y1 = roi_mag_belowM_yi;
     int z1 = roi_mag_belowM_zi;
@@ -652,7 +652,7 @@ public class ImageItem {
   // =====================================================================================
   public void calcCenterS() {
 
-    center_s = new Triplet<Double>(-1.0, -1.0, -1.0);
+    center_s = new Vec3<Double>(-1.0, -1.0, -1.0);
 
     // ------ Begin summing planes in innerbox
     // Initializing arrays for sums of planes in small box
@@ -749,21 +749,21 @@ public class ImageItem {
   // =====================================================================================
   // Getter for Center_L
   // =====================================================================================
-  public Triplet<Double> centerL() {
+  public Vec3<Double> centerL() {
     return center_l;
   }
 
   // =====================================================================================
   // Getter for Center_M
   // =====================================================================================
-  public Triplet<Double> centerM() {
+  public Vec3<Double> centerM() {
     return center_m;
   }
 
   // =====================================================================================
   // Getter for Center_S
   // =====================================================================================
-  public Triplet<Double> centerS() {
+  public Vec3<Double> centerS() {
     return center_s;
   }
 
@@ -825,10 +825,10 @@ public class ImageItem {
    * @param img_size size of image in nth direction
    * @param point    initial coordinate of ROI in the nth direction
    * @param delta    size of ROI in nth direction
-   * @return a Triplet with contents being the fitted point, the fitted delta,
+   * @return a Vec3 with contents being the fitted point, the fitted delta,
    *         then null
    */
-  private Triplet<Integer> goodROI(int img_size, int point, int delta) {
+  private Vec3<Integer> goodROI(int img_size, int point, int delta) {
 
     // if point + delta extends past image size, restrict delta to only go to the
     // image edge
@@ -847,7 +847,7 @@ public class ImageItem {
 
     delta = (delta % 2 == 0) ? delta + 1 : delta;
 
-    return new Triplet<Integer>(point, delta, null);
+    return new Vec3<Integer>(point, delta, null);
   }
 
   /**

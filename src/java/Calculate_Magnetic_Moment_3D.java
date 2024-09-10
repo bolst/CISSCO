@@ -224,7 +224,7 @@ public class Calculate_Magnetic_Moment_3D implements PlugIn {
     double c2x = Double.parseDouble(gui.ltf_rcx.getValue());
     double c2y = Double.parseDouble(gui.ltf_rcy.getValue());
     double c2z = Double.parseDouble(gui.ltf_rcz.getValue()) - 1.0;
-    item.subpix_image_center = new Triplet<Double>(c2x, c2y, c2z);
+    item.subpix_image_center = new Vec3<Double>(c2x, c2y, c2z);
     logger.addVariable("subpix image center", item.subpix_image_center.toString());
 
     // if no RCenter is inputted
