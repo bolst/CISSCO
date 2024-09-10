@@ -63,7 +63,7 @@ public class ImageMethods {
       // TODO: what if peak value is found at last index?
 
       // for each phase value in phase direction from center_s
-      for (int r = 0; r < P.length; r++) {
+      for (int r = 0; r < P.length - 1; r++) {
         double phase = P[r];
         // find peak phase value
         if (phase != 0.0) {
@@ -115,7 +115,7 @@ public class ImageMethods {
    *
    * @return averaged radius in both directions
    */
-  public static double[] calculateRC(int mriAxisCenter,
+  public static double[] calculateRCenter(int mriAxisCenter,
       Axis mriAxis,
       double[] phaseValsPos,
       double[] phaseValsNeg,
@@ -220,6 +220,15 @@ public class ImageMethods {
       }
     }
     avgOfCorners /= 8.0;
+
+    Calculate_Magnetic_Moment_3D.logger.addVariable("8 corner average", avgOfCorners);
+
+    double avgCorners4 = ImageMethods.getVoxelValue(magImg, roi_xi, roi_yi, magImg.getSlice() - 1, echoImageIndex)
+        + ImageMethods.getVoxelValue(magImg, roi_xi + roi_dx, roi_yi, magImg.getSlice() - 1, echoImageIndex)
+        + ImageMethods.getVoxelValue(magImg, roi_xi, roi_yi + roi_dy, magImg.getSlice() - 1, echoImageIndex)
+        + ImageMethods.getVoxelValue(magImg, roi_xi + roi_dx, roi_yi + roi_dy, magImg.getSlice() - 1, echoImageIndex);
+    avgCorners4 /= 4.0;
+    Calculate_Magnetic_Moment_3D.logger.addVariable("4 corner average", avgCorners4);
 
     // all values below this variable will be negated
     double maxMagValue = avgOfCorners * (double) M / 100.0;

@@ -408,7 +408,7 @@ public class ImageItem {
     Calculate_Magnetic_Moment_3D.logger.addVariable("mriAxis", mriAxis);
 
     // calculate RCenter and new center
-    double[] RCenterAndNewCenter = ImageMethods.calculateRC(center_mri_axis, mriAxis, phaseVals_pos, phaseVals_neg,
+    double[] RCenterAndNewCenter = ImageMethods.calculateRCenter(center_mri_axis, mriAxis, phaseVals_pos, phaseVals_neg,
         phaseValue);
     RCenter = RCenterAndNewCenter[0];
     double newCenter = RCenterAndNewCenter[1];
