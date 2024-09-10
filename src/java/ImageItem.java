@@ -382,6 +382,7 @@ public class ImageItem {
         phaseVals_pos = phaseVals_xPos;
         phaseVals_neg = phaseVals_xNeg;
         center_mri_axis = csx;
+        break;
 
       case Y:
         phaseVals_pos = phaseVals_yPos;
