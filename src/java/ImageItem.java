@@ -3,8 +3,6 @@ import javax.swing.JOptionPane;
 import ij.ImagePlus;
 import ij.gui.*;
 import ij.WindowManager;
-import java.util.Arrays;
-import java.util.function.Consumer;
 
 public class ImageItem {
 
