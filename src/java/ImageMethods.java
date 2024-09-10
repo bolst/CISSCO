@@ -84,8 +84,8 @@ public class ImageMethods {
       int r0p = r0s[i];
       int r0n = r0s[j];
 
-      double pos0 = (r0p < Ps.length - 1) ? Ps[i][r0p + 1] : 0;
-      double neg0 = (r0n < Ps.length - 1) ? Ps[j][r0n + 1] : 0;
+      double pos0 = (r0p + 1 < Ps.length) ? Ps[i][r0p + 1] : 0;
+      double neg0 = (r0n + 1 < Ps.length) ? Ps[j][r0n + 1] : 0;
 
       double pos = Math.abs(Ps[i][r0p] - pos0);
       double neg = Math.abs(Ps[j][r0n] - neg0);
