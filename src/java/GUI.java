@@ -35,7 +35,7 @@ public class GUI {
             ltf_v2seX1, ltf_v2seX2, ltf_v2seY1, ltf_v2seY2, ltf_v2seZ1, ltf_v2seZ2;
     public LabeledLabel ll_estBkgPhase, ll_grid, ll_rho0, ll_ReRi, ll_ImRi, ll_momenterror, ll_rho0SE, ll_aSE, ll_dChi,
             ll_dChiSE, ll_a, ll_V0, ltf_magMom;
-    public LabeledDropDown<ImageItem.Axis> ldd_MriAxis;
+    public LabeledDropDown<Axis> ldd_MriAxis;
 
     private final int WIDTH = 1000;
     private final int HEIGHT = 900;
@@ -353,10 +353,10 @@ public class GUI {
         ltf_M = new LabeledTextField("|M%|=", "50", "%", 2);
         frame.getContentPane().add(ltf_M, "cell 3 1 6 1");
 
-        ldd_MriAxis = new LabeledDropDown<ImageItem.Axis>("<html>B<sub>0</sub> Axis</html>",
-                new DefaultComboBoxModel<ImageItem.Axis>(
-                        new ImageItem.Axis[] { ImageItem.Axis.X, ImageItem.Axis.Y,
-                                ImageItem.Axis.Z }));
+        ldd_MriAxis = new LabeledDropDown<Axis>("<html>B<sub>0</sub> Axis</html>",
+                new DefaultComboBoxModel<Axis>(
+                        new Axis[] { Axis.X, Axis.Y,
+                                Axis.Z }));
         frame.getContentPane().add(ldd_MriAxis, "cell 6 1 2 1,growx");
 
         // ActionListeners
