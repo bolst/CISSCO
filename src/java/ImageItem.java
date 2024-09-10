@@ -248,6 +248,7 @@ public class ImageItem {
     bkgPhase /= 8.0;
 
     estimatedBkgPhase = bkgPhase;
+    Calculate_Magnetic_Moment_3D.logger.addVariable("estimated bkg phase", estimatedBkgPhase);
 
     return bkgPhase;
 
@@ -270,7 +271,7 @@ public class ImageItem {
   // =====================================================================================
   // Function to access phase values with removed background
   // =====================================================================================
-  public double phase_noBkg(int i, int j, int k) {
+  public double phaseNoBkg(int i, int j, int k) {
     int x = i - roi_xi;
     int y = j - roi_yi;
     int z = k - roi_zi;
@@ -312,39 +313,39 @@ public class ImageItem {
       // phaseVals_xPos[i] = Math.abs((double)
       // getImageProcessor(phase_img).getPixelValue(i + csx,
       // csy));
-      phaseVals_xPos[i] = Math.abs(phase_noBkg(csx + i, csy, csz));
+      phaseVals_xPos[i] = Math.abs(phaseNoBkg(csx + i, csy, csz));
     }
     for (int i = 0; i < xn_size; i++) {
       // phaseVals_xNeg[i] = Math.abs((double)
       // getImageProcessor(phase_img).getPixelValue(csx - i,
       // csy));
-      phaseVals_xNeg[i] = Math.abs(phase_noBkg(csx - i, csy, csz));
+      phaseVals_xNeg[i] = Math.abs(phaseNoBkg(csx - i, csy, csz));
     }
     for (int j = 0; j < yp_size; j++) {
       // phaseVals_yPos[j] = Math.abs((double)
       // getImageProcessor(phase_img).getPixelValue(csx, j +
       // csy));
-      phaseVals_yPos[j] = Math.abs(phase_noBkg(csx, csy + j, csz));
+      phaseVals_yPos[j] = Math.abs(phaseNoBkg(csx, csy + j, csz));
     }
     for (int j = 0; j < yn_size; j++) {
       // phaseVals_yNeg[j] = Math.abs((double)
       // getImageProcessor(phase_img).getPixelValue(csx, csy
       // - j));
-      phaseVals_yNeg[j] = Math.abs(phase_noBkg(csx, csy - j, csz));
+      phaseVals_yNeg[j] = Math.abs(phaseNoBkg(csx, csy - j, csz));
     }
     for (int k = 0; k < zp_size; k++) {
       // phase_img.setSlice(k + csz + 1);
       // phaseVals_zPos[k] = Math.abs((double)
       // getImageProcessor(phase_img).getPixelValue(csx,
       // csy));
-      phaseVals_zPos[k] = Math.abs(phase_noBkg(csx, csy, csz + k));
+      phaseVals_zPos[k] = Math.abs(phaseNoBkg(csx, csy, csz + k));
     }
     for (int k = 0; k < zn_size; k++) {
       // phase_img.setSlice(csz - k + 1);
       // phaseVals_zNeg[k] = Math.abs((double)
       // getImageProcessor(phase_img).getPixelValue(csx,
       // csy));
-      phaseVals_zNeg[k] = Math.abs(phase_noBkg(csx, csy, csz - k));
+      phaseVals_zNeg[k] = Math.abs(phaseNoBkg(csx, csy, csz - k));
     }
 
     // negating all the values that are below the threshold (because phase values

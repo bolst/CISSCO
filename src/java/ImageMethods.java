@@ -60,6 +60,8 @@ public class ImageMethods {
       // get direction
       double[] P = Ps[i];
 
+      // TODO: what if peak value is found at last index?
+
       // for each phase value in phase direction from center_s
       for (int r = 0; r < P.length; r++) {
         double phase = P[r];
@@ -71,6 +73,8 @@ public class ImageMethods {
         }
       }
     }
+
+    Calculate_Magnetic_Moment_3D.logger.addVariable("dynamic box", Arrays.toString(r0s));
 
     // TODO: fix potential out of bounds
     double[] averages = new double[3];
@@ -88,9 +92,9 @@ public class ImageMethods {
       averages[(int) (i / 2)] = (pos + neg) / 2.0;
     }
 
-    Calculate_Magnetic_Moment_3D.logger.addVariable("average x", averages[0]);
-    Calculate_Magnetic_Moment_3D.logger.addVariable("average y", averages[1]);
-    Calculate_Magnetic_Moment_3D.logger.addVariable("average z", averages[2]);
+    Calculate_Magnetic_Moment_3D.logger.addVariable("average x slope", averages[0]);
+    Calculate_Magnetic_Moment_3D.logger.addVariable("average y slope", averages[1]);
+    Calculate_Magnetic_Moment_3D.logger.addVariable("average z slope", averages[2]);
 
     double minAvg = Math.min(Math.min(averages[0], averages[1]), averages[2]);
     Axis retval = Axis.X;
