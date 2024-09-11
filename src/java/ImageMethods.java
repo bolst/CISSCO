@@ -241,7 +241,7 @@ public class ImageMethods {
               values[i] = 0.0;
             }
           }
-          return;
+          break;
         }
         // negative x direction
         else {
@@ -250,7 +250,7 @@ public class ImageMethods {
               values[i] = 0.0;
             }
           }
-          return;
+          break;
         }
         // y axis
       case Y:
@@ -262,7 +262,7 @@ public class ImageMethods {
               values[i] = 0.0;
             }
           }
-          return;
+          break;
         }
         // negative y direction
         else {
@@ -271,7 +271,7 @@ public class ImageMethods {
               values[i] = 0.0;
             }
           }
-          return;
+          break;
         }
         // z axis
       case Z:
@@ -283,7 +283,7 @@ public class ImageMethods {
               values[i] = 0.0;
             }
           }
-          return;
+          break;
         }
         // negative z direction
         else {
@@ -292,11 +292,24 @@ public class ImageMethods {
               values[i] = 0.0;
             }
           }
-          return;
+          break;
         }
       default:
         break;
     }
+
+    // now go back and make sure there are no nonzero values before any zero values
+    // if there are, set them to zero
+    boolean zeroFound = false;
+    for (int i = values.length - 1; i >= 0; i--) {
+      if (zeroFound) {
+        values[i] = 0.0;
+      } else if (values[i] == 0.0) {
+        zeroFound = true;
+      }
+
+    }
+
   }
 
 }
