@@ -119,22 +119,10 @@ public class ImageItem {
     int currFrame = mag_img.getFrame();
     Calculate_Magnetic_Moment_3D.logger.addVariable("curr frame", currFrame);
 
-    // summing all corners of ROI box in this slice
-    float avgCorners = ImageMethods.getVoxelValue(mag_img, roi_xi, roi_yi, roi_zi, echoImageIndex)
-        + ImageMethods.getVoxelValue(mag_img, roi_xi + (roi_dx - 1), roi_yi, roi_zi, echoImageIndex)
-        + ImageMethods.getVoxelValue(mag_img, roi_xi, roi_yi + (roi_dy - 1), roi_zi, echoImageIndex)
-        + ImageMethods.getVoxelValue(mag_img, roi_xi + (roi_dx - 1),
-            roi_xi + (roi_dy - 1), roi_zi, echoImageIndex);
+    Vec3<Integer> corner = new Vec3<Integer>(roi_xi, roi_yi, roi_zi);
+    Vec3<Integer> roiSizeNoEdge = new Vec3<Integer>(roi_xi + roi_dx - 1, roi_yi + roi_dy - 1, roi_zi + roi_dz - 1);
+    double avgCorners = ImageMethods.sumBoxCorners(mag_img, corner, roiSizeNoEdge, echoImageIndex) / 8.0;
 
-    // adding these corners of the ROI box in this slice
-    avgCorners += ImageMethods.getVoxelValue(mag_img, roi_xi, roi_yi, roi_zi + roi_dz - 1, echoImageIndex)
-        + ImageMethods.getVoxelValue(mag_img, roi_xi + (roi_dx - 1), roi_yi, roi_zi + roi_dz - 1, echoImageIndex)
-        + ImageMethods.getVoxelValue(mag_img, roi_xi, roi_yi + (roi_dy - 1), roi_zi + roi_dz - 1, echoImageIndex)
-        + ImageMethods.getVoxelValue(mag_img, roi_xi + (roi_dx - 1),
-            roi_xi + (roi_dy - 1), roi_zi + roi_dz - 1, echoImageIndex);
-
-    // dividing by 8 for average
-    avgCorners /= 8.0;
     Calculate_Magnetic_Moment_3D.logger.addVariable("avgCorners", avgCorners);
 
     // ----------------------------------------------------------------------------
@@ -169,9 +157,9 @@ public class ImageItem {
     roi_mag_belowM_dz = 0;
 
     // getting all pixel values that are below value
-    for (int dz = 0; dz < roi_dz; dz++) {
-      for (int dx = 0; dx < roi_dx; dx++) {
-        for (int dy = 0; dy < roi_dy; dy++) {
+    for (int dx = 0; dx < roi_dx; dx++) {
+      for (int dy = 0; dy < roi_dy; dy++) {
+        for (int dz = 0; dz < roi_dz; dz++) {
           double mag_intensity = ImageMethods.getVoxelValue(mag_img, roi_xi + dx, roi_yi + dy, roi_zi + dz,
               echoImageIndex);
 
@@ -234,25 +222,15 @@ public class ImageItem {
       }
     }
 
-    // ---------- Begin to find estimated background phase
-    bkgPhase = ImageMethods.getVoxelValue(phase_img, roi_xi, roi_yi, roi_zi, echoImageIndex)
-        + ImageMethods.getVoxelValue(phase_img, roi_xi + roi_dx, roi_yi, roi_zi, echoImageIndex)
-        + ImageMethods.getVoxelValue(phase_img, roi_xi, roi_yi + roi_dy, roi_zi, echoImageIndex)
-        + ImageMethods.getVoxelValue(phase_img, roi_xi + roi_dx, roi_yi + roi_dy, roi_zi, echoImageIndex);
-
-    bkgPhase += ImageMethods.getVoxelValue(phase_img, roi_xi, roi_yi, roi_zi + roi_dz, echoImageIndex)
-        + ImageMethods.getVoxelValue(phase_img, roi_xi + roi_dx, roi_yi, roi_zi + roi_dz, echoImageIndex)
-        + ImageMethods.getVoxelValue(phase_img, roi_xi, roi_yi + roi_dy, roi_zi + roi_dz, echoImageIndex)
-        + ImageMethods.getVoxelValue(phase_img, roi_xi + roi_dx, roi_yi + roi_dy, roi_zi + roi_dz, echoImageIndex);
-
-    bkgPhase /= 8.0;
+    Vec3<Integer> corner = new Vec3<Integer>(roi_xi, roi_yi, roi_zi);
+    Vec3<Integer> roiSize = new Vec3<Integer>(roi_xi + roi_dx, roi_yi + roi_dy, roi_zi + roi_dz);
+    bkgPhase = ImageMethods.sumBoxCorners(phase_img, corner, roiSize, echoImageIndex) / 8.0;
 
     estimatedBkgPhase = bkgPhase;
     Calculate_Magnetic_Moment_3D.logger.addVariable("estimated bkg phase", estimatedBkgPhase);
 
     return bkgPhase;
 
-    // ---------- end to find background phase
   }
 
   // =====================================================================================
