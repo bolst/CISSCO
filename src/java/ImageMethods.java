@@ -30,6 +30,18 @@ public class ImageMethods {
     }
   }
 
+  public static float sumBoxCorners(ImagePlus image, Vec3<Integer> corner, Vec3<Integer> size, int echoImageIndex) {
+    float retval = 0f;
+    for (int x : new int[] { corner.get(0), size.get(0) }) {
+      for (int y : new int[] { corner.get(1), size.get(1) }) {
+        for (int z : new int[] { corner.get(2), size.get(2) }) {
+          retval += ImageMethods.getVoxelValue(image, x, y, z, echoImageIndex);
+        }
+      }
+    }
+    return retval;
+  }
+
   /*
    * Function to find MRI field direction. Does this by comparing the values in
    * each direction from the estimated center.
@@ -121,9 +133,9 @@ public class ImageMethods {
       double[] phaseValsNeg,
       double phaseValue) {
 
-    // radius in each direction
-    double r_pos = 1.6;
-    double r_neg = 1.6;
+    // radius in each direction (1.6)
+    double r_pos = Calculate_Magnetic_Moment_3D.MIN_RCENTER;
+    double r_neg = Calculate_Magnetic_Moment_3D.MIN_RCENTER;
 
     /*
      * The logic below works by finding a voxel phase value that is between the
@@ -142,9 +154,9 @@ public class ImageMethods {
         Calculate_Magnetic_Moment_3D.logger.addVariable("Found pos phase 2", phaseValsPos[i + 1]);
         // this condition is if the interpolation value is greater than 1.6, because the
         // object radius has to be greater than 1.6
-        double interpolatedPhase = Utilities.interpolation(phaseValue, phaseValsPos[i], phaseValsPos[i + 1], i, i + 1);
-        if (interpolatedPhase > 1.6) {
-          r_pos = interpolatedPhase;
+        double r0 = Utilities.interpolation(phaseValue, phaseValsPos[i], phaseValsPos[i + 1], i, i + 1);
+        if (r0 > Calculate_Magnetic_Moment_3D.MIN_RCENTER) {
+          r_pos = r0;
         }
         break;
       }
@@ -155,9 +167,9 @@ public class ImageMethods {
       if ((phaseValsNeg[i] > phaseValue) && (phaseValsNeg[i + 1] < phaseValue)) {
         Calculate_Magnetic_Moment_3D.logger.addVariable("Found neg phase 1", phaseValsNeg[i]);
         Calculate_Magnetic_Moment_3D.logger.addVariable("Found neg phase 2", phaseValsNeg[i + 1]);
-        double interpolatedPhase = Utilities.interpolation(phaseValue, phaseValsNeg[i], phaseValsNeg[i + 1], i, i + 1);
-        if (interpolatedPhase > 1.6) {
-          r_neg = interpolatedPhase;
+        double r0 = Utilities.interpolation(phaseValue, phaseValsNeg[i], phaseValsNeg[i + 1], i, i + 1);
+        if (r0 > Calculate_Magnetic_Moment_3D.MIN_RCENTER) {
+          r_neg = r0;
         }
         break;
       }
@@ -169,6 +181,7 @@ public class ImageMethods {
 
     // RCenter to return
     double RCenter = Math.abs(r_pos + r_neg) / 2.0 / Math.cbrt(2);
+    RCenter = Math.max(RCenter, Calculate_Magnetic_Moment_3D.MIN_RCENTER);
 
     // new center to return
     double newCenter = ((mriAxisCenter + r_pos) + (mriAxisCenter - r_neg)) / 2.0;
@@ -203,32 +216,10 @@ public class ImageMethods {
       Axis axis,
       boolean direction) {
 
-    int roi_xi = roiCorner.get(0);
-    int roi_yi = roiCorner.get(1);
-    int roi_zi = roiCorner.get(2);
-    int roi_dx = roiSize.get(0);
-    int roi_dy = roiSize.get(1);
-    int roi_dz = roiSize.get(2);
-
     // getting average of ROI
-    double avgOfCorners = 0.0;
-    for (int x : new int[] { roi_xi, roi_xi + roi_dx }) {
-      for (int y : new int[] { roi_yi, roi_yi + roi_dy }) {
-        for (int z : new int[] { roi_zi, roi_zi + roi_dz }) {
-          avgOfCorners += ImageMethods.getVoxelValue(magImg, x, y, z, echoImageIndex);
-        }
-      }
-    }
-    avgOfCorners /= 8.0;
+    double avgOfCorners = sumBoxCorners(magImg, roiCorner, roiSize, echoImageIndex) / 8.0;
 
     Calculate_Magnetic_Moment_3D.logger.addVariable("8 corner average", avgOfCorners);
-
-    double avgCorners4 = ImageMethods.getVoxelValue(magImg, roi_xi, roi_yi, magImg.getSlice() - 1, echoImageIndex)
-        + ImageMethods.getVoxelValue(magImg, roi_xi + roi_dx, roi_yi, magImg.getSlice() - 1, echoImageIndex)
-        + ImageMethods.getVoxelValue(magImg, roi_xi, roi_yi + roi_dy, magImg.getSlice() - 1, echoImageIndex)
-        + ImageMethods.getVoxelValue(magImg, roi_xi + roi_dx, roi_yi + roi_dy, magImg.getSlice() - 1, echoImageIndex);
-    avgCorners4 /= 4.0;
-    Calculate_Magnetic_Moment_3D.logger.addVariable("4 corner average", avgCorners4);
 
     // all values below this variable will be negated
     double maxMagValue = avgOfCorners * (double) M / 100.0;
