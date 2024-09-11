@@ -40,6 +40,8 @@ public class Calculate_Magnetic_Moment_3D implements PlugIn {
   private static final String subPhaseTitle = "Subpixel Phase Image";
   private static final String subPhaseXZTitle = "Subpixel Phase Image XZ";
 
+  public static final double MIN_RCENTER = 1.6;
+
   // set this to true if debugging in IntelliJ
   private static final boolean DEBUG = false;
 
