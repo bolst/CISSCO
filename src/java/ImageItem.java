@@ -54,6 +54,12 @@ public class ImageItem {
 
       echoImageIndex = (mag_img.getRoi() != null) ? mag_img.getFrame() : phase_img.getFrame();
       Calculate_Magnetic_Moment_3D.logger.addVariable("echo image index", echoImageIndex);
+
+      if (mag_img.getRoi() == null)
+        mag_img.setT(echoImageIndex);
+      else
+        phase_img.setT(echoImageIndex);
+
     } catch (Exception exc) {
       JOptionPane.showMessageDialog(Calculate_Magnetic_Moment_3D.gui.frame, exc);
     }
