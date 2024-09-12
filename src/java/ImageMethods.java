@@ -8,8 +8,8 @@ public class ImageMethods {
   public static float getVoxelValue(ImagePlus image, int x, int y, int z, int t) {
     if (image.isHyperStack()) {
       int currFrame = t > 0 ? t : image.getFrame();
-      int T = image.getT();
-      int Z = image.getZ();
+      final int T = image.getT();
+      final int Z = image.getZ();
 
       image.setT(currFrame);
       image.setZ(z + 1);

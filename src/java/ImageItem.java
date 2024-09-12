@@ -390,8 +390,7 @@ public class ImageItem {
         phaseValue);
     RCenter = RCenterAndNewCenter[0];
     double newCenter = RCenterAndNewCenter[1];
-    // new center rounded to one decimal place
-    double newCenter1f = Math.round(newCenter * 10.0) / 10.0;
+    double newCenter1f = Math.round(newCenter * 10.0) / 10.0; // new center rounded to one decimal place
     Calculate_Magnetic_Moment_3D.logger.addVariable("newCenter rounded", newCenter1f);
 
     // Set the center_s MRI axis value to the average of the found radii + the
