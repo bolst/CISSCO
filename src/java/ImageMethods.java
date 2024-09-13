@@ -42,16 +42,19 @@ public class ImageMethods {
     return retval;
   }
 
-  /*
+  /**
    * Function to find MRI field direction. Does this by comparing the values in
    * each direction from the estimated center.
    * The two that follow similar trends are going to be on the equitorial plane,
    * while the other will be the MRI field direction.
-   *
-   * @param accuracy The amount of times the code will iterate along each
-   * direction
-   *
-   * @return A string value ("x", "y", or "z") of the MRI field direction
+   * 
+   * @param XP phase values in positive x direction
+   * @param XN phase values in negative x direction
+   * @param YP phase values in positive y direction
+   * @param YN phase values in negative y direction
+   * @param ZP phase values in positive z direction
+   * @param ZN phase values in negative z direction
+   * @return Axis of MRI field direction
    */
   public static Axis calculateMRIAxis(double[] XP, double[] XN, double[] YP, double[] YN, double[] ZP, double[] ZN) {
     Calculate_Magnetic_Moment_3D.logger.addVariable("XP", Arrays.toString(XP));
