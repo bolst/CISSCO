@@ -63,62 +63,49 @@ public class ImageMethods {
 
     // to hold distances from center_s where phase is non-zero
     // indexed xp,xn,yp,yn,zp,zn
-    final int nDims = 6;
-    int[] r0s = new int[] { 0, 0, 0, 0, 0, 0 };
     double[][] Ps = new double[][] { XP, XN, YP, YN, ZP, ZN };
 
-    // for each direction
-    for (int i = 0; i < nDims; i++) {
-      // get direction
-      double[] P = Ps[i];
+    double[] weightedAvgs = new double[] { 0, 0, 0 };
+    // for each direction X,Y,Z
+    for (int iP = 0; iP < Ps.length; iP += 2) {
+      // get phase arrays in both directions
+      double[] phasesPos = Ps[iP];
+      double[] phasesNeg = Ps[iP + 1];
 
-      // TODO: what if peak value is found at last index?
+      double weightedSum = 0.0;
+      int norm = 0;
 
-      // for each phase value in phase direction from center_s
-      for (int r = 0; r < P.length - 1; r++) {
-        double phase = P[r];
-        // find peak phase value
-        if (phase != 0.0) {
-          if (phase > P[r0s[i]]) {
-            r0s[i] = r;
-          }
+      // weighted sum along positive axis
+      for (int r = 0; r < phasesPos.length; r++) {
+        double phase = phasesPos[r];
+        if (phase != 0) {
+          weightedSum += phase * Math.pow(r, 3);
+          norm++;
         }
       }
+      // weighted sum along negative axis
+      for (int r = 0; r < phasesNeg.length; r++) {
+        double phase = phasesNeg[r];
+        if (phase != 0) {
+          weightedSum += phase * Math.pow(r, 3);
+          norm++;
+        }
+      }
+
+      Calculate_Magnetic_Moment_3D.logger.addVariable("weighted sum " + String.valueOf((int) (iP / 2)), weightedSum);
+      Calculate_Magnetic_Moment_3D.logger.addVariable("norm", norm);
+
+      weightedAvgs[(int) (iP / 2)] = weightedSum / norm;
     }
 
-    Calculate_Magnetic_Moment_3D.logger.addVariable("dynamic box", Arrays.toString(r0s));
+    double xAvg = weightedAvgs[0];
+    double yAvg = weightedAvgs[1];
+    double zAvg = weightedAvgs[2];
 
-    // TODO: fix potential out of bounds
-    double[] averages = new double[3];
-    for (int i = 0; i < nDims; i += 2) {
-      int j = i + 1;
+    // max average is the corresponding direction
+    Axis mri = xAvg > yAvg ? (xAvg > zAvg ? Axis.X : Axis.Z) : (yAvg > zAvg ? Axis.Y : Axis.Z);
 
-      int r0p = r0s[i];
-      int r0n = r0s[j];
-
-      double pos0 = (r0p + 1 < Ps.length) ? Ps[i][r0p + 1] : 0;
-      double neg0 = (r0n + 1 < Ps.length) ? Ps[j][r0n + 1] : 0;
-
-      double pos = Math.abs(Ps[i][r0p] - pos0);
-      double neg = Math.abs(Ps[j][r0n] - neg0);
-      averages[(int) (i / 2)] = (pos + neg) / 2.0;
-    }
-
-    Calculate_Magnetic_Moment_3D.logger.addVariable("average x slope", averages[0]);
-    Calculate_Magnetic_Moment_3D.logger.addVariable("average y slope", averages[1]);
-    Calculate_Magnetic_Moment_3D.logger.addVariable("average z slope", averages[2]);
-
-    double minAvg = Math.min(Math.min(averages[0], averages[1]), averages[2]);
-    Axis retval = Axis.X;
-    if (minAvg == averages[2])
-      retval = Axis.Z;
-    else if (minAvg == averages[1])
-      retval = Axis.Y;
-    else
-      retval = Axis.X;
-
-    Calculate_Magnetic_Moment_3D.logger.addVariable("mri axis", retval);
-    return retval;
+    return mri;
   }
 
   /*
