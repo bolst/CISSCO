@@ -220,18 +220,15 @@ public class ImageMethods {
 
     // setting all values in array below maxMagValue to 0
     switch (axis) {
-      // x axis
       case X:
         int cx0 = centerS.get(0).intValue();
         // positive x direction
         if (direction) {
           for (int i = 0; i < values.length; i++) {
-            if (Math.abs(
-                ImageMethods.getVoxelValue(magImg, i + cx0, intCsy, intCsz, echoImageIndex)) < maxMagValue) {
+            if (Math.abs(ImageMethods.getVoxelValue(magImg, i + cx0, intCsy, intCsz, echoImageIndex)) < maxMagValue) {
               values[i] = 0.0;
             }
           }
-          break;
         }
         // negative x direction
         else {
@@ -240,9 +237,8 @@ public class ImageMethods {
               values[i] = 0.0;
             }
           }
-          break;
         }
-        // y axis
+        break;
       case Y:
         int cy0 = centerS.get(1).intValue();
         // positive y direction
@@ -252,7 +248,6 @@ public class ImageMethods {
               values[i] = 0.0;
             }
           }
-          break;
         }
         // negative y direction
         else {
@@ -261,9 +256,8 @@ public class ImageMethods {
               values[i] = 0.0;
             }
           }
-          break;
         }
-        // z axis
+        break;
       case Z:
         int cz0 = centerS.get(2).intValue();
         // positive z direction
@@ -273,7 +267,6 @@ public class ImageMethods {
               values[i] = 0.0;
             }
           }
-          break;
         }
         // negative z direction
         else {
@@ -282,8 +275,8 @@ public class ImageMethods {
               values[i] = 0.0;
             }
           }
-          break;
         }
+        break;
       default:
         break;
     }
