@@ -39,7 +39,6 @@ int m_RCenterPhase;
 int OBcount;
 // int Xfirst, Yfirst, Zfirst;
 int halfreal, Zhalfreal, halfdisplay, displaydim, realdim, Zrealdim, subpixeldisplay, subpixelreal, Zsubpixelreal;
-double BackPhase;
 double ZoomedX, ZoomedY, ZoomedZ, lastValueSlice;
 // double REALXfirst, REALYfirst, REALSlice;
 // double Xinitial, Yinitial, Zinitial;
@@ -59,7 +58,7 @@ float ***tempReal_BG, ***tempImag_BG;
 int smallBox_X, smallBox_Y, smallBox_Z, smallBox_XSize, smallBox_YSize, smallBox_ZSize;
 double centerL_x, centerL_y, centerL_z, centerM_x, centerM_y, centerM_z, centerS_x, centerS_y, centerS_z;
 double subCenter;
-double m_MagMoment, m_p_first, m_p_last, m_RInnerPhase, m_RMiddlePhase, m_ROuterPhase, m_rho, m_p0, m_BackPhase, m_RChi, m_B0, m_TE_first, m_TE_last, m_g, m_a, m_Chi, m_e12, m_e23, m_Uncertainty, m_Si, m_Si2;
+double m_MagMoment, m_p_first, m_p_last, m_RInnerPhase, m_RMiddlePhase, m_ROuterPhase, m_rho, m_p0, m_RChi, m_B0, m_TE_first, m_TE_last, m_g, m_a, m_Chi, m_e12, m_e23, m_Uncertainty, m_Si, m_Si2;
 
 double m_resx = 1.0, m_resy = 1.0, m_resz = 1.0;
 
@@ -141,7 +140,7 @@ JNIEXPORT void JNICALL Java_JNIMethods_passGenSubpixelValues(JNIEnv *env, jobjec
     m_R0 = jm_R0;
     m_SubPixels = jm_SubPixels;
     m_RCenter = jm_RCenter;
-    m_BackPhase = jm_BackPhase;
+    BkgPhase = jm_BackPhase;
 }
 
 JNIEXPORT void JNICALL Java_JNIMethods_passCalcSubCenterValues(JNIEnv *env, jobject thisObj,
@@ -265,7 +264,6 @@ JNIEXPORT void JNICALL Java_JNIMethods_setMagMoment(JNIEnv *env, jobject thisObj
 
 JNIEXPORT void JNICALL Java_JNIMethods_setBackPhase(JNIEnv *env, jobject thisObj, jdouble nBackPhase)
 {
-    BackPhase = nBackPhase;
     BkgPhase = nBackPhase;
     return;
 }
@@ -671,7 +669,7 @@ void OnBnClickedGenerateSubpixel()
     SubpixelImagMatrix3D.clear();
     SubpixelImagMatrix3D.resize(subpixelreal, vector<vector<float>>(subpixelreal, vector<float>(Zsubpixelreal, 0)));
 
-    removeBGPhaseAndInterpolateVoxels(BackPhase);
+    removeBGPhaseAndInterpolateVoxels(BkgPhase);
 
     return;
 }
@@ -685,10 +683,6 @@ double SumSphericalMask(int radius, int Scan1, int Scan2, int Scan3, vector<vect
     Scan1 = Scan1 - radius;
     Scan2 = Scan2 - radius;
     Scan3 = Scan3 - radius;
-
-    fstream fs("cpp.txt");
-    fs << "SRM3D" << Scan1 << ',' << Scan2 << ',' << Scan3 << '\n';
-    fs.close();
 
     for (int k = 0; k <= diameter; k++)
     {
