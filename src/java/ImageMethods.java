@@ -221,11 +221,11 @@ public class ImageMethods {
     // setting all values in array below maxMagValue to 0
     switch (axis) {
       case X:
-        int cx0 = centerS.get(0).intValue();
         // positive x direction
         if (direction) {
           for (int i = 0; i < values.length; i++) {
-            if (Math.abs(ImageMethods.getVoxelValue(magImg, i + cx0, intCsy, intCsz, echoImageIndex)) < maxMagValue) {
+            if (Math
+                .abs(ImageMethods.getVoxelValue(magImg, i + intCsx, intCsy, intCsz, echoImageIndex)) < maxMagValue) {
               values[i] = 0.0;
             }
           }
@@ -233,18 +233,19 @@ public class ImageMethods {
         // negative x direction
         else {
           for (int i = 0; i < values.length; i++) {
-            if (Math.abs(ImageMethods.getVoxelValue(magImg, cx0 - i, intCsy, intCsz, echoImageIndex)) < maxMagValue) {
+            if (Math
+                .abs(ImageMethods.getVoxelValue(magImg, intCsx - i, intCsy, intCsz, echoImageIndex)) < maxMagValue) {
               values[i] = 0.0;
             }
           }
         }
         break;
       case Y:
-        int cy0 = centerS.get(1).intValue();
         // positive y direction
         if (direction) {
           for (int i = 0; i < values.length; i++) {
-            if (Math.abs(ImageMethods.getVoxelValue(magImg, intCsx, i + cy0, intCsz, echoImageIndex)) < maxMagValue) {
+            if (Math
+                .abs(ImageMethods.getVoxelValue(magImg, intCsx, i + intCsy, intCsz, echoImageIndex)) < maxMagValue) {
               values[i] = 0.0;
             }
           }
@@ -252,18 +253,19 @@ public class ImageMethods {
         // negative y direction
         else {
           for (int i = 0; i < values.length; i++) {
-            if (Math.abs(ImageMethods.getVoxelValue(magImg, intCsx, cy0 - i, intCsz, echoImageIndex)) < maxMagValue) {
+            if (Math
+                .abs(ImageMethods.getVoxelValue(magImg, intCsx, intCsy - i, intCsz, echoImageIndex)) < maxMagValue) {
               values[i] = 0.0;
             }
           }
         }
         break;
       case Z:
-        int cz0 = centerS.get(2).intValue();
         // positive z direction
         if (direction) {
           for (int i = 0; i < values.length; i++) {
-            if (Math.abs(ImageMethods.getVoxelValue(magImg, intCsx, intCsy, i + cz0, echoImageIndex)) < maxMagValue) {
+            if (Math
+                .abs(ImageMethods.getVoxelValue(magImg, intCsx, intCsy, i + intCsz, echoImageIndex)) < maxMagValue) {
               values[i] = 0.0;
             }
           }
@@ -271,7 +273,8 @@ public class ImageMethods {
         // negative z direction
         else {
           for (int i = 0; i < values.length; i++) {
-            if (Math.abs(ImageMethods.getVoxelValue(magImg, intCsx, intCsy, cz0 - i, echoImageIndex)) < maxMagValue) {
+            if (Math
+                .abs(ImageMethods.getVoxelValue(magImg, intCsx, intCsy, intCsz - i, echoImageIndex)) < maxMagValue) {
               values[i] = 0.0;
             }
           }
