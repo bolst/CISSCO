@@ -64,46 +64,46 @@ public class ImageMethods {
     Calculate_Magnetic_Moment_3D.logger.addVariable("ZP", Arrays.toString(ZP));
     Calculate_Magnetic_Moment_3D.logger.addVariable("ZN", Arrays.toString(ZN));
 
-    // to hold distances from center_s where phase is non-zero
     // indexed xp,xn,yp,yn,zp,zn
     double[][] Ps = new double[][] { XP, XN, YP, YN, ZP, ZN };
 
-    double[] weightedAvgs = new double[] { 0, 0, 0 };
+    // to hold moment in each direction x,y,z
+    double[] moments = new double[3];
+
     // for each direction X,Y,Z
     for (int iP = 0; iP < Ps.length; iP += 2) {
-      // get phase arrays in both directions
+      // get phase arrays in both + and - directions
       double[] phasesPos = Ps[iP];
       double[] phasesNeg = Ps[iP + 1];
 
-      double weightedSum = 0.0;
-      int norm = 0;
+      double moment = 0.0;
 
-      // weighted sum along positive axis
+      // at the first non-zero phase value, calculate the moment
       for (int r = 0; r < phasesPos.length; r++) {
         double phase = phasesPos[r];
         if (phase != 0) {
-          weightedSum += phase * Math.pow(r, 3);
-          norm++;
+          moment += phase * Math.pow(r, 3);
+          break;
         }
       }
-      // weighted sum along negative axis
+      // repeat in negative direction
       for (int r = 0; r < phasesNeg.length; r++) {
         double phase = phasesNeg[r];
         if (phase != 0) {
-          weightedSum += phase * Math.pow(r, 3);
-          norm++;
+          moment += phase * Math.pow(r, 3);
+          break;
         }
       }
 
-      Calculate_Magnetic_Moment_3D.logger.addVariable("weighted sum " + String.valueOf((int) (iP / 2)), weightedSum);
-      Calculate_Magnetic_Moment_3D.logger.addVariable("norm", norm);
+      Calculate_Magnetic_Moment_3D.logger.addVariable("moment " + String.valueOf((int) (iP / 2)), moment);
 
-      weightedAvgs[(int) (iP / 2)] = weightedSum / norm;
+      // divide by 2 for average
+      moments[(int) (iP / 2)] = moment / 2.0;
     }
 
-    double xAvg = weightedAvgs[0];
-    double yAvg = weightedAvgs[1];
-    double zAvg = weightedAvgs[2];
+    double xAvg = moments[0];
+    double yAvg = moments[1];
+    double zAvg = moments[2];
 
     // max average is the corresponding direction
     Axis mri = xAvg > yAvg ? (xAvg > zAvg ? Axis.X : Axis.Z) : (yAvg > zAvg ? Axis.Y : Axis.Z);
