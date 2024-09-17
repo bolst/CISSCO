@@ -226,8 +226,11 @@ public class Calculate_Magnetic_Moment_3D implements PlugIn {
     double c2x = Double.parseDouble(gui.ltf_rcx.getValue());
     double c2y = Double.parseDouble(gui.ltf_rcy.getValue());
     double c2z = Double.parseDouble(gui.ltf_rcz.getValue()) - 1.0;
-    item.subpix_image_center = new Vec3<Double>(c2x, c2y, c2z);
-    logger.addVariable("subpix image center", item.subpix_image_center.toString());
+    c2x = Math.floor(c2x);
+    c2y = Math.floor(c2y);
+    c2z = Math.floor(c2z);
+    item.subImageCenter = new Vec3<Double>(c2x, c2y, c2z);
+    logger.addVariable("subpix image center", item.subImageCenter.toString());
 
     // if no RCenter is inputted
     if (gui.ltf_rc.getValue().isEmpty()) {
@@ -451,15 +454,15 @@ public class Calculate_Magnetic_Moment_3D implements PlugIn {
     double csx = Double.parseDouble(gui.ltf_rcx.getValue());
     double csy = Double.parseDouble(gui.ltf_rcy.getValue());
     double csz = Double.parseDouble(gui.ltf_rcz.getValue()) - 1.0;
-    int c2x = (int) csx;
-    int c2y = (int) csy;
-    int c2z = (int) csz;
+    double c2x = Math.floor(csx);
+    double c2y = Math.floor(csy);
+    double c2z = Math.floor(csz);
     jni.passCalcSubCenterValues(item.roi_mag_belowM_xi, item.roi_mag_belowM_dx, item.roi_mag_belowM_yi,
         item.roi_mag_belowM_dy, item.roi_mag_belowM_zi, item.roi_mag_belowM_dz, RCenter, m_R0,
         item.centerL().get(0), item.centerL().get(1), item.centerL().get(2),
         item.centerM().get(0), item.centerM().get(1), item.centerM().get(2),
         csx, csy, csz,
-        (double) c2x, (double) c2y, (double) c2z);
+        c2x, c2y, c2z);
 
     // Calculating subpixel center, if there are no errors then the returned string
     // will be empty
@@ -1596,7 +1599,7 @@ public class Calculate_Magnetic_Moment_3D implements PlugIn {
     double subCenter = (2 * m_R0 + 1) * (10.0 / 2.0);
     double subpixelCoordinate = 0.0;
 
-    subpixelCoordinate = subCenter + (coordinate - (double) (item.subpix_image_center.get(axisFlag))) * 10.0;
+    subpixelCoordinate = subCenter + (coordinate - (double) (item.subImageCenter.get(axisFlag))) * 10.0;
 
     return subpixelCoordinate;
   }

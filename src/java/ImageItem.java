@@ -10,7 +10,7 @@ public class ImageItem {
   private Vec3<Double> center_l;
   private Vec3<Double> center_m;
   private Vec3<Double> center_s;
-  public Vec3<Double> subpix_image_center;
+  public Vec3<Double> subImageCenter;
   public double bkgPhase, estimatedBkgPhase;
   private double roi_mag_belowM_sumX, roi_mag_belowM_sumY, roi_mag_belowM_sumZ;
   public int roi_xi, roi_yi, roi_zi, roi_dx, roi_dy, roi_dz;

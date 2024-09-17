@@ -124,57 +124,33 @@ public class ImageMethods {
       double phaseValue) {
 
     // radius in each direction (1.6)
-    double r_pos = Calculate_Magnetic_Moment_3D.MIN_RCENTER;
-    double r_neg = Calculate_Magnetic_Moment_3D.MIN_RCENTER;
-
-    /*
-     * The logic below works by finding a voxel phase value that is between the
-     * user-inputted phase value.
-     * So by default it is 1, so the program finds the voxel that is between two
-     * voxels that have greater phase than 1 and less than 1.
-     * The program then interpolates the distance between these two voxels to
-     * estimate how far from the center a phase value of 1 is
-     */
-
-    for (int i = 0; i < phaseValsPos.length - 1; i++) {
-      // this condition is if the current voxel is nested between two voxels greater
-      // and less than the user-defined phase value
-      if ((phaseValsPos[i] > phaseValue) && (phaseValsPos[i + 1] < phaseValue)) {
-        Calculate_Magnetic_Moment_3D.logger.addVariable("Found pos phase 1", phaseValsPos[i]);
-        Calculate_Magnetic_Moment_3D.logger.addVariable("Found pos phase 2", phaseValsPos[i + 1]);
-        // this condition is if the interpolation value is greater than 1.6, because the
-        // object radius has to be greater than 1.6
-        double r0 = Utilities.interpolation(phaseValue, phaseValsPos[i], phaseValsPos[i + 1], i, i + 1);
-        if (r0 > Calculate_Magnetic_Moment_3D.MIN_RCENTER) {
-          r_pos = r0;
-        }
-        break;
+    double rPos = Calculate_Magnetic_Moment_3D.MIN_RCENTER;
+    double maxPhasePos = 0.0;
+    for (int r = 0; r < phaseValsPos.length; r++) {
+      double phase = phaseValsPos[r];
+      if (phase > maxPhasePos) {
+        maxPhasePos = phase;
+        rPos = r;
       }
     }
 
-    // Same thing as above just the opposite direction
-    for (int i = 0; i < phaseValsNeg.length - 1; i++) {
-      if ((phaseValsNeg[i] > phaseValue) && (phaseValsNeg[i + 1] < phaseValue)) {
-        Calculate_Magnetic_Moment_3D.logger.addVariable("Found neg phase 1", phaseValsNeg[i]);
-        Calculate_Magnetic_Moment_3D.logger.addVariable("Found neg phase 2", phaseValsNeg[i + 1]);
-        double r0 = Utilities.interpolation(phaseValue, phaseValsNeg[i], phaseValsNeg[i + 1], i, i + 1);
-        if (r0 > Calculate_Magnetic_Moment_3D.MIN_RCENTER) {
-          r_neg = r0;
-        }
-        break;
+    double rNeg = Calculate_Magnetic_Moment_3D.MIN_RCENTER;
+    double maxPhaseNeg = 0.0;
+    for (int r = 0; r < phaseValsNeg.length; r++) {
+      double phase = phaseValsNeg[r];
+      if (phase > maxPhaseNeg) {
+        maxPhaseNeg = phase;
+        rNeg = r;
       }
     }
 
-    Calculate_Magnetic_Moment_3D.logger.addVariable("r_pos", r_pos);
-    Calculate_Magnetic_Moment_3D.logger.addVariable("r_neg", r_neg);
-    Calculate_Magnetic_Moment_3D.logger.addVariable("MRI axis center", mriAxisCenter);
-
-    // RCenter to return
-    double RCenter = Math.abs(r_pos + r_neg) / 2.0 / Math.cbrt(2);
+    // half distance between max phase values
+    double halfMaxDistance = (rPos + rNeg) / 2.0;
+    double avgMaxPhase = (maxPhasePos + maxPhaseNeg) / 2.0;
+    double RCenter = halfMaxDistance * Math.cbrt(avgMaxPhase / 2.0);
     RCenter = Math.max(RCenter, Calculate_Magnetic_Moment_3D.MIN_RCENTER);
-
     // new center to return
-    double newCenter = ((mriAxisCenter + r_pos) + (mriAxisCenter - r_neg)) / 2.0;
+    double newCenter = ((mriAxisCenter + rPos) + (mriAxisCenter - rNeg)) / 2.0;
 
     double[] retval = new double[] { RCenter, newCenter };
 
