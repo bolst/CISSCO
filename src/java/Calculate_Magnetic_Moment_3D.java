@@ -197,11 +197,13 @@ public class Calculate_Magnetic_Moment_3D implements PlugIn {
       item.calcR0123();
       double m_R0 = item.m_R0();
 
-      jni.setmVariables(grid, m_R0, RCenter,
-          Double.parseDouble(gui.ltf_rcx.getValue()),
-          Double.parseDouble(gui.ltf_rcy.getValue()),
-          Double.parseDouble(gui.ltf_rcz.getValue()) - 1.0,
-          Double.parseDouble(gui.ltf_eqPhase.getValue()));
+      double c2x = Double.parseDouble(gui.ltf_rcx.getValue());
+      double c2y = Double.parseDouble(gui.ltf_rcy.getValue());
+      double c2z = Double.parseDouble(gui.ltf_rcz.getValue()) - 1.0;
+      c2x = Math.floor(c2x);
+      c2y = Math.floor(c2y);
+      c2z = Math.floor(c2z);
+      jni.setmVariables(grid, m_R0, RCenter, c2x, c2y, c2z, Double.parseDouble(gui.ltf_eqPhase.getValue()));
       jni.setMagMoment(Double.parseDouble(gui.ltf_eqPhase.getValue()) *
           Math.pow(RCenter, 3));
 

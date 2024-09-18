@@ -2563,6 +2563,25 @@ void OnBnClickedCalcmagmoment()
         return;
     }
 
+    ofstream myfile("mag.txt");
+    myfile << "subpixr1 " << subpixRadius1 << '\n';
+    myfile << "subpixr2 " << subpixRadius2 << '\n';
+    myfile << "subpixr3 " << subpixRadius3 << '\n';
+    myfile << "m_CenterX " << m_CenterX << '\n';
+    myfile << "m_CenterY " << m_CenterY << '\n';
+    myfile << "m_CenterZ " << m_CenterZ << '\n';
+    myfile << "zoomedX " << ZoomedX << '\n';
+    myfile << "zoomedY " << ZoomedY << '\n';
+    myfile << "lastValueSlice " << lastValueSlice << '\n';
+    myfile << "R1 " << R1 << '\n';
+    myfile << "R2 " << R2 << '\n';
+    myfile << "R3 " << R3 << '\n';
+    myfile << "mInner " << m_RInnerPhase << '\n';
+    myfile << "mMiddle " << m_RMiddlePhase << '\n';
+    myfile << "mOuter " << m_ROuterPhase << '\n';
+    myfile << "m_Subpixels " << m_SubPixels << '\n';
+    myfile.close();
+
     double RES1 = SumCircleElementsReal3D(subpixRadius1, (int)ZoomedX, (int)ZoomedY, (int)lastValueSlice);
     double RES2 = SumCircleElementsReal3D(subpixRadius2, (int)ZoomedX, (int)ZoomedY, (int)lastValueSlice);
     double RES3 = SumCircleElementsReal3D(subpixRadius3, (int)ZoomedX, (int)ZoomedY, (int)lastValueSlice);
