@@ -228,9 +228,9 @@ public class ImageItem {
       }
     }
 
-    Vec3<Integer> corner = new Vec3<Integer>(roi_xi, roi_yi, roi_zi);
-    Vec3<Integer> roiSize = new Vec3<Integer>(roi_xi + roi_dx, roi_yi + roi_dy, roi_zi + roi_dz);
-    bkgPhase = ImageMethods.sumBoxCorners(phase_img, corner, roiSize, echoImageIndex) / 8.0;
+    Vec3<Integer> corner1 = new Vec3<Integer>(roi_xi, roi_yi, roi_zi);
+    Vec3<Integer> corner2 = new Vec3<Integer>(roi_xi + roi_dx - 1, roi_yi + roi_dy - 1, roi_zi + roi_dz - 1);
+    bkgPhase = ImageMethods.sumBoxCorners(phase_img, corner1, corner2, echoImageIndex) / 8.0;
 
     estimatedBkgPhase = bkgPhase;
     Calculate_Magnetic_Moment_3D.logger.addVariable("estimated bkg phase", estimatedBkgPhase);
@@ -334,23 +334,23 @@ public class ImageItem {
 
     // negating all the values that are below the threshold (because phase values
     // can be random within the object)
-    Vec3<Integer> roiCorner = new Vec3<Integer>(roi_xi, roi_yi, roi_zi);
-    Vec3<Integer> roiSize = new Vec3<Integer>(roi_dx, roi_dy, roi_dz);
-    ImageMethods.removeValuesBelow(phaseVals_xPos, mag_img, center_s, roiCorner, roiSize, echoImageIndex, M, Axis.X,
+    Vec3<Integer> roiCorner1 = new Vec3<Integer>(roi_xi, roi_yi, roi_zi);
+    Vec3<Integer> roiCorner2 = new Vec3<Integer>(roi_xi + roi_dx - 1, roi_yi + roi_dy - 1, roi_zi + roi_dz - 1);
+    ImageMethods.removeValuesBelow(phaseVals_xPos, mag_img, center_s, roiCorner1, roiCorner2, echoImageIndex, M, Axis.X,
         true);
-    ImageMethods.removeValuesBelow(phaseVals_xNeg, mag_img, center_s, roiCorner, roiSize, echoImageIndex, M, Axis.X,
+    ImageMethods.removeValuesBelow(phaseVals_xNeg, mag_img, center_s, roiCorner1, roiCorner2, echoImageIndex, M, Axis.X,
         false);
-    ImageMethods.removeValuesBelow(phaseVals_yPos, mag_img, center_s, roiCorner, roiSize, echoImageIndex, M, Axis.Y,
+    ImageMethods.removeValuesBelow(phaseVals_yPos, mag_img, center_s, roiCorner1, roiCorner2, echoImageIndex, M, Axis.Y,
         true);
-    ImageMethods.removeValuesBelow(phaseVals_yNeg, mag_img, center_s, roiCorner, roiSize, echoImageIndex, M, Axis.Y,
+    ImageMethods.removeValuesBelow(phaseVals_yNeg, mag_img, center_s, roiCorner1, roiCorner2, echoImageIndex, M, Axis.Y,
         false);
-    ImageMethods.removeValuesBelow(phaseVals_zPos, mag_img, center_s, roiCorner, roiSize, echoImageIndex, M, Axis.Z,
+    ImageMethods.removeValuesBelow(phaseVals_zPos, mag_img, center_s, roiCorner1, roiCorner2, echoImageIndex, M, Axis.Z,
         true);
-    ImageMethods.removeValuesBelow(phaseVals_zNeg, mag_img, center_s, roiCorner, roiSize, echoImageIndex, M, Axis.Z,
+    ImageMethods.removeValuesBelow(phaseVals_zNeg, mag_img, center_s, roiCorner1, roiCorner2, echoImageIndex, M, Axis.Z,
         false);
     Calculate_Magnetic_Moment_3D.logger.addInfo("negated");
-    Calculate_Magnetic_Moment_3D.logger.addVariable("roiCorner in M% removal", roiCorner.toString());
-    Calculate_Magnetic_Moment_3D.logger.addVariable("roiSize in M% removal", roiSize.toString());
+    Calculate_Magnetic_Moment_3D.logger.addVariable("roiCorner1 in M% removal", roiCorner1.toString());
+    Calculate_Magnetic_Moment_3D.logger.addVariable("roiCorner2 in M% removal", roiCorner2.toString());
 
     // Putting equitorial plane and MRI field direction into new variables (since we
     // technically don't know which direction is going to be the MRI field

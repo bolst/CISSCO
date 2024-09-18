@@ -30,11 +30,11 @@ public class ImageMethods {
     }
   }
 
-  public static float sumBoxCorners(ImagePlus image, Vec3<Integer> corner, Vec3<Integer> size, int echoImageIndex) {
+  public static float sumBoxCorners(ImagePlus image, Vec3<Integer> corner1, Vec3<Integer> corner2, int echoImageIndex) {
     float retval = 0f;
-    int[] xs = new int[] { corner.get(0), size.get(0) };
-    int[] ys = new int[] { corner.get(1), size.get(1) };
-    int[] zs = new int[] { corner.get(2), size.get(2) };
+    int[] xs = new int[] { corner1.get(0), corner2.get(0) };
+    int[] ys = new int[] { corner1.get(1), corner2.get(1) };
+    int[] zs = new int[] { corner1.get(2), corner2.get(2) };
     for (int x : xs) {
       for (int y : ys) {
         for (int z : zs) {
