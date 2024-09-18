@@ -349,6 +349,8 @@ public class ImageItem {
     ImageMethods.removeValuesBelow(phaseVals_zNeg, mag_img, center_s, roiCorner, roiSize, echoImageIndex, M, Axis.Z,
         false);
     Calculate_Magnetic_Moment_3D.logger.addInfo("negated");
+    Calculate_Magnetic_Moment_3D.logger.addVariable("roiCorner in M% removal", roiCorner.toString());
+    Calculate_Magnetic_Moment_3D.logger.addVariable("roiSize in M% removal", roiSize.toString());
 
     // Putting equitorial plane and MRI field direction into new variables (since we
     // technically don't know which direction is going to be the MRI field

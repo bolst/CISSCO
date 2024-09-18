@@ -32,9 +32,12 @@ public class ImageMethods {
 
   public static float sumBoxCorners(ImagePlus image, Vec3<Integer> corner, Vec3<Integer> size, int echoImageIndex) {
     float retval = 0f;
-    for (int x : new int[] { corner.get(0), size.get(0) }) {
-      for (int y : new int[] { corner.get(1), size.get(1) }) {
-        for (int z : new int[] { corner.get(2), size.get(2) }) {
+    int[] xs = new int[] { corner.get(0), size.get(0) };
+    int[] ys = new int[] { corner.get(1), size.get(1) };
+    int[] zs = new int[] { corner.get(2), size.get(2) };
+    for (int x : xs) {
+      for (int y : ys) {
+        for (int z : zs) {
           retval += ImageMethods.getVoxelValue(image, x, y, z, echoImageIndex);
         }
       }
