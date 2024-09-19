@@ -279,24 +279,25 @@ public class ImageMethods {
     // ex. [4,3,7,6,...] -> [0,0,7,6,...]
 
     // find first nonzero value
-    int nonZeroIndex = 0;
-    for (int i = 0; i < values.length; i++) {
-      if (values[i] != 0.0) {
-        nonZeroIndex = i;
-        break;
-      }
-    }
+    // int nonZeroIndex = 0;
+    // for (int i = 0; i < values.length; i++) {
+    // if (values[i] != 0.0) {
+    // nonZeroIndex = i;
+    // break;
+    // }
+    // }
 
     // go through first three nonzero values (or end of array)
-    for (int i = nonZeroIndex; i < Math.min(nonZeroIndex + 3, values.length - 1); i++) {
-      // if value is smaller than next, value is ascending, zero all values before and
-      // including this one
-      if (values[i] < values[i + 1]) {
-        for (int j = nonZeroIndex; j <= i; j++) {
-          values[j] = 0.0;
-        }
-      }
-    }
+    // for (int i = nonZeroIndex; i < Math.min(nonZeroIndex + 3, values.length - 1);
+    // i++) {
+    // if value is smaller than next, value is ascending, zero all values before and
+    // including this one
+    // if (values[i] < values[i + 1]) {
+    // for (int j = nonZeroIndex; j <= i; j++) {
+    // values[j] = 0.0;
+    // }
+    // }
+    // }
 
   }
 
