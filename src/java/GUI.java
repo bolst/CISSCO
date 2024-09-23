@@ -78,8 +78,12 @@ public class GUI {
         btn_estCR = new JButton("Estimate Center/Radii");
         frame.getContentPane().add(btn_estCR, "cell 1 1,growx");
 
-        ltf_eqPhase = new LabeledTextField("Equatorial Phase at RCenter=", "1.0", "radian(s)", 5);
-        frame.getContentPane().add(ltf_eqPhase, "cell 1 2");
+        // ltf_eqPhase = new LabeledTextField("Equatorial Phase at RCenter=", "1.0",
+        // "radian(s)", 5);
+        // frame.getContentPane().add(ltf_eqPhase, "cell 1 2");
+
+        JLabel lbl_eqPhase = new JLabel("Equatorial Phase at RCenter = 1.0 radian");
+        frame.getContentPane().add(lbl_eqPhase, "cell 1 2");
 
         ltf_rc = new LabeledTextField("RCenter=", null, "pixels", 3);
         frame.getContentPane().add(ltf_rc, "cell 4 2 3 1");

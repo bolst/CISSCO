@@ -34,6 +34,7 @@ public class Calculate_Magnetic_Moment_3D implements PlugIn {
 
   private static final int grid = 10;
   private static final double GAMMARBAR = 42.58;
+  private static final double EQUATORIAL_PHASE = 1.0;
   private static final String PLUS_MINUS = "\u00B1";
   private static final String subMagTitle = "Subpixel Mag Image";
   private static final String subMagXZTitle = "Subpixel Mag Image XZ";
@@ -109,7 +110,8 @@ public class Calculate_Magnetic_Moment_3D implements PlugIn {
         ImageItem new_item = new ImageItem(s1MagWindowTitle,
             s1PhaseWindowTitle,
             (int) Double.parseDouble(gui.ltf_M.getValue()),
-            Double.parseDouble(gui.ltf_eqPhase.getValue()));
+            EQUATORIAL_PHASE);
+        // Double.parseDouble(gui.ltf_eqPhase.getValue()));
 
         // if the ROI was changed
         if (new_item.roi_xi != item.roi_xi ||
@@ -129,7 +131,8 @@ public class Calculate_Magnetic_Moment_3D implements PlugIn {
       item = new ImageItem(s1MagWindowTitle,
           s1PhaseWindowTitle,
           (int) Double.parseDouble(gui.ltf_M.getValue()),
-          Double.parseDouble(gui.ltf_eqPhase.getValue()));
+          EQUATORIAL_PHASE);
+      // Double.parseDouble(gui.ltf_eqPhase.getValue()));
 
       // calculating each center
       item.calcCenterL();
@@ -203,8 +206,8 @@ public class Calculate_Magnetic_Moment_3D implements PlugIn {
       c2x = Math.floor(c2x);
       c2y = Math.floor(c2y);
       c2z = Math.floor(c2z);
-      jni.setmVariables(grid, m_R0, RCenter, c2x, c2y, c2z, Double.parseDouble(gui.ltf_eqPhase.getValue()));
-      jni.setMagMoment(Double.parseDouble(gui.ltf_eqPhase.getValue()) *
+      jni.setmVariables(grid, m_R0, RCenter, c2x, c2y, c2z, EQUATORIAL_PHASE);// Double.parseDouble(gui.ltf_eqPhase.getValue()));
+      jni.setMagMoment(/* Double.parseDouble(gui.ltf_eqPhase.getValue()) */EQUATORIAL_PHASE *
           Math.pow(RCenter, 3));
 
       // setting slice to center
@@ -426,13 +429,6 @@ public class Calculate_Magnetic_Moment_3D implements PlugIn {
   // "Estimate Subpixel Center"
   // =====================================================================================
   public static void estimateSubpixelCenter() {
-
-    // updateVariables();
-    // jni.setmVariables(grid, m_R0, RCenter,
-    // Double.parseDouble(gui.ltf_rcx.getValue()),
-    // Double.parseDouble(gui.ltf_rcy.getValue()),
-    // Double.parseDouble(gui.ltf_rcz.getValue()) - 1.0,
-    // Double.parseDouble(gui.ltf_eqPhase.getValue()));
 
     // condition for program to continue, must have generated subpixel and estimated
     // a center and RCenter
