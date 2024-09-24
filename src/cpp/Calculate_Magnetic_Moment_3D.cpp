@@ -39,7 +39,6 @@ int m_RCenterPhase;
 int OBcount;
 // int Xfirst, Yfirst, Zfirst;
 int halfreal, Zhalfreal, halfdisplay, displaydim, realdim, Zrealdim, subpixeldisplay, subpixelreal, Zsubpixelreal;
-double s2_BackgroundPhase;
 double ZoomedX, ZoomedY, ZoomedZ, lastValueSlice;
 // double REALXfirst, REALYfirst, REALSlice;
 // double Xinitial, Yinitial, Zinitial;
@@ -141,7 +140,6 @@ JNIEXPORT void JNICALL Java_JNIMethods_passGenSubpixelValues(JNIEnv *env, jobjec
     m_R0 = jm_R0;
     m_SubPixels = jm_SubPixels;
     m_RCenter = jm_RCenter;
-    s2_BackgroundPhase = jm_BackPhase;
     m_BackgroundPhase = jm_BackPhase;
 }
 
@@ -266,7 +264,6 @@ JNIEXPORT void JNICALL Java_JNIMethods_setMagMoment(JNIEnv *env, jobject thisObj
 
 JNIEXPORT void JNICALL Java_JNIMethods_setBackPhase(JNIEnv *env, jobject thisObj, jdouble nBackPhase)
 {
-    s2_BackgroundPhase = nBackPhase;
     m_BackgroundPhase = nBackPhase;
     return;
 }

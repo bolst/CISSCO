@@ -11,7 +11,7 @@ public class ImageItem {
   private Vec3<Double> center_m;
   private Vec3<Double> center_s;
   public Vec3<Double> subImageCenter;
-  public double bkgPhase, estimatedBkgPhase;
+  public double bkgPhase;
   private double roi_mag_belowM_sumX, roi_mag_belowM_sumY, roi_mag_belowM_sumZ;
   public int roi_xi, roi_yi, roi_zi, roi_dx, roi_dy, roi_dz;
   public int roi_mag_belowM_xi, roi_mag_belowM_yi, roi_mag_belowM_zi,
@@ -232,8 +232,7 @@ public class ImageItem {
     Vec3<Integer> corner2 = new Vec3<Integer>(roi_xi + roi_dx - 1, roi_yi + roi_dy - 1, roi_zi + roi_dz - 1);
     bkgPhase = ImageMethods.sumBoxCorners(phase_img, corner1, corner2, echoImageIndex) / 8.0;
 
-    estimatedBkgPhase = bkgPhase;
-    Calculate_Magnetic_Moment_3D.logger.addVariable("estimated bkg phase", estimatedBkgPhase);
+    Calculate_Magnetic_Moment_3D.logger.addVariable("estimated bkg phase", bkgPhase);
 
     return bkgPhase;
 

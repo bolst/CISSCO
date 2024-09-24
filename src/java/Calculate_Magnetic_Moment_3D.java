@@ -158,7 +158,8 @@ public class Calculate_Magnetic_Moment_3D implements PlugIn {
       }
 
       // setting GUI bkg phase to estimate bkg phase
-      gui.ll_estBkgPhase.setValue(roundAndConvertToString(item.estimateBkgPhase(), 2));
+      double estimatedBkgPhase = item.estimateBkgPhase();
+      gui.ll_estBkgPhase.setValue(roundAndConvertToString(estimatedBkgPhase, 2));
 
       // Setting center to GUI unless user already has an inputted center point
       if (gui.ltf_rcx.getTextFieldInstance().isDefault()) {
@@ -209,6 +210,7 @@ public class Calculate_Magnetic_Moment_3D implements PlugIn {
       jni.setmVariables(grid, m_R0, RCenter, c2x, c2y, c2z, EQUATORIAL_PHASE);// Double.parseDouble(gui.ltf_eqPhase.getValue()));
       jni.setMagMoment(/* Double.parseDouble(gui.ltf_eqPhase.getValue()) */EQUATORIAL_PHASE *
           Math.pow(RCenter, 3));
+      jni.setBackPhase(item.bkgPhase);
 
       // setting slice to center
       item.setZ((int) Double.parseDouble(gui.ltf_rcz.getValue()));
