@@ -39,6 +39,7 @@ int m_RCenterPhase;
 int OBcount;
 // int Xfirst, Yfirst, Zfirst;
 int halfreal, Zhalfreal, halfdisplay, displaydim, realdim, Zrealdim, subpixeldisplay, subpixelreal, Zsubpixelreal;
+double s2_BackgroundPhase;
 double ZoomedX, ZoomedY, ZoomedZ, lastValueSlice;
 // double REALXfirst, REALYfirst, REALSlice;
 // double Xinitial, Yinitial, Zinitial;
@@ -66,7 +67,7 @@ double m_RInnerFrom = 2.5;
 double m_RMiddleFrom = 0.9;
 double m_ROuterFrom = 0.2;
 double m_SNR, m_SNRoc;
-double rho, BkgPhase;
+double rho, m_BackgroundPhase;
 double m_Ri;
 
 int counter = 0;
@@ -140,7 +141,8 @@ JNIEXPORT void JNICALL Java_JNIMethods_passGenSubpixelValues(JNIEnv *env, jobjec
     m_R0 = jm_R0;
     m_SubPixels = jm_SubPixels;
     m_RCenter = jm_RCenter;
-    BkgPhase = jm_BackPhase;
+    s2_BackgroundPhase = jm_BackPhase;
+    m_BackgroundPhase = jm_BackPhase;
 }
 
 JNIEXPORT void JNICALL Java_JNIMethods_passCalcSubCenterValues(JNIEnv *env, jobject thisObj,
@@ -197,7 +199,7 @@ JNIEXPORT void JNICALL Java_JNIMethods_passMagMomValues(JNIEnv *env, jobject thi
     m_CenterZ = jm_csz;
 
     m_R0 = jm_R0;
-    BkgPhase = jm_bkg;
+    m_BackgroundPhase = jm_bkg;
 
     m_RChi = jm_RChi;
     m_B0 = jm_B0;
@@ -226,7 +228,7 @@ JNIEXPORT void JNICALL Java_JNIMethods_passSpinDensValues(JNIEnv *env, jobject t
     m_R2 = jm_r2;
     m_R3 = jm_r3;
 
-    BkgPhase = jm_bkgphase;
+    m_BackgroundPhase = jm_bkgphase;
     m_MagMoment = jm_magmom;
 
     return;
@@ -264,7 +266,8 @@ JNIEXPORT void JNICALL Java_JNIMethods_setMagMoment(JNIEnv *env, jobject thisObj
 
 JNIEXPORT void JNICALL Java_JNIMethods_setBackPhase(JNIEnv *env, jobject thisObj, jdouble nBackPhase)
 {
-    BkgPhase = nBackPhase;
+    s2_BackgroundPhase = nBackPhase;
+    m_BackgroundPhase = nBackPhase;
     return;
 }
 
@@ -544,7 +547,7 @@ void removeBGPhaseAndInterpolateVoxels(double bPhase)
 
     // ---------- begin to remove background phase  ---------- Do NOT change without discussion
 
-    // double tmpreal, tmpimag, tmpPhase = BkgPhase;
+    // double tmpreal, tmpimag, tmpPhase = m_BackgroundPhase;
     float tmpreal, tmpimag;
     double tmpPhase = bPhase;
     int Nfinal = m_SubPixels;
@@ -598,7 +601,7 @@ void interpolateVoxels_SIM(int msize)
 
     // ---------- begin to interpolate voxels for simmed images  ---------- Do NOT change without discussion
 
-    // double tmpreal, tmpimag, tmpPhase = BkgPhase;
+    // double tmpreal, tmpimag, tmpPhase = m_BackgroundPhase;
     float tmpreal, tmpimag;
     int Nfinal = m_SubPixels;
     int ratio = Nfinal * Nfinal * Nfinal;
@@ -669,7 +672,7 @@ void OnBnClickedGenerateSubpixel()
     SubpixelImagMatrix3D.clear();
     SubpixelImagMatrix3D.resize(subpixelreal, vector<vector<float>>(subpixelreal, vector<float>(Zsubpixelreal, 0)));
 
-    removeBGPhaseAndInterpolateVoxels(BkgPhase);
+    removeBGPhaseAndInterpolateVoxels(m_BackgroundPhase);
 
     return;
 }
@@ -2437,7 +2440,7 @@ pair<double, double> CalculateSpinDensity(double RES2, double RES3, double IMS2,
 
     double localSpinDensity = (9 * sqrt(3.0) / (4.0 * PI)) * magS23 / magf23;
 
-    // exp(i*BkgPhase) is proportional to (f*23)*(S23)
+    // exp(i*m_BackgroundPhase) is proportional to (f*23)*(S23)
     double reBkgPhase = ref23 * reS23 + imf23 * imS23;
     double imBkgPhase = ref23 * imS23 - reS23 * imf23;
 
@@ -2806,7 +2809,7 @@ JNIEXPORT void JNICALL Java_JNIMethods_estBkgAndSpinDensity(JNIEnv *env, jobject
 
     pair<double, double> retval = CalculateSpinDensity(RES2, RES3, IMS2, IMS3, m_R2, m_R3, m_MagMoment);
     rho = retval.first;
-    BkgPhase = retval.second;
+    m_BackgroundPhase = retval.second;
     return;
 }
 
@@ -2922,7 +2925,7 @@ JNIEXPORT jdouble JNICALL Java_JNIMethods_getImagSum(JNIEnv *env, jobject thisOb
 
 JNIEXPORT jdouble JNICALL Java_JNIMethods_getBkg(JNIEnv *env, jobject thisObj)
 {
-    return BkgPhase;
+    return m_BackgroundPhase;
 }
 
 JNIEXPORT jdouble JNICALL Java_JNIMethods_getSpinDensity(JNIEnv *env, jobject thisObj)
