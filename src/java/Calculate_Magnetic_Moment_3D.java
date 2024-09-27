@@ -734,22 +734,16 @@ public class Calculate_Magnetic_Moment_3D implements PlugIn {
         break;
 
       case Y:
-        // R1_phase_actual += subpixelPhaseMatrixXZ[sub_x + (int) (m_R1 * 10)][sub_z];
-        // R1_phase_actual += subpixelPhaseMatrixXZ[sub_x - (int) (m_R1 * 10)][sub_z];
         R1_phase_actual += subpixelPhaseMatrix[sub_x + (int) (m_R1 * 10)][sub_y];
         R1_phase_actual += subpixelPhaseMatrix[sub_x - (int) (m_R1 * 10)][sub_y];
         R1_phase_actual += subpixelPhaseMatrixXZ[sub_x][sub_z + (int) (m_R1 * 10)];
         R1_phase_actual += subpixelPhaseMatrixXZ[sub_x][sub_z - (int) (m_R1 * 10)];
 
-        // R2_phase_actual += subpixelPhaseMatrixXZ[sub_x + (int) (m_R2 * 10)][sub_z];
-        // R2_phase_actual += subpixelPhaseMatrixXZ[sub_x - (int) (m_R2 * 10)][sub_z];
         R2_phase_actual += subpixelPhaseMatrix[sub_x + (int) (m_R2 * 10)][sub_y];
         R2_phase_actual += subpixelPhaseMatrix[sub_x - (int) (m_R2 * 10)][sub_y];
         R2_phase_actual += subpixelPhaseMatrixXZ[sub_x][sub_z + (int) (m_R2 * 10)];
         R2_phase_actual += subpixelPhaseMatrixXZ[sub_x][sub_z - (int) (m_R2 * 10)];
 
-        // R3_phase_actual += subpixelPhaseMatrixXZ[sub_x + (int) (m_R3 * 10)][sub_z];
-        // R3_phase_actual += subpixelPhaseMatrixXZ[sub_x - (int) (m_R3 * 10)][sub_z];
         R3_phase_actual += subpixelPhaseMatrix[sub_x + (int) (m_R3 * 10)][sub_y];
         R3_phase_actual += subpixelPhaseMatrix[sub_x - (int) (m_R3 * 10)][sub_y];
         R3_phase_actual += subpixelPhaseMatrixXZ[sub_x][sub_z + (int) (m_R3 * 10)];
@@ -788,6 +782,7 @@ public class Calculate_Magnetic_Moment_3D implements PlugIn {
     R2_phase_actual -= bkg_phase;
     R3_phase_actual -= bkg_phase;
 
+    // update GUI
     gui.lbl_r1phaseAct.setText(roundAndConvertToString(R1_phase_actual, 2));
     gui.lbl_r2phaseAct.setText(roundAndConvertToString(R2_phase_actual, 2));
     gui.lbl_r3phaseAct.setText(roundAndConvertToString(R3_phase_actual, 2));
