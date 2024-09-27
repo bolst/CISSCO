@@ -195,7 +195,7 @@ public class Calculate_Magnetic_Moment_3D implements PlugIn {
       } else {
         RCenter = Double.parseDouble(gui.ltf_rc.getValue());
         item.setRCenter(RCenter);
-        logger.addVariable("RCenter_", RCenter);
+        logger.addVariable("RCenter", RCenter);
       }
 
       item.calcR0123();
@@ -325,8 +325,8 @@ public class Calculate_Magnetic_Moment_3D implements PlugIn {
       // Interpolating XY subpixel phase matrix
       for (int m = 0; m < croppedImageSize * Nfinal; m++) {
         for (int k = 0; k < croppedImageSize * Nfinal; k++) {
-          subpixelPhaseMatrix[k][m] = croppedPhaseValues3D[(int) (k / Nfinal)][(int) (m / Nfinal)][(int) m_R0];
           subpixelMagMatrix[k][m] = croppedMagnitudeValues3D[(int) (k / Nfinal)][(int) (m / Nfinal)][(int) m_R0];
+          subpixelPhaseMatrix[k][m] = croppedPhaseValues3D[(int) (k / Nfinal)][(int) (m / Nfinal)][(int) m_R0];
           subpixelMagMatrixXZ[k][m] = croppedMagnitudeValues3D[(int) (k / Nfinal)][(int) m_R0][(int) (m / Nfinal)];
           subpixelPhaseMatrixXZ[k][m] = croppedPhaseValues3D[(int) (k / Nfinal)][(int) m_R0][(int) (m / Nfinal)];
         }
