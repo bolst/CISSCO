@@ -127,7 +127,7 @@ public class ImageMethods {
       double phaseValue) {
 
     // radius in each direction (1.6)
-    double rPos = Calculate_Magnetic_Moment_3D.MIN_RCENTER;
+    int rPos = 0;
     double maxPhasePos = 0.0;
     for (int r = 0; r < phaseValsPos.length; r++) {
       double phase = phaseValsPos[r];
@@ -137,7 +137,7 @@ public class ImageMethods {
       }
     }
 
-    double rNeg = Calculate_Magnetic_Moment_3D.MIN_RCENTER;
+    int rNeg = 0;
     double maxPhaseNeg = 0.0;
     for (int r = 0; r < phaseValsNeg.length; r++) {
       double phase = phaseValsNeg[r];
@@ -147,13 +147,37 @@ public class ImageMethods {
       }
     }
 
-    // half distance between max phase values
-    double halfMaxDistance = (rPos + rNeg) / 2.0;
-    double avgMaxPhase = (maxPhasePos + maxPhaseNeg) / 2.0;
-    double RCenter = halfMaxDistance * Math.cbrt(avgMaxPhase / 2.0);
+    double smallestDistanceToOne = Double.POSITIVE_INFINITY;
+
+    double eqPhasePos = maxPhasePos;
+    for (int r = rPos; r < phaseValsPos.length; r++) {
+      double phase = phaseValsPos[r];
+      double dist = Math.abs(phase - 1);
+      if (dist < smallestDistanceToOne) {
+        smallestDistanceToOne = dist;
+        eqPhasePos = phase;
+        rPos = r;
+      }
+    }
+
+    smallestDistanceToOne = Double.POSITIVE_INFINITY;
+    double eqPhaseNeg = maxPhaseNeg;
+    for (int r = rNeg; r < phaseValsNeg.length; r++) {
+      double phase = phaseValsNeg[r];
+      double dist = Math.abs(phase - 1);
+      if (dist < smallestDistanceToOne) {
+        smallestDistanceToOne = dist;
+        eqPhaseNeg = phase;
+        rNeg = r;
+      }
+    }
+
+    double avgDistance = (rPos + rNeg) / 2.0;
+    double avgEqPhase = (eqPhasePos + eqPhaseNeg) / 2.0;
+    double RCenter = avgDistance * Math.cbrt(avgEqPhase / 2.0);
     RCenter = Math.max(RCenter, Calculate_Magnetic_Moment_3D.MIN_RCENTER);
     // new center to return
-    double newCenter = ((mriAxisCenter + rPos) + (mriAxisCenter - rNeg)) / 2.0;
+    double newCenter = mriAxisCenter;
 
     double[] retval = new double[] { RCenter, newCenter };
 
