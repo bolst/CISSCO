@@ -419,6 +419,7 @@ public class ImageItem {
         Calculate_Magnetic_Moment_3D.logger.addInfo("Unable to determine MRI axis");
     }
 
+    Calculate_Magnetic_Moment_3D.logger.addVariable("RCenter calculated as", RCenter);
     return RCenter;
   }
 
