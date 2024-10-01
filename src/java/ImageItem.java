@@ -269,7 +269,7 @@ public class ImageItem {
     return phase_nobkg[x][y][z];
   }
 
-  public double estimateRCenter() {
+  public double estimateRCenter(Axis overrideB0) {
     int csx = center_s.get(0).intValue();
     int csy = center_s.get(1).intValue();
     int csz = center_s.get(2).intValue();
@@ -359,10 +359,14 @@ public class ImageItem {
     double[] phaseVals_neg;
     int center_mri_axis;
     // String neglectedAxis;
-    mriAxis = ImageMethods.calculateMRIAxis(phaseVals_xPos, phaseVals_xNeg, phaseVals_yPos, phaseVals_yNeg,
+    setMRIAxis(ImageMethods.calculateMRIAxis(phaseVals_xPos, phaseVals_xNeg, phaseVals_yPos, phaseVals_yNeg,
         phaseVals_zPos,
-        phaseVals_zNeg);
-    Calculate_Magnetic_Moment_3D.gui.ldd_MriAxis.setValue(mriAxis);
+        phaseVals_zNeg));
+
+    if (overrideB0 != Axis.UNKNOWN) {
+      setMRIAxis(overrideB0);
+    }
+
     switch (mriAxis) {
       case X:
         phaseVals_pos = phaseVals_xPos;
@@ -413,7 +417,7 @@ public class ImageItem {
         break;
       case Z:
         center_s.set(2, newCenter1f);
-        Calculate_Magnetic_Moment_3D.gui.ltf_rcz.setValue(String.valueOf(newCenter1f));
+        Calculate_Magnetic_Moment_3D.gui.ltf_rcz.setValue(String.valueOf(newCenter1f + 1));
         break;
       default:
         Calculate_Magnetic_Moment_3D.logger.addInfo("Unable to determine MRI axis");
@@ -801,6 +805,14 @@ public class ImageItem {
   // =====================================================================================
   public void setRCenter(double rc) {
     RCenter = rc;
+  }
+
+  // =====================================================================================
+  // Setter for B0 axis
+  // =====================================================================================
+  public void setMRIAxis(Axis B0) {
+    mriAxis = B0;
+    Calculate_Magnetic_Moment_3D.gui.ldd_MriAxis.setValue(B0);
   }
 
   /**
