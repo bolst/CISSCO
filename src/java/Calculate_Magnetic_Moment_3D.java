@@ -354,12 +354,6 @@ public class Calculate_Magnetic_Moment_3D implements PlugIn {
       subpixelPhaseImage.show();
       subpixelPhaseImageXZ.show();
 
-      // Passing matrices to C++
-      jni.setPhaseXYMatrix(subpixelPhaseMatrix);
-      jni.setPhaseXZMatrix(subpixelPhaseMatrixXZ);
-      jni.setMagXYMatrix(subpixelMagMatrix);
-      jni.setMagXZMatrix(subpixelMagMatrixXZ);
-
       // resetting slice to center
       magnitudeImage.setZ(item.centerS().get(2).intValue());
       phaseImage.setZ(item.centerS().get(2).intValue());
@@ -1576,7 +1570,7 @@ public class Calculate_Magnetic_Moment_3D implements PlugIn {
       c2x = Math.floor(c2x);
       c2y = Math.floor(c2y);
       c2z = Math.floor(c2z);
-      jni.setmVariables(grid, m_R0, RCenter, c2x, c2y, c2z, EQUATORIAL_PHASE);
+      jni.setmVariables(grid, m_R0, RCenter, c2x, c2y, c2z);
       jni.setMagMoment(EQUATORIAL_PHASE * Math.pow(RCenter, 3));
       jni.setBackPhase(item.bkgPhase);
 

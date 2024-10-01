@@ -74,7 +74,7 @@ class JNIMethods {
     native void passSumValues(double jm_ri, double jm_cx, double jm_cy, double jm_cz);
 
     native void setmVariables(int jm_SubPixels, double jm_R0, double jm_RCenter,
-            double jm_CenterX2, double jm_CenterY2, double jm_CenterZ2, double jphaseValue);
+            double jm_CenterX2, double jm_CenterY2, double jm_CenterZ2);
 
     native void setMagMomentVariables(double jSNR, double je12, double je23, double jB0, double jRChi, double jTE);
 
@@ -83,14 +83,6 @@ class JNIMethods {
     native void setBackPhase(double jBackPhase);
 
     native void setRealImagNumbers(float[][][] jreal, float[][][] jimag);
-
-    native void setPhaseXYMatrix(float[][] jphase);
-
-    native void setPhaseXZMatrix(float[][] jphase);
-
-    native void setMagXYMatrix(float[][] jmag);
-
-    native void setMagXZMatrix(float[][] jmag);
 
     native void setCenterL(double jx, double jy, double jz);
 

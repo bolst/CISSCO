@@ -50,10 +50,10 @@ JNIEXPORT void JNICALL Java_JNIMethods_passSumValues
 /*
  * Class:     JNIMethods
  * Method:    setmVariables
- * Signature: (IDDDDDD)V
+ * Signature: (IDDDDD)V
  */
 JNIEXPORT void JNICALL Java_JNIMethods_setmVariables
-  (JNIEnv *, jobject, jint, jdouble, jdouble, jdouble, jdouble, jdouble, jdouble);
+  (JNIEnv *, jobject, jint, jdouble, jdouble, jdouble, jdouble, jdouble);
 
 /*
  * Class:     JNIMethods
@@ -86,38 +86,6 @@ JNIEXPORT void JNICALL Java_JNIMethods_setBackPhase
  */
 JNIEXPORT void JNICALL Java_JNIMethods_setRealImagNumbers
   (JNIEnv *, jobject, jobjectArray, jobjectArray);
-
-/*
- * Class:     JNIMethods
- * Method:    setPhaseXYMatrix
- * Signature: ([[F)V
- */
-JNIEXPORT void JNICALL Java_JNIMethods_setPhaseXYMatrix
-  (JNIEnv *, jobject, jobjectArray);
-
-/*
- * Class:     JNIMethods
- * Method:    setPhaseXZMatrix
- * Signature: ([[F)V
- */
-JNIEXPORT void JNICALL Java_JNIMethods_setPhaseXZMatrix
-  (JNIEnv *, jobject, jobjectArray);
-
-/*
- * Class:     JNIMethods
- * Method:    setMagXYMatrix
- * Signature: ([[F)V
- */
-JNIEXPORT void JNICALL Java_JNIMethods_setMagXYMatrix
-  (JNIEnv *, jobject, jobjectArray);
-
-/*
- * Class:     JNIMethods
- * Method:    setMagXZMatrix
- * Signature: ([[F)V
- */
-JNIEXPORT void JNICALL Java_JNIMethods_setMagXZMatrix
-  (JNIEnv *, jobject, jobjectArray);
 
 /*
  * Class:     JNIMethods

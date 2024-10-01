@@ -31,30 +31,17 @@ using namespace std;
 #define MAX_SUBPIXEL_DIM 640
 
 int m_SubPixels;
-double m_R0, m_R1, m_R2, m_R3, m_radians, m_RCenter, m_CenterX, m_CenterY, m_CenterZ, m_CenterX2, m_CenterY2, m_CenterZ2, m_CenterX3, m_CenterY3, m_CenterZ3;
+double m_R0, m_R1, m_R2, m_R3, m_radians, m_RCenter, m_CenterX, m_CenterY, m_CenterZ, m_CenterX2, m_CenterY2, m_CenterZ2;
 float ***RealNumbers, ***ImagNumbers;
-float **subPhaseMatrix, **subPhaseMatrixXZ, **subMagMatrix, **subMagMatrixXZ;
 float ***SimRealNumbers, ***SimImagNumbers;
-int m_RCenterPhase;
 int OBcount;
-// int Xfirst, Yfirst, Zfirst;
 int halfreal, Zhalfreal, halfdisplay, displaydim, realdim, Zrealdim, subpixeldisplay, subpixelreal, Zsubpixelreal;
 double ZoomedX, ZoomedY, ZoomedZ, lastValueSlice;
-// double REALXfirst, REALYfirst, REALSlice;
-// double Xinitial, Yinitial, Zinitial;
-string magFileName, phaseFileName, errorMessage, errorMessage_magMom, errorMessage_sums;
-bool m_Rcentercheck;
+string errorMessage, errorMessage_magMom, errorMessage_sums;
 vector<vector<vector<float>>> SubpixelRealMatrix3D;
 vector<vector<vector<float>>> SubpixelImagMatrix3D;
 vector<vector<vector<float>>> SubpixelSimulatedRealMatrix3D;
 vector<vector<vector<float>>> SubpixelSimulatedImagMatrix3D;
-vector<vector<float>> SubpixelPhaseMatrix;
-vector<vector<float>> SubpixelMagMatrix;
-vector<vector<float>> SubpixelPhaseMatrixXZ;
-vector<vector<float>> SubpixelMagMatrixXZ;
-// vector<vector<vector<float>>> SmallReal(realdim, vector<vector<float>>(realdim, vector<float>(Zrealdim, 0)));
-// vector<vector<vector<float>>> SmallImag(realdim, vector<vector<float>>(realdim, vector<float>(Zrealdim, 0)));
-float ***tempReal_BG, ***tempImag_BG;
 int smallBox_X, smallBox_Y, smallBox_Z, smallBox_XSize, smallBox_YSize, smallBox_ZSize;
 double centerL_x, centerL_y, centerL_z, centerM_x, centerM_y, centerM_z, centerS_x, centerS_y, centerS_z;
 double subCenter;
@@ -243,7 +230,7 @@ JNIEXPORT void JNICALL Java_JNIMethods_passSumValues(JNIEnv *env, jobject thisOb
     return;
 }
 
-JNIEXPORT void JNICALL Java_JNIMethods_setmVariables(JNIEnv *env, jobject thisObj, jint nm_SubPixels, jdouble nm_R0, jdouble nm_RCenter, jdouble nm_CenterX2, jdouble nm_CenterY2, jdouble nm_CenterZ2, jdouble nmphasevalue)
+JNIEXPORT void JNICALL Java_JNIMethods_setmVariables(JNIEnv *env, jobject thisObj, jint nm_SubPixels, jdouble nm_R0, jdouble nm_RCenter, jdouble nm_CenterX2, jdouble nm_CenterY2, jdouble nm_CenterZ2)
 {
     m_SubPixels = nm_SubPixels;
     m_R0 = nm_R0;
@@ -251,8 +238,6 @@ JNIEXPORT void JNICALL Java_JNIMethods_setmVariables(JNIEnv *env, jobject thisOb
     m_CenterX2 = nm_CenterX2;
     m_CenterY2 = nm_CenterY2;
     m_CenterZ2 = nm_CenterZ2;
-    m_RCenterPhase = nmphasevalue;
-    // m_MagMoment = m_RCenterPhase * pow(m_RCenter, 3);
     return;
 }
 
@@ -270,21 +255,6 @@ JNIEXPORT void JNICALL Java_JNIMethods_setBackPhase(JNIEnv *env, jobject thisObj
 
 JNIEXPORT void JNICALL Java_JNIMethods_setRealImagNumbers(JNIEnv *env, jobject thisObj, jobjectArray _real, jobjectArray _imag)
 {
-    /*
-    RealNumbers = new float **[(int)(m_CenterX2 + m_R0) + 1];
-    ImagNumbers = new float **[(int)(m_CenterX2 + m_R0) + 1];
-    for (int i = 0; i <= (int)(m_CenterX2 + m_R0); i++)
-    {
-        RealNumbers[i] = new float *[(int)(m_CenterY2 + m_R0) + 1];
-        ImagNumbers[i] = new float *[(int)(m_CenterY2 + m_R0) + 1];
-        for (int j = 0; j <= (int)(m_CenterY2 + m_R0); j++)
-        {
-            RealNumbers[i][j] = new float[(int)(m_CenterZ2 + m_R0) + 1];
-            ImagNumbers[i][j] = new float[(int)(m_CenterZ2 + m_R0) + 1];
-        }
-    }
-    */
-
     RealNumbers = new float **[subpixeldisplay + 1];
     ImagNumbers = new float **[subpixeldisplay + 1];
 
@@ -301,102 +271,6 @@ JNIEXPORT void JNICALL Java_JNIMethods_setRealImagNumbers(JNIEnv *env, jobject t
 
     RealNumbers = firstLevel(env, _real);
     ImagNumbers = firstLevel(env, _imag);
-
-    return;
-}
-
-JNIEXPORT void JNICALL Java_JNIMethods_setPhaseXYMatrix(JNIEnv *env, jobject thisObj, jobjectArray jarr)
-{
-    subPhaseMatrix = new float *[subpixeldisplay];
-    for (int i = 0; i < subpixeldisplay; i++)
-    {
-        subPhaseMatrix[i] = new float[subpixeldisplay];
-    }
-
-    subPhaseMatrix = secondLevel(env, jarr);
-
-    SubpixelPhaseMatrix.clear();
-    SubpixelPhaseMatrix.resize(subpixeldisplay, vector<float>(subpixeldisplay, 0));
-
-    for (int i = 0; i < subpixeldisplay; i++)
-    {
-        for (int j = 0; j < subpixeldisplay; j++)
-        {
-            SubpixelPhaseMatrix[j][i] = subPhaseMatrix[j][i];
-        }
-    }
-
-    return;
-}
-
-JNIEXPORT void JNICALL Java_JNIMethods_setPhaseXZMatrix(JNIEnv *env, jobject thisObj, jobjectArray jarr)
-{
-    subPhaseMatrixXZ = new float *[subpixeldisplay];
-    for (int i = 0; i < subpixeldisplay; i++)
-    {
-        subPhaseMatrixXZ[i] = new float[subpixeldisplay];
-    }
-
-    subPhaseMatrixXZ = secondLevel(env, jarr);
-
-    SubpixelPhaseMatrixXZ.clear();
-    SubpixelPhaseMatrixXZ.resize(subpixeldisplay, vector<float>(subpixeldisplay, 0));
-
-    for (int i = 0; i < subpixeldisplay; i++)
-    {
-        for (int j = 0; j < subpixeldisplay; j++)
-        {
-            SubpixelPhaseMatrixXZ[j][i] = subPhaseMatrixXZ[j][i];
-        }
-    }
-
-    return;
-}
-
-JNIEXPORT void JNICALL Java_JNIMethods_setMagXYMatrix(JNIEnv *env, jobject thisObj, jobjectArray jarr)
-{
-    subMagMatrix = new float *[subpixeldisplay];
-    for (int i = 0; i < subpixeldisplay; i++)
-    {
-        subMagMatrix[i] = new float[subpixeldisplay];
-    }
-
-    subMagMatrix = secondLevel(env, jarr);
-
-    SubpixelMagMatrix.clear();
-    SubpixelMagMatrix.resize(subpixeldisplay, vector<float>(subpixeldisplay, 0));
-
-    for (int i = 0; i < subpixeldisplay; i++)
-    {
-        for (int j = 0; j < subpixeldisplay; j++)
-        {
-            SubpixelMagMatrix[j][i] = subMagMatrix[j][i];
-        }
-    }
-
-    return;
-}
-
-JNIEXPORT void JNICALL Java_JNIMethods_setMagXZMatrix(JNIEnv *env, jobject thisObj, jobjectArray jarr)
-{
-    subMagMatrixXZ = new float *[subpixeldisplay];
-    for (int i = 0; i < subpixeldisplay; i++)
-    {
-        subMagMatrixXZ[i] = new float[subpixeldisplay];
-    }
-
-    subMagMatrixXZ = secondLevel(env, jarr);
-
-    SubpixelMagMatrixXZ.clear();
-    SubpixelMagMatrixXZ.resize(subpixeldisplay, vector<float>(subpixeldisplay, 0));
-
-    for (int i = 0; i < subpixeldisplay; i++)
-    {
-        for (int j = 0; j < subpixeldisplay; j++)
-        {
-            SubpixelMagMatrixXZ[j][i] = subMagMatrixXZ[j][i];
-        }
-    }
 
     return;
 }
@@ -944,7 +818,7 @@ void OnBnClickedEstimatecenter()
 
     errorMessage = "";
 
-    if (SubpixelPhaseMatrix.empty())
+    if (SubpixelRealMatrix3D.empty())
     {
         //::MessageBox(NULL, "Must generate Subpixel grid first.", "Message", MB_OK);
         errorMessage = "Must generate Subpixel grid first.";
@@ -2523,7 +2397,7 @@ void OnBnClickedCalcmagmoment()
         return;
     }
 
-    if (SubpixelPhaseMatrix.empty())
+    if (SubpixelRealMatrix3D.empty())
     {
         //::MessageBox(NULL, "Must generate subpixel data first.", "Message", MB_OK);
         errorMessage_magMom = "Must generate subpixel data first.";
@@ -2639,7 +2513,7 @@ void OnBnClickedImaginarysum()
         return;
     }
 
-    if (SubpixelPhaseMatrix.empty())
+    if (SubpixelRealMatrix3D.empty())
     {
         //::MessageBox(NULL, "Must generate subpixel data first.", "Message", MB_OK);
         errorMessage_sums = "Must generate subpixel data first.";
@@ -2686,7 +2560,7 @@ void OnBnClickedRealsum()
         return;
     }
 
-    if (SubpixelPhaseMatrix.empty())
+    if (SubpixelRealMatrix3D.empty())
     {
         //::MessageBox(NULL, "Must generate subpixel data first.", "Message", MB_OK);
         errorMessage_sums = "Must generate subpixel data first.";
