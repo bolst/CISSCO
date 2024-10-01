@@ -186,34 +186,7 @@ public class Calculate_Magnetic_Moment_3D implements PlugIn {
 
       // removing background phase then estimating rcenter
       item.removeBkgPhase();
-      double RCenter = item.estimateRCenter();
-
-      // Updating GUI/RCenter
-      if (gui.ltf_rc.getTextFieldInstance().isDefault()) {
-        gui.ltf_rc.setValue(roundAndConvertToString(RCenter, 1));
-        logger.addVariable("RCenter", RCenter);
-      } else {
-        RCenter = Double.parseDouble(gui.ltf_rc.getValue());
-        item.setRCenter(RCenter);
-        logger.addVariable("RCenter", RCenter);
-      }
-
-      item.calcR0123();
-      double m_R0 = item.m_R0();
-
-      double c2x = Double.parseDouble(gui.ltf_rcx.getValue());
-      double c2y = Double.parseDouble(gui.ltf_rcy.getValue());
-      double c2z = Double.parseDouble(gui.ltf_rcz.getValue()) - 1.0;
-      c2x = Math.floor(c2x);
-      c2y = Math.floor(c2y);
-      c2z = Math.floor(c2z);
-      jni.setmVariables(grid, m_R0, RCenter, c2x, c2y, c2z, EQUATORIAL_PHASE);// Double.parseDouble(gui.ltf_eqPhase.getValue()));
-      jni.setMagMoment(/* Double.parseDouble(gui.ltf_eqPhase.getValue()) */EQUATORIAL_PHASE *
-          Math.pow(RCenter, 3));
-      jni.setBackPhase(item.bkgPhase);
-
-      // setting slice to center
-      item.setZ((int) Double.parseDouble(gui.ltf_rcz.getValue()));
+      calcRCenter(Axis.UNKNOWN);
 
     } catch (Exception exc) {
       JOptionPane.showMessageDialog(gui.frame, exc);
@@ -225,7 +198,9 @@ public class Calculate_Magnetic_Moment_3D implements PlugIn {
   // "Generate Subpixel Grid/Data"
   // =====================================================================================
   public static void generateSubpixelImages() {
-    // updateVariables();
+    // TODO: make one subpixel image to be perpendicular to B0. For example if B0~x
+    // then we need a YZ image
+
     float[][] subpixelMagMatrix, subpixelMagMatrixXZ;
 
     // pass step 2 estimated center to item. This is needed for subpixel/pixel
@@ -1572,6 +1547,61 @@ public class Calculate_Magnetic_Moment_3D implements PlugIn {
           + roundAndConvertToString(d_dChi, 2));
     }
 
+  }
+
+  // =====================================================================================
+  // Helper function for when user changes B0 axis or step 2 clicked
+  // =====================================================================================
+  public static void calcRCenter(Axis B0) {
+    try {
+
+      double RCenter = item.estimateRCenter(B0);
+
+      // Updating GUI/RCenter
+      if (gui.ltf_rc.getTextFieldInstance().isDefault()) {
+        gui.ltf_rc.setValue(roundAndConvertToString(RCenter, 1));
+        logger.addVariable("RCenter", RCenter);
+      } else {
+        RCenter = Double.parseDouble(gui.ltf_rc.getValue());
+        item.setRCenter(RCenter);
+        logger.addVariable("RCenter", RCenter);
+      }
+
+      item.calcR0123();
+      double m_R0 = item.m_R0();
+
+      double c2x = Double.parseDouble(gui.ltf_rcx.getValue());
+      double c2y = Double.parseDouble(gui.ltf_rcy.getValue());
+      double c2z = Double.parseDouble(gui.ltf_rcz.getValue()) - 1.0;
+      c2x = Math.floor(c2x);
+      c2y = Math.floor(c2y);
+      c2z = Math.floor(c2z);
+      jni.setmVariables(grid, m_R0, RCenter, c2x, c2y, c2z, EQUATORIAL_PHASE);
+      jni.setMagMoment(EQUATORIAL_PHASE * Math.pow(RCenter, 3));
+      jni.setBackPhase(item.bkgPhase);
+
+      // setting slice to center
+      item.setZ((int) Double.parseDouble(gui.ltf_rcz.getValue()));
+    } catch (Exception exc) {
+      JOptionPane.showMessageDialog(gui.frame, exc);
+    }
+  }
+
+  // =====================================================================================
+  // When user changes B0 axis in GUI
+  // =====================================================================================
+  public static void onB0Changed(Axis B0) {
+    if (item == null) {
+      return;
+    }
+
+    try {
+      Calculate_Magnetic_Moment_3D.gui.ltf_rc.reset();
+      item.setMRIAxis(B0);
+      calcRCenter(B0);
+    } catch (Exception exc) {
+      JOptionPane.showMessageDialog(gui.frame, exc);
+    }
   }
 
   /*

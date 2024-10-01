@@ -464,6 +464,11 @@ public class GUI {
                 Calculate_Magnetic_Moment_3D.estimateRadiusFromSpinEcho();
             }
         });
+        ldd_MriAxis.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                Calculate_Magnetic_Moment_3D.onB0Changed(ldd_MriAxis.getValue());
+            }
+        });
     }
 
 }
@@ -546,8 +551,10 @@ class LabeledTextField extends JPanel {
         textField.setText(value);
     }
 
-    public void addTFDocumentListener(DocumentListener d) {
-        textField.getDocument().addDocumentListener(d);
+    // resets textField to default value
+    public void reset() {
+        String defaultText = textField.getDefaultText();
+        textField.setText(defaultText);
     }
 }
 
@@ -618,5 +625,9 @@ class LabeledDropDown<T> extends JPanel {
     // Setter for the text field value
     public void setValue(T value) {
         comboBox.setSelectedItem(value);
+    }
+
+    public void addActionListener(ActionListener listener) {
+        comboBox.addActionListener(listener);
     }
 }
